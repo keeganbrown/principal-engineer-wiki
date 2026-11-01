@@ -13,13 +13,11 @@ tags: [testing, design, workflow]
 
 TDD flips the usual order. Instead of writing code and then testing it, you:
 
-1. **Red** — write a test for one small behavior. Run it. Watch it fail.
+1. **Red** — write a test for one small behavior. Run it and watch it fail, which proves the test can catch a problem.
 2. **Green** — write the simplest code that makes it pass. Don't polish.
 3. **Refactor** — now that it works and is protected by a test, improve the design.
 
 Each loop takes minutes. Over a day, you build up working code *and* a test suite that describes exactly what it does.
-
-Watching the test fail first proves it can catch a problem.
 
 Kent Beck popularized TDD as part of Extreme Programming in the late 1990s.
 
@@ -32,10 +30,10 @@ Kent Beck popularized TDD as part of Extreme Programming in the late 1990s.
 
 ## How to apply it
 
-- **Start with the simplest meaningful case,** then add edge cases one at a time.
+- **Start with the simplest meaningful case.** Then add edge cases one at a time.
 - **Test behavior through public interfaces.** Tests that know about private methods or internal structure break on every refactor.
 - **Keep tests fast.** Milliseconds each. Slow tests stop being run.
-- **Name tests as sentences:** `"rejects expired tokens"`, `"applies discount to orders over 100"`.
+- **Name tests as sentences.** For example, `"rejects expired tokens"` or `"applies discount to orders over 100"`.
 - **Start every bug fix with a failing test.** Reproduce the bug in a test, then fix it, so it can never silently return.
 - **Wrap what's hard to test.** For UI, hardware, or third-party APIs, put a thin layer around them and test-drive everything behind it ([[hexagonal-architecture]]).
 
@@ -77,7 +75,7 @@ Each step is tiny, and the boundary case (`100`) is pinned down by a test.
 
 Exploratory spikes — where you don't yet know what you're building — are often better done without tests, then thrown away and rebuilt with TDD. Visual design, performance tuning, and integration with poorly documented systems may need other feedback loops (screenshots, benchmarks, [[contract-testing|contract tests]]).
 
-In untested legacy code, TDD often stalls because there are no seams to test through. Start with **characterization tests** that pin down what the code does today, then test-drive your changes.
+In untested legacy code, TDD often stalls because there are no **seams** — places where you can swap in a test double without editing the code. Start with **characterization tests** that pin down what the code does today, then test-drive your changes.
 
 ## Related
 

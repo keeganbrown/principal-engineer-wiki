@@ -1,11 +1,11 @@
 ---
-title: Writing Design Docs
+title: Design Docs
 category: practices
 summary: Before building something significant, write a short document explaining the problem, the proposed solution, and the alternatives, so the team can find flaws while they're still cheap to fix.
 tags: [documentation, communication, decision-making]
 ---
 
-# Writing Design Docs
+# Design Docs
 
 > **In one sentence:** Before building something significant, write a short document explaining the problem, the proposed solution, and the alternatives, so the team can find flaws while they're still cheap to fix.
 
@@ -39,7 +39,7 @@ Guidelines:
 - **Write for a smart reader new to the area.** Define terms; lead with the problem.
 - **Keep it as short as the problem allows.** A few pages is common for a single-team change; large cross-team projects run longer. Move details to appendices.
 - **Share early as a draft.** A rough doc reviewed early beats a perfect doc reviewed too late.
-- **Name reviewers explicitly** and set a deadline for feedback.
+- **Name reviewers and a deadline.** Explicit names and dates get feedback; open invitations don't.
 - **Resolve comments in writing.** Record decisions in the doc so the discussion isn't lost.
 
 ## Example
@@ -50,10 +50,10 @@ In review, the finance team points out that prices must update within one minute
 
 ## Common traps
 
-- **Writing it after building the real thing.** Then it's documentation, not design. (A throwaway *spike* before the doc is fine — often better — when the unknowns are technical. The doc should still come before the committed build.)
-- **Solution-first docs** that skip the problem, so reviewers can't judge whether the solution fits.
-- **No alternatives,** which signals the decision was made before the review.
-- **Novel-length docs** that nobody finishes.
+- **Writing it after building the real thing.** Then it's documentation, not design. A throwaway **spike** — quick experimental code built only to answer a technical question — before the doc is fine, often better; the doc still comes before the committed build.
+- **Skipping the problem.** Solution-first docs leave reviewers unable to judge whether the solution fits.
+- **Listing no alternatives.** It signals the decision was made before the review.
+- **Writing a novel.** Nobody finishes it.
 - **Design by committee.** Gather input widely, but have a clear decision-maker.
 
 ## When it doesn't apply
@@ -65,7 +65,7 @@ Watch for the process turning into bureaucracy. If doc review routinely takes lo
 ## Related
 
 - [[architecture-decision-records]] — record the outcome of a design doc concisely.
-- [[reversible-decisions]] — design docs are for one-way doors.
+- [[reversible-decisions]] — one-way doors are the strongest reason to write one.
 - [[influencing-without-authority]] — clear writing is a principal engineer's main lever.
 - [[code-review]] — design review is code review moved earlier.
 - [[yagni]] — non-goals are where YAGNI gets written down.

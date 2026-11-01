@@ -1,13 +1,13 @@
 ---
 title: Contract Testing
 category: practices
-summary: Check that a service and the clients that call it agree on the shape of their API, in each side's own fast test suite, so breaking changes fail in CI instead of in production.
+summary: Check that a service and the clients that call it agree on the shape of their API, in each side's own fast test suite, so breaking changes fail before release instead of in production.
 tags: [testing, api-design, microservices]
 ---
 
 # Contract Testing
 
-> **In one sentence:** Check that a service and the clients that call it agree on the shape of their API, in each side's own fast test suite, so breaking changes fail in CI instead of in production.
+> **In one sentence:** Check that a service and the clients that call it agree on the shape of their API, in each side's own fast test suite, so breaking changes fail before release instead of in production.
 
 ## The idea
 
@@ -18,38 +18,41 @@ The obvious fix is end-to-end tests that run both services together. They work, 
 A **contract test** checks the agreement without running both sides at once:
 
 - The **consumer** (the client) writes down what it relies on: "When I call `GET /orders/42`, I need a response with `id` (string) and `total` (number)."
-- That expectation is saved as a **contract** file and shared.
-- The **provider** (the service) runs the contract against its own code in its own CI. If it no longer satisfies a consumer's expectations, its build fails.
+- That expectation is saved as a contract file and shared.
+- The **provider** (the service) runs the contract against its own code in its **continuous integration (CI)** pipeline — the automated build and tests that run on every change. If it no longer satisfies a consumer, its build fails.
 
-This style is called **consumer-driven contracts**. Tools like Pact automate it. A lighter variant is **schema-based**: both sides test against a shared OpenAPI or Protobuf schema, and CI flags breaking schema changes.
+This style is called **consumer-driven contracts**; tools like Pact automate it. A lighter variant is schema-based: both sides test against a shared API description (an OpenAPI spec for HTTP, or a Protobuf schema for gRPC), and CI flags breaking schema changes.
+
+Ian Robinson named consumer-driven contracts in a 2006 article on martinfowler.com.
 
 ## Why it matters
 
-- **Breaking changes are caught before merge,** on the provider side, where they're cheapest to fix.
-- **Fast and reliable.** Each side tests alone; no shared environment, no network flakiness.
-- **Providers learn what's actually used.** If no contract mentions a field, it can be removed safely.
-- **Teams can deploy independently** with real confidence — the main promise of separate services.
+- **Breaks surface before merge.** The provider's build fails, where the fix is cheapest.
+- **Tests stay fast and reliable.** Each side tests alone; no shared environment, no network flakiness.
+- **Providers see what's used.** A field no contract mentions is a strong signal it's unused — but only consumers that publish contracts are counted. Confirm with usage metrics before removing anything ([[expand-and-contract]]).
+- **Teams can deploy independently.** That's the main promise of separate services, and contracts make it real.
 
 ## How to apply it
 
 - **Start where it hurts.** Pick the API boundary that breaks most often, or the one between two teams who rarely talk.
-- **Consumers specify only what they use.** A contract that asserts every field makes the provider unable to change anything.
-- **Run provider verification in CI on every change,** against every consumer's latest contract.
-- **Use a contract broker** (a shared store for contracts) so providers can check "is it safe to deploy?" against what's live.
-- **Check schema changes automatically.** Even without full consumer-driven contracts, diffing an OpenAPI or Protobuf schema for breaking changes catches most problems.
-- **Keep business logic out of contracts.** They test shape and meaning of the interface, not every behavior — that's what the provider's own tests are for.
+- **Have consumers specify only what they use.** A contract that asserts every field leaves the provider unable to change anything.
+- **Verify against every consumer version still in production.** For a mobile app, that's every supported release, not just the latest. Old app versions stay installed for years.
+- **Run a contract broker.** A broker is a shared store for contracts; it answers "is it safe to deploy?" against what's actually live.
+- **Diff schemas automatically.** Even without consumer-driven contracts, checking an OpenAPI or Protobuf schema for breaking changes catches structural breaks cheaply.
+- **Remember contracts check shape, not meaning.** Changed sort order, stricter validation, or different error codes still pass. Those need review ([[api-versioning]] lists them).
+- **Budget for the organizational cost.** Consumers write contracts that mostly protect them; providers maintain test fixtures that put the service into each contract's assumed state; someone runs the broker. Adoption stalls when only one side sees the payoff, so start where both teams feel the pain.
 
 ## Example
 
 The mobile app shows an order's `total`. The orders team, cleaning up, renames it to `totalAmount` and updates their own tests. Everything passes.
 
-With contract testing, the mobile team's contract says "`GET /orders/{id}` returns `total` as a number." The orders team's CI runs that contract and fails: *"Consumer mobile-app expects field `total`."* The orders team adds `totalAmount` alongside `total` instead of replacing it ([[expand-and-contract]]), and nothing breaks for the app users who haven't updated yet.
+With contract testing, the mobile team's contract — for every app version still supported — says "`GET /orders/{id}` returns `total` as a number." The orders team's CI runs those contracts and fails: *"Consumer mobile-app 4.2 expects field `total`."* The team adds `totalAmount` alongside `total` instead of replacing it, and nothing breaks for users who haven't updated.
 
 ## Common traps
 
-- **Over-specified contracts** that assert exact values or every field, so any change breaks them.
-- **Contracts nobody verifies.** If the provider doesn't run them in CI, they're just documentation.
-- **Treating contract tests as end-to-end tests.** They don't check that the whole flow works — keep a few true end-to-end tests for critical journeys.
+- **Over-specified contracts.** Asserting exact values or every field means any change breaks them.
+- **Leaving contracts unverified.** If the provider doesn't run them in CI, they're just documentation.
+- **Treating contract tests as end-to-end tests.** They don't check that the whole flow works; keep a few true end-to-end tests for critical journeys.
 - **Adopting a heavy tool for two services owned by one team.** The overhead may outweigh the benefit.
 
 ## When it doesn't apply

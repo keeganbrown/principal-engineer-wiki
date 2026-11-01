@@ -13,7 +13,7 @@ tags: [collaboration, quality, mentorship]
 
 Code review is a second pair of eyes on a change. It catches bugs, but that's not its main value. Reviews **spread knowledge** (more people understand each part of the system), **keep the codebase consistent**, and **teach** — in both directions.
 
-A good review is a conversation between peers about making the code better. But be honest about what it costs: mandatory review before every merge is a gate, and waiting at that gate is often the biggest delay in a team's workflow.
+A good review is a conversation between peers about making the code better. It also has a cost: mandatory review before every merge is a gate, and waiting at that gate is often the biggest delay in a team's workflow.
 
 ## Why it matters
 
@@ -28,13 +28,13 @@ A good review is a conversation between peers about making the code better. But 
 - **Keep changes small.** Aim for under about 400 lines per pull request (PR). A well-known SmartBear/Cisco study found that reviewers catch fewer defects beyond roughly 200–400 lines — treat it as a heuristic.
 - **Write a description.** Say *what* changed, *why*, and *how you tested it*.
 - **Review your own diff first.** You'll catch many of the comments yourself.
-- **Separate refactors from behavior changes** into different PRs.
+- **Separate refactors from behavior changes.** Put them in different PRs.
 
 **As a reviewer:**
-- **Review in priority order:** correctness, then design, then readability, then style. Let linters and formatters handle style ([[paved-roads]]).
+- **Review in priority order.** Correctness, then design, then readability, then style. Let linters and formatters handle style ([[paved-roads]]).
 - **Ask questions instead of issuing orders.** "What happens if this list is empty?"
-- **Label comment weight:** `nit:` (optional), `suggestion:`, `blocking:`.
-- **Respond quickly.** Aim to respond within a few working hours. Waiting a day kills momentum.
+- **Label comment weight.** Use `nit:` (optional), `suggestion:`, or `blocking:`.
+- **Respond within a few working hours.** Waiting a day kills momentum.
 - **Praise good work.** It tells people what to keep doing.
 
 ## Example
@@ -62,7 +62,7 @@ The helpful version names the problem, explains the impact, suggests a fix, and 
 
 ## When it doesn't apply
 
-Mandatory pre-merge review on every change is a policy choice, not a law. Some high-trust teams use **ship / show / ask**: *ship* trivial changes directly, *show* low-risk ones by merging and reviewing afterwards, and *ask* for blocking review only on risky or unfamiliar code. Measure how long PRs wait for review; if it's measured in days, the gate costs more than it catches.
+Mandatory pre-merge review on every change is a policy choice, not a law. Some high-trust teams use **ship / show / ask** (Rouan Wilsenach, martinfowler.com, 2021): *ship* trivial changes directly, *show* low-risk ones by merging and reviewing afterwards, and *ask* for blocking review only on risky or unfamiliar code. Measure how long PRs wait for review; if it's measured in days, the gate costs more than it catches.
 
 Pair or ensemble (mob) programming provides continuous review, so a separate review may add little. Emergency fixes may merge first and get reviewed immediately after — but that should be rare and explicit.
 

@@ -16,8 +16,8 @@ tags: [operations, reliability, debugging]
 A system is observable when you can understand its internal state from the data it emits — its **telemetry**. The three main kinds:
 
 - **Logs** — timestamped records of events. Best when **structured** (JSON with named fields), not free text.
-- **Metrics** — numbers over time: request rate, error rate, latency, queue depth. Cheap to store, great for dashboards and alerts.
-- **Traces** — the path of a single request across services, showing where time was spent.
+- **Metrics** — numbers over time: request rate, error rate, latency, queue depth. They're often tagged with **labels** like `region=eu` or `status=500`. Cheap to store, great for dashboards and alerts.
+- **Traces** — the path of a single request across services, showing where time was spent. A trace is made of **spans**: one timed step each, such as a service call or a database query.
 
 ## Why it matters
 
@@ -27,11 +27,11 @@ Good observability can shorten incidents from hours to minutes, and lets you dep
 
 ## How to apply it
 
-- **Use structured logs with consistent fields:** `trace_id`, `user_id`, `service`, `duration_ms`.
-- **Propagate a trace ID** (also called a correlation ID) through every call, so you can follow one request everywhere. OpenTelemetry is the common standard.
-- **Measure the four golden signals** for each service: **latency**, **traffic**, **errors**, and **saturation** (how full the service is — CPU, memory, connection pools, queue depth; see [[backpressure]]).
+- **Use structured logs with consistent fields.** At minimum: `traceId`, `userId`, `service`, `durationMs`.
+- **Propagate a trace ID through every call.** A trace ID (also called a correlation ID) lets you follow one request everywhere. OpenTelemetry is the common standard.
+- **Measure the four golden signals for each service.** They are latency, traffic, errors, and **saturation** — how full the service is: CPU, memory, connection pools, queue depth ([[backpressure]]). The list comes from Google's *Site Reliability Engineering* book (2016).
 - **Define SLOs (service level objectives).** For example: "99.9% of checkouts succeed in under 1s." The 0.1% allowed to fail is your **error budget**. Alert when you're burning through it faster than planned, not on every blip.
-- **Alert on symptoms users feel,** not on causes. "Checkout is failing" pages someone; "CPU at 80%" goes to a dashboard.
+- **Alert on symptoms users feel, not on causes.** "Checkout is failing" pages someone; "CPU at 80%" or "a circuit breaker opened" goes to a dashboard ([[circuit-breaker]]).
 - **Add context at the edges.** Log what came in and what went out at system boundaries.
 - **Budget for telemetry.** It can become a large share of infrastructure spend. Sample traces deliberately — keep all errors and slow requests, sample the rest.
 
@@ -55,7 +55,7 @@ Users report checkout is slow:
 
 ## When it doesn't apply
 
-A small internal tool or batch script needs little more than basic logs and a failure alert. Scale your investment to the system's criticality and complexity — but almost everything in production deserves *some*.
+A small internal tool or batch script needs little more than basic logs and a failure alert. A reasonable progression: start every service with structured logs and the four golden signals, and add distributed tracing once a typical request crosses more than two or three services.
 
 ## Related
 

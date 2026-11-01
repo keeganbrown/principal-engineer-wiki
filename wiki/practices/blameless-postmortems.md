@@ -24,11 +24,11 @@ The approach comes from safety-critical fields like aviation and medicine. In so
 
 ## How to apply it
 
-- **Hold one for every significant incident** (and interesting near-misses), within a few days while memory is fresh.
+- **Hold one for every significant incident.** Include interesting near-misses, and meet within a few days while memory is fresh.
 - **Build a timeline first.** What happened, when, what people saw, and what they did — from logs, chat history, and dashboards ([[observability]]).
 - **Ask "how" and "what," not "why did you."** "What did the dashboard show at that moment?" invites detail; "Why didn't you check?" invites defense.
 - **Look for contributing factors, not one root cause.** Real incidents usually need several things to go wrong at once.
-- **Write action items that change the system:** automation, safer defaults, removed hazards. "Be more careful" is not an action item.
+- **Write action items that change the system.** Think automation, safer defaults, removed hazards. "Be more careful" is not an action item.
 - **Give every action item an owner and a due date.** Track them to completion.
 - **Share widely.** Publish postmortems so other teams learn too.
 

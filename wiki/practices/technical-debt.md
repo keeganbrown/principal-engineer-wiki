@@ -43,14 +43,16 @@ As a principal engineer, your job is to **translate debt into business terms** �
 - **Watch for debt that carries risk, not interest.** A rarely touched module can wait — *unless* it runs on an unsupported runtime, has unpatched dependencies, or only one person understands it. That debt comes due on someone else's schedule: a security advisory, a forced upgrade, a resignation.
 - **Find the debt nobody recorded.** Look for **hotspots**: files with high churn and frequent bug fixes. Measure lead time for changes there before and after paying debt down, to show it worked.
 - **Budget for it.** Many teams reserve roughly 10–20% of capacity for paying down debt continuously.
-- **Record deliberate debt when you take it:** what shortcut, why, and what will trigger repaying it.
+- **Record deliberate debt when you take it.** Note the shortcut, the reason, and the trigger for repaying it.
 - **Frame it in outcomes.** Not "refactor the order module," but "cut time-to-ship for checkout features from 2 weeks to 3 days."
 
 ## Example
 
 A team hard-codes support for one currency to launch in the US on time — a prudent, deliberate choice. They note it in an architecture decision record ([[architecture-decision-records|ADR]]) with the trigger "before any international launch."
 
-A year later, international expansion is on the roadmap. Because the debt was recorded and scoped, the team estimates the payoff work accurately and schedules it before the launch, instead of discovering it mid-project.
+Recording it didn't stop the interest. Over the year, about 30 places in the code quietly assumed USD, and every pricing feature took a little longer because of it.
+
+When international expansion reached the roadmap, though, the team knew exactly what to search for and budgeted a quarter for the fix — instead of discovering it mid-launch.
 
 ## Common traps
 

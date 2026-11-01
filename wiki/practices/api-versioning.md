@@ -15,10 +15,10 @@ Once someone depends on your API — a mobile app, a partner, another team's ser
 
 Changes come in two kinds:
 
-- **Backward-compatible (safe):** add a new optional field, a new endpoint, a new optional parameter, a new enum value *that clients are prepared to ignore*.
-- **Breaking:** remove or rename a field, change a type, make an optional field required, change meaning or default behavior, tighten validation.
+- **Backward-compatible (safe)** — add a new optional field, a new endpoint, a new optional parameter, or a new enum value *that clients are prepared to ignore*.
+- **Breaking** — remove or rename a field, change a type, make an optional field required, change meaning or default behavior, or tighten validation.
 
-The best versioning strategy is to **need it rarely**: design APIs that can grow through additive changes.
+The best versioning strategy is to **need it rarely**: design APIs that can grow through additive changes, using [[expand-and-contract]] for anything else.
 
 ## Why it matters
 
@@ -27,33 +27,32 @@ Breaking changes are among the most expensive mistakes in software because their
 ## How to apply it
 
 - **Make clients tolerant readers.** Clients should ignore fields they don't recognize, so you can add new ones safely. (Martin Fowler calls this the *Tolerant Reader* pattern.)
-- **Make servers strict from day one.** Validate input strictly. Anything you tolerate becomes behavior someone depends on, and tightening it later is a breaking change. This is why the old robustness principle — "be liberal in what you accept" (Jon Postel) — is now treated with caution; the IETF's RFC 9413 (2023) explains why.
+- **Make servers strict from day one.** Anything you tolerate becomes behavior someone depends on, and tightening it later is a breaking change. This is why the old robustness principle — "be liberal in what you accept" (Jon Postel) — is now treated with caution; RFC 9413 (Internet Architecture Board, 2023) explains why.
 - **Never reuse or repurpose a field.** Add a new one and deprecate the old.
-- **Change things with [[expand-and-contract]]:** add the new alongside the old, migrate consumers, then remove the old.
-- **When you must break, version explicitly.** Common approaches:
-  - URL: `/v2/orders` — simple and visible.
-  - Header: `Accept: application/vnd.example.v2+json` — a custom media type that names the version; keeps URLs clean.
-  - Date-based: e.g. Stripe's `Stripe-Version: 2024-09-30.acacia` or GitHub's `X-GitHub-Api-Version: 2022-11-28`. Very fine-grained, but it requires a translation layer that converts responses for every past version — worth it mainly for large public APIs.
-- **Publish a deprecation policy** (e.g., "12 months' notice"), and use the standard `Deprecation` and `Sunset` response headers.
-- **Measure usage** per version and per client, so you know who to contact.
-- **Catch accidental breaks in CI** with schema diffs or [[contract-testing|contract tests]].
-- **Version events and messages too** — they are APIs.
+- **Evolve additively.** Add the new alongside the old, migrate consumers, then remove the old ([[expand-and-contract]]).
+- **Version explicitly when you must break.** Common approaches:
+  - URL — `/v2/orders`. Simple and visible.
+  - Header — `Accept: application/vnd.example.v2+json`, a custom media type that names the version. Keeps URLs clean.
+  - Date-based — e.g. Stripe's `Stripe-Version: 2024-09-30.acacia` or GitHub's `X-GitHub-Api-Version: 2022-11-28`. Very fine-grained, but you must maintain a translation layer that converts responses for every past version — worth it mainly for large public APIs.
+- **Publish a deprecation policy.** For example, 12 months' notice, announced with the standard `Deprecation` (RFC 9745) and `Sunset` (RFC 8594) response headers.
+- **Track usage per version and per client.** Without it, you can never safely remove anything or know whom to contact.
+- **Catch accidental breaks in continuous integration (CI).** Use schema diffs or [[contract-testing|contract tests]].
+- **Version events and messages too.** They are APIs.
 
 ## Example
 
-An API returns `{ "name": "Ada Lovelace" }`. The team wants separate first and last names.
+An orders API returns money as a float: `"total": 19.99`. Rounding errors are causing billing disputes, and the team needs integer cents with an explicit currency: `"total": {"amountCents": 1999, "currency": "USD"}`. The *type* of `total` changes, so this can't be done additively under the same name.
 
-**Breaking approach:** replace `name` with `firstName` and `lastName`. Every client that reads `name` breaks.
+The team ships `/v2/orders` with the new shape and leaves `/v1` unchanged. `/v1` responses start carrying `Deprecation` and `Sunset: Sat, 31 Oct 2027 00:00:00 GMT` headers. Per-client usage dashboards show which partners still call `/v1`; the team emails each one twice and offers migration help.
 
-**Evolution approach:** return all three fields. Mark `name` deprecated in the docs and the schema. Watch usage of `name` drop as clients update; contact the stragglers. After the deprecation window, remove it — or keep it forever if it's cheap. No client ever broke.
+A year later, two partners still haven't moved. Rather than break them on the sunset date, the team extends the date by three months for those two and switches `/v1` off afterward — a decision recorded in an [[architecture-decision-records|ADR (architecture decision record)]].
 
 ## Common traps
 
 - **Versioning every change.** Ten versions to maintain is far worse than additive evolution.
-- **"It's internal, so it's fine."** Internal consumers break too — and are often harder to find.
-- **Hidden breaking changes:** stricter validation, changed sort order, new required headers, different error codes.
-- **No usage data,** so you can never safely remove anything.
-- **Exhaustive enum handling** in clients that crashes on new values. Document that enums may grow.
+- **Assuming internal APIs are safe to break.** Internal consumers break too — and are often harder to find.
+- **Missing hidden breaking changes.** Stricter validation, changed sort order, new required headers, and different error codes all break clients.
+- **Crashing on new enum values.** Clients that handle enums exhaustively break when you add one. Document that enums may grow.
 
 ## When it doesn't apply
 
