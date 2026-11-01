@@ -11,17 +11,21 @@ tags: [distributed-systems, data, trade-offs]
 
 ## The idea
 
-Eric Brewer's CAP theorem talks about three properties of a system that stores data on multiple machines:
+The CAP theorem names three properties of a system that stores data on multiple machines:
 
 - **Consistency (C)** — every read sees the most recent write. Everyone sees the same data.
 - **Availability (A)** — every request gets a (non-error) response.
-- **Partition tolerance (P)** — the system keeps working even when the network between machines drops messages.
+- **Partition tolerance (P)** — the system keeps running, without corrupting data, when the network between machines drops messages. It may still have to turn some requests away.
 
 The popular phrase "pick two of three" is misleading. Network partitions *will* happen; you don't get to opt out of P. So the real rule is:
 
 > **When a partition happens, you must choose: refuse some requests (stay consistent) or answer them with possibly stale data (stay available).**
 
-When there's no partition, the trade-off is between **latency and consistency** — waiting for replicas to agree takes time. This extension is called **PACELC**: if Partition, choose A or C; Else, choose Latency or Consistency.
+When there's no partition, there's still a trade-off, between **latency and consistency**: waiting for copies to agree takes time. This extension is called **PACELC** — if Partition, choose A or C; Else, choose Latency or Consistency.
+
+The same "else" trade-off shows up in application design. When a service publishes an event and doesn't wait for consumers to process it, it has chosen low latency, and the consumers' copies lag behind. That lag is **eventual consistency**.
+
+Eric Brewer stated CAP as a conjecture in 2000; Seth Gilbert and Nancy Lynch proved it in 2002. Daniel Abadi proposed PACELC (published 2012).
 
 ## Why it matters
 
@@ -29,21 +33,23 @@ Every distributed database, cache, and multi-service system makes this choice, w
 
 ## How to apply it
 
-Learn the common **consistency models**, from strongest to weakest:
+This article owns the wiki's **consistency models**, from strongest to weakest:
 
 | Model | Plain English | Typical use |
 | --- | --- | --- |
-| Linearizable (strong) | Behaves like one single copy | Bank balances, locks, inventory counts |
-| Sequential / causal | Everyone sees related events in the same order | Comments and replies, chat |
-| Read-your-writes | You always see your own changes | Profile edits, settings |
-| Eventual | Replicas converge "soon" if writes stop | Like counts, feeds, analytics |
+| Linearizable (strong) | Behaves like one single copy, in real time. | Locks, leader election, unique usernames |
+| Sequential | Everyone sees all operations in the same order, though maybe not instantly. | Replicated logs |
+| Causal | If B depends on A (a reply to a comment), everyone sees A before B. Unrelated events may appear in different orders. | Comments and replies, chat |
+| Read-your-writes | You always see your own changes. | Profile edits, settings |
+| Eventual | Copies converge "soon" if writes stop. | Like counts, feeds, analytics |
 
 Then:
 
-- **Decide per operation, not per system.** Checkout payment needs strong consistency; the "recommended for you" list doesn't.
-- **Ask the business** what being wrong costs. Showing a stale like count costs nothing; overselling the last concert ticket costs a lot.
+- **Default to one strong store.** Every extra consistency model is something every engineer must remember, and bugs live at the seams. Relax consistency only where latency, availability, or cost forces it.
+- **Decide per operation when you do relax.** Checkout payment needs strong consistency; "recommended for you" doesn't.
+- **Ask the business** what being wrong costs. A stale like count costs nothing; overselling the last concert ticket costs a lot.
 - **Know your tools' defaults.** Many databases and caches are eventually consistent unless configured otherwise.
-- **Design the UX for staleness** where you choose availability: "updated a few seconds ago," optimistic updates, clear retry states.
+- **Design the UX for staleness** where you choose availability: "updated a few seconds ago," optimistic updates (show the change immediately, reconcile later), and reading from the primary right after a user's own write.
 
 ## Example
 
@@ -58,16 +64,18 @@ For seat booking, the airline chooses consistency. For the flight-status page, i
 
 - **"We picked CA."** Partition tolerance isn't optional in a real network.
 - **Treating the whole system as one choice.** Different data deserves different guarantees.
-- **Confusing CAP consistency with ACID consistency.** ACID's "C" means data obeys rules (constraints); CAP's "C" means all copies agree.
-- **Assuming partitions are rare.** Timeouts, GC pauses, and overloaded nodes all look like partitions to the rest of the system.
+- **Confusing CAP consistency with ACID consistency.** ACID (Atomic, Consistent, Isolated, Durable) describes database transactions; its "C" means data obeys rules like constraints. CAP's "C" means all copies agree.
+- **Assuming partitions are rare.** Timeouts, overloaded nodes, and garbage-collection pauses that freeze a process for seconds all look like partitions to the rest of the system.
 
 ## When it doesn't apply
 
-A single database on a single machine doesn't face CAP — there's nothing to partition. Many apps can live comfortably on one strongly consistent primary database plus replicas for reads, and that's often the right, simple choice.
+A single database on one machine doesn't face CAP — there's nothing to partition.
+
+Adding read replicas is often the right, simple next step, but it brings back a small version of the choice: replica reads can be seconds stale. Send reads that must be fresh — like "show me the profile I just saved" — to the primary.
 
 ## Related
 
-- [[event-driven-architecture]] — choosing events usually means choosing eventual consistency.
-- [[cqrs]] — read models are typically eventually consistent with the write side.
-- [[saga-pattern]] — how to keep data correct across services without distributed transactions.
+- [[event-driven-architecture]] — choosing async events means choosing eventual consistency for consumers.
+- [[cqrs]] — read models are usually eventually consistent with the write side.
+- [[saga-pattern]] — gives up atomic transactions; these models describe what you're left with.
 - [[idempotency]] — retries during partitions must be safe.

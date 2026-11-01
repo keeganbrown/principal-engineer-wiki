@@ -15,22 +15,22 @@ A **concern** is a distinct area of responsibility: business rules, storing data
 
 Think of a restaurant. The chef cooks, the server takes orders, the cashier handles payment. If the chef also had to run the register, every rush hour would be chaos. Software is the same.
 
-The term comes from Edsger Dijkstra, who argued it's the only way humans can reason about complex systems: focus on one aspect at a time.
+The term comes from Edsger Dijkstra (1974), who called it the only technique he knew for effectively ordering one's thoughts.
 
 ## Why it matters
 
 - **Understandability.** You can read the pricing logic without wading through SQL and HTTP code.
 - **Testability.** Pure business logic can be tested in milliseconds without a database or browser.
-- **Replaceability.** Swap Postgres for DynamoDB, or a web UI for a mobile app, without rewriting the rules.
+- **Contained change.** Adding a mobile app or changing storage touches the edges, not the rules. (Don't oversell this: swapping a relational database for a key-value store still leaks transaction and query semantics into the logic. The reliable win is testability.)
 - **Parallel work.** Different people can change different concerns with fewer merge conflicts.
 
 ## How to apply it
 
-- Keep **decisions** (logic) apart from **effects** (I/O: database, network, files, UI).
-- Group code by what changes together. If two things always change at the same time, they're probably one concern.
-- Put boundaries where the "language" changes — e.g., HTTP requests vs. domain objects vs. database rows.
-- Translate at the boundary: convert raw input into clean domain types once, at the edge.
-- Watch for functions that do "this *and* that." The word "and" is a hint.
+- **Keep decisions apart from effects.** Logic decides; I/O (database, network, files, UI) does.
+- **Group code by what changes together.** If two things always change at the same time, they're probably one concern.
+- **Put boundaries where the shape of the data changes.** An HTTP request becomes a domain object; a domain object becomes a database row.
+- **Translate once, at the edge.** Convert raw input into clean domain types as it enters the system.
+- **Watch for "and."** A function that does "this *and* that" is usually two concerns.
 
 ## Example
 
@@ -38,19 +38,34 @@ The term comes from Edsger Dijkstra, who argued it's the only way humans can rea
 
 ```
 function handleSignup(request):
-    if not request.body.email.contains("@"): return 400
-    row = db.query("SELECT ... WHERE email = ?", request.body.email)
-    if row: return 409
-    db.insert(...)
+    if "@" not in request.body.email: return 400
+    if db.query("SELECT 1 FROM users WHERE email = ?", request.body.email): return 409
+    db.insert("users", ...)
     smtp.send(welcomeEmail(request.body.email))
     return 201
 ```
 
-**Separated:** the HTTP handler parses input and maps results to status codes; a `signUp(email, users, mailer)` function holds the rules; `users` and `mailer` are small interfaces backed by the database and SMTP. Now the rules can be tested with in-memory fakes.
+**Separated:**
+
+```
+# rules — testable with in-memory fakes for users and mailer
+function signUp(email, users, mailer):
+    if "@" not in email: return Invalid
+    if not users.add(email): return AlreadyExists   # add() reports a duplicate
+    mailer.sendWelcome(email)
+    return Created
+
+# HTTP edge — only translates
+function handleSignup(request):
+    result = signUp(request.body.email, postgresUsers, smtpMailer)
+    return {Invalid: 400, AlreadyExists: 409, Created: 201}[result]
+```
+
+One subtle point: the tangled version checks *then* inserts, so two simultaneous signups can both pass the check. In the separated version, uniqueness is guaranteed by a unique index in the database; `users.add` catches the duplicate-key error and reports it. In-memory tests can't prove uniqueness — the database constraint does.
 
 ## Common traps
 
-- **Separating by technical layer only.** A "controllers/ services/ repositories/" folder split can still tangle every feature across all three. Consider grouping by feature too.
+- **Separating by technical layer only.** A `controllers/ services/ repositories/` split can still tangle every feature across all three. Consider grouping by domain (orders, billing) too — see [[coupling-and-cohesion]] for why.
 - **Too many tiny pieces.** Splitting one simple concern across ten files adds navigation cost without benefit.
 - **Leaky separation.** If the "business logic" module imports the HTTP framework, the concerns aren't really separate.
 
@@ -60,7 +75,7 @@ Small scripts and throwaway prototypes rarely need strict separation — a 50-li
 
 ## Related
 
-- [[functional-core-imperative-shell]] — a concrete way to separate logic from effects.
-- [[hexagonal-architecture]] — separation of concerns applied at the architecture level.
+- [[functional-core-imperative-shell]] — goes further: keep the rules completely free of I/O.
+- [[hexagonal-architecture]] — the `users` and `mailer` parameters above are ports; this is that pattern in miniature.
 - [[coupling-and-cohesion]] — the vocabulary for judging whether your separation is good.
 - [[solid-principles]] — single responsibility is separation of concerns at the class level.

@@ -1,11 +1,11 @@
 ---
-title: KISS — Keep It Simple
+title: Keep It Simple (KISS)
 category: principles
 summary: Choose the simplest design that solves today's problem, because simple systems are easier to understand, change, and fix.
 tags: [simplicity, design, maintainability]
 ---
 
-# KISS — Keep It Simple
+# Keep It Simple (KISS)
 
 > **In one sentence:** Choose the simplest design that solves today's problem, because simple systems are easier to understand, change, and fix.
 
@@ -15,31 +15,36 @@ Most code is read many more times than it is written. Every extra layer, option,
 
 "Simple" is not the same as "easy." Easy means familiar or quick to type. Simple means *not tangled* — each piece does one thing and you can understand it without understanding everything else. Sometimes the simple solution takes more thought up front.
 
+The simple-versus-easy distinction comes from Rich Hickey's 2011 talk *Simple Made Easy*.
+
 ## Why it matters
 
 - **Bugs hide in complexity.** The more paths through the code, the more paths nobody tested.
-- **Onboarding cost.** A new teammate can contribute to a simple system in days, not months.
+- **Onboarding is faster.** A new teammate can contribute to a simple system in days, not months.
 - **Change is cheaper.** You can't safely change what you don't understand.
 - **Incidents are shorter.** At 3 a.m., the on-call engineer needs to reason about the system fast.
 
 ## How to apply it
 
-- Start with the most direct solution. Add structure only when real pressure appears.
-- Prefer boring, well-known technology unless something new gives a clear, large win.
-- Ask "what can I remove?" before "what can I add?"
-- Count the concepts a reader must learn to understand a change. Fewer is better.
-- Favor plain data and functions over frameworks and deep class hierarchies.
-- If you need a long comment to explain *what* code does, restructure it instead.
+- **Start with the most direct solution.** Add structure only when real pressure appears.
+- **Prefer boring, well-known technology.** Choose something new only when it gives a clear, large win.
+- **Ask "what can I remove?"** before "what can I add?"
+- **Count the concepts.** How many ideas must a reader learn to understand this change? Fewer is better.
+- **Favor plain data and functions** over frameworks and deep class hierarchies.
+- **Restructure instead of explaining.** If you need a long comment to say *what* code does, the code is too complicated.
+- **Judge simplicity against what you already run.** One more instance of a familiar tool is often simpler than a new special case.
 
 ## Example
 
 A team needs to send a nightly report email.
 
-**Complex:** a message queue, a worker service, a retry scheduler, and a templating microservice — "so it scales."
+**Option A:** add a new message queue, a worker service, a retry scheduler, and a templating service — "so it scales."
 
-**Simple:** a scheduled job that runs one script, renders a template, and calls the email API. If it fails, the scheduler alerts and someone reruns it.
+**Option B:** a scheduled job that runs one script, renders a template, and calls the email API. If it fails, the scheduler alerts and someone reruns it.
 
-The simple version ships in a day, has one place to look when it breaks, and can grow into the complex version *if* report volume ever demands it.
+Option B ships in a day and has one place to look when it breaks.
+
+The harder call: suppose the team *already* runs a job queue in production for other work. Now putting the report on that queue may be the simpler choice — one familiar system with existing monitoring beats a special-case cron job nobody remembers. Simple is relative to what you already operate.
 
 ## Common traps
 
@@ -50,10 +55,14 @@ The simple version ships in a day, has one place to look when it breaks, and can
 
 ## When it doesn't apply
 
-Some problems are inherently complex — distributed consensus, tax rules, real-time systems. You can't make that complexity disappear; you can only keep it contained and avoid adding *accidental* complexity on top. Also, a slightly more complex design is sometimes worth it when you have strong evidence (not a guess) that a requirement is coming.
+Some problems are inherently complex — distributed consensus, tax rules, real-time systems. Fred Brooks called this **essential complexity**: it comes from the problem itself and can't be designed away. What you *can* avoid is **accidental complexity**, which comes from your design choices rather than the problem ("No Silver Bullet," 1986).
+
+A slightly more complex design is worth it when you have strong evidence — not a guess — that a requirement is coming, or when the decision would be expensive to reverse later.
 
 ## Related
 
 - [[yagni]] — the time-based cousin of KISS: don't build for imagined futures.
 - [[separation-of-concerns]] — a key technique for keeping each piece simple.
 - [[technical-debt]] — what accumulates when complexity goes unchecked.
+- [[modular-monolith]] — KISS applied to architecture: clean boundaries without a network.
+- [[reversible-decisions]] — when a little up-front complexity is worth it.
