@@ -25,7 +25,7 @@ But the opposite mistake is just as costly. A premature abstraction couples thin
 
 ## How to apply it
 
-This article owns the wiki's answer to "when should I abstract?":
+When should you abstract?
 
 - **Unify a known rule at the second copy.** If you already *know* two places encode the same business fact — a tax rate, a validation rule — don't wait. Give it one home now.
 - **Wait for the third copy of look-alike code.** When code merely *looks* similar, writing it twice is fine. By the third time, you know enough about the pattern to abstract it well. This is the **rule of three** (Don Roberts, via Martin Fowler's *Refactoring*).
@@ -36,18 +36,20 @@ This article owns the wiki's answer to "when should I abstract?":
 
 ## Example
 
-The tax rate `0.0825` is hard-coded in the checkout page, the invoice generator, and the refunds service. When the rate changes, refunds keeps the old value for a week.
+The current sales-tax rate `0.0825` is hard-coded in the checkout page, the invoice generator, and the refunds service. When the rate changes, the three drift apart.
 
-Checkout and invoices live in the same codebase, so they share one `TAX_RATE` constant. But refunds is a **separate service**, and a shared library constant would tie its releases to the others. Instead, one service — pricing — *owns* the tax rate and exposes it through its API. Refunds reads it at runtime. Knowledge is shared across the boundary through a contract, not through shared code.
+The fix is one owner for the fact. The pricing service owns the tax rate and exposes it through its API. Checkout reads the rate when an order is placed and **stores the rate it applied on the order**. Invoices and refunds then use the rate on the original order, never today's rate — refunding a 2025 purchase at a 2026 rate would be wrong.
 
-Counter-example: `validate_shipping_address` and `validate_billing_address` look identical today. Merging them seems DRY — until billing must match the card issuer's format and shipping must support PO boxes. They were different knowledge all along.
+Refunds is a separate service, so a shared library constant would have tied its releases to everyone else's. Instead, knowledge crosses the boundary through a contract: the pricing API and the stored order record.
+
+Counter-example: `validateShippingAddress` and `validateBillingAddress` look identical today. Merging them seems DRY — until billing must match the card issuer's format and shipping must support PO boxes. They were different knowledge all along.
 
 ## Common traps
 
 - **Abstracting on coincidence.** Similar-looking code isn't necessarily the same idea.
-- **The wrong abstraction.** Once a shared function grows flags for each caller, it's often cheaper to inline it back into copies and start over. Sandi Metz put it well: "duplication is far cheaper than the wrong abstraction."
-- **Sharing code across service boundaries.** A shared library of domain models couples the services' release cycles. Share knowledge through APIs and events instead. [[domain-driven-design]] makes the same point from the other side: don't build one canonical model for everyone.
-- **Over-DRY tests.** Tests should read on their own; a little repetition beats a maze of shared helpers.
+- **Keeping the wrong abstraction.** Once a shared function grows flags for each caller, it's often cheaper to inline it back into copies and start over. Sandi Metz put it well: "duplication is far cheaper than the wrong abstraction."
+- **Sharing code across service boundaries.** A shared library of domain models couples the services' release cycles. Share knowledge through APIs and events instead ([[microservices]] lists this as a classic trap). [[domain-driven-design]] makes the same point from the other side: don't build one canonical model for everyone.
+- **Over-DRYing tests.** Tests should read on their own; a little repetition beats a maze of shared helpers.
 
 ## When it doesn't apply
 
@@ -59,3 +61,4 @@ Prototypes and spikes don't live long enough for duplication to hurt. Generated 
 - [[coupling-and-cohesion]] — over-eager DRY creates coupling between unrelated parts.
 - [[solid-principles]] — single responsibility helps you see which code shares a "reason to change."
 - [[domain-driven-design]] — why one shared model across contexts backfires.
+- [[microservices]] — why services share knowledge through contracts, not libraries.

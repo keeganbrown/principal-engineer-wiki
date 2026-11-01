@@ -19,10 +19,10 @@ The term comes from Edsger Dijkstra (1974), who called it the only technique he 
 
 ## Why it matters
 
-- **Understandability.** You can read the pricing logic without wading through SQL and HTTP code.
-- **Testability.** Pure business logic can be tested in milliseconds without a database or browser.
-- **Contained change.** Adding a mobile app or changing storage touches the edges, not the rules. (Don't oversell this: swapping a relational database for a key-value store still leaks transaction and query semantics into the logic. The reliable win is testability.)
-- **Parallel work.** Different people can change different concerns with fewer merge conflicts.
+- **You can read one concern at a time.** The pricing logic makes sense without wading through SQL and HTTP code.
+- **Logic tests run in milliseconds.** Pure business rules need no database or browser to test.
+- **Change stays at the edges.** Adding a mobile app or changing storage touches the boundary code, not the rules. Storage swaps still leak transaction and query behavior into the logic, though; the reliable win is testability.
+- **People can work in parallel.** Different concerns mean fewer merge conflicts.
 
 ## How to apply it
 
@@ -30,7 +30,7 @@ The term comes from Edsger Dijkstra (1974), who called it the only technique he 
 - **Group code by what changes together.** If two things always change at the same time, they're probably one concern.
 - **Put boundaries where the shape of the data changes.** An HTTP request becomes a domain object; a domain object becomes a database row.
 - **Translate once, at the edge.** Convert raw input into clean domain types as it enters the system.
-- **Watch for "and."** A function that does "this *and* that" is usually two concerns.
+- **Split functions that do "this *and* that."** The word "and" usually marks two concerns.
 
 ## Example
 
@@ -61,13 +61,15 @@ function handleSignup(request):
     return {Invalid: 400, AlreadyExists: 409, Created: 201}[result]
 ```
 
-One subtle point: the tangled version checks *then* inserts, so two simultaneous signups can both pass the check. In the separated version, uniqueness is guaranteed by a unique index in the database; `users.add` catches the duplicate-key error and reports it. In-memory tests can't prove uniqueness — the database constraint does.
+`users` and `mailer` are **ports**: small interfaces the rules define for the outside world. In tests you pass **fakes** — simple working stand-ins, like a list instead of a database.
+
+The tangled version checks *then* inserts, so two simultaneous signups can both pass the check. In the separated version, uniqueness is guaranteed by a unique index in the database; `users.add` catches the duplicate-key error and reports it. In-memory tests can't prove uniqueness — the database constraint does.
 
 ## Common traps
 
 - **Separating by technical layer only.** A `controllers/ services/ repositories/` split can still tangle every feature across all three. Consider grouping by domain (orders, billing) too — see [[coupling-and-cohesion]] for why.
-- **Too many tiny pieces.** Splitting one simple concern across ten files adds navigation cost without benefit.
-- **Leaky separation.** If the "business logic" module imports the HTTP framework, the concerns aren't really separate.
+- **Splitting into too many tiny pieces.** One simple concern spread across ten files adds navigation cost without benefit.
+- **Leaking across the separation.** If the "business logic" module imports the HTTP framework, the concerns aren't really separate.
 
 ## When it doesn't apply
 
@@ -76,6 +78,6 @@ Small scripts and throwaway prototypes rarely need strict separation — a 50-li
 ## Related
 
 - [[functional-core-imperative-shell]] — goes further: keep the rules completely free of I/O.
-- [[hexagonal-architecture]] — the `users` and `mailer` parameters above are ports; this is that pattern in miniature.
+- [[hexagonal-architecture]] — the ports above, applied to a whole application.
 - [[coupling-and-cohesion]] — the vocabulary for judging whether your separation is good.
 - [[solid-principles]] — single responsibility is separation of concerns at the class level.

@@ -21,12 +21,14 @@ The phrase comes from Extreme Programming (XP), an agile method from the late 19
 
 Martin Fowler describes four costs of building a speculative feature:
 
-- **Even if the guess is right**, you pay:
-  1. **Cost of delay** — what users need today ships later.
-  2. **Cost of carry** — every change until the feature is used must work around the extra code.
-- **If the guess is wrong** (which is common), you also pay:
-  3. **Cost of build** — the time spent building it was wasted.
-  4. **Cost of repair** — you must remove it, or bend everything else around the wrong design.
+| Cost | What it is | When you pay it |
+| --- | --- | --- |
+| Delay | What users need today ships later. | Always |
+| Carry | Every change must work around the extra code until it's used. | Always |
+| Build | The time spent building it is wasted. | If the guess was wrong |
+| Repair | You must remove it, or bend everything around the wrong design. | If the guess was wrong |
+
+Even a correct guess costs delay and carry. A wrong guess — which is common — costs all four.
 
 ## How to apply it
 
@@ -34,13 +36,13 @@ Martin Fowler describes four costs of building a speculative feature:
 - **Write code that's easy to change, not code that predicts change.** A plain function with good tests is easy to change; an interface with one implementation and three empty extension points is a prediction.
 - **Park ideas outside the code.** Put them in a backlog or a design doc.
 - **Keep good tests.** They are what make deferring decisions safe.
-- **When the need arrives, refactor first,** then add the feature.
+- **Refactor first when the need arrives.** Then add the feature.
 
 ## Example
 
 You're building export-to-CSV. A teammate suggests a generic `Exporter` interface with pluggable formats (CSV, JSON, XML, Parquet).
 
-**YAGNI response:** write an `export_csv(rows)` function with tests. Six months later, a customer asks for JSON. Now you have two real formats and can see what they share, so you can design an abstraction that actually fits — and you never wasted time on XML or Parquet, which nobody asked for. (When to extract that abstraction is covered in [[dry|the rule of three]].)
+**YAGNI response:** write an `exportCsv(rows)` function with tests. Six months later, a customer asks for JSON, so you add `exportJson(rows)` next to it. Two plain functions are fine; the wiki's rule is to extract a shared abstraction for look-alike code at the third copy ([[dry|the rule of three]]). Meanwhile you never wasted time on XML or Parquet, which nobody asked for.
 
 ## Common traps
 
@@ -52,15 +54,15 @@ You're building export-to-CSV. A teammate suggests a generic `Exporter` interfac
 
 YAGNI weakens wherever later change is expensive, no matter how good your tests are:
 
-- **One-way doors** — public API shapes, database schemas with lots of data, security models, and data formats shared with partners are hard to undo. Spend more thought up front. See [[reversible-decisions]].
-- **Team boundaries** — anything other teams build on is costly to change later because of coordination, not code quality. Ten consumers means ten migrations.
+- **One-way doors resist change.** Public API shapes, database schemas with lots of data, security models, and data formats shared with partners are hard to undo. Spend more thought up front ([[reversible-decisions]]).
+- **Team boundaries multiply the cost.** Anything other teams build on is costly to change later because of coordination, not code quality. Ten consumers means ten migrations.
 
-A principal engineer's job is often to tell the difference: most decisions are two-way doors where YAGNI applies; a few are one-way doors that deserve care.
+Most decisions are two-way doors, and there YAGNI applies.
 
 ## Related
 
 - [[kiss]] — keep the solution simple; YAGNI keeps the *scope* simple.
-- [[dry]] — owns the question of *when* to extract an abstraction.
+- [[dry]] — has the wiki's rule for *when* to extract an abstraction.
 - [[reversible-decisions]] — where YAGNI stops applying.
 - [[api-versioning]] — public API shapes are a classic one-way door.
 - [[test-driven-development]] — the safety net that makes deferring decisions cheap.

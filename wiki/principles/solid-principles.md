@@ -31,9 +31,9 @@ All five aim at the same goal: **limit the blast radius of change.** When requir
 
 ## How to apply it
 
-- **S: describe the module in one sentence without "and."** Ask "who would ask for this to change?" — Martin later clarified that a "reason to change" means one *actor*, one group of stakeholders.
+- **S: describe the module in one sentence without "and".** Ask "who would ask for this to change?" — Martin later clarified that a "reason to change" means one *actor*, one group of stakeholders.
 - **O: replace a switch only when it repeats.** When the *same* `switch` on a type appears in several places, polymorphism or a lookup table lets new cases be additions. A single switch in one place is often the simplest thing ([[kiss]]).
-- **L: watch for "not supported."** If a subclass throws for an inherited method, the hierarchy is wrong. Prefer composition.
+- **L: watch for "not supported" errors.** If a subclass throws for an inherited method, the hierarchy is wrong. Prefer composition.
 - **I: split fat interfaces.** A `Printer` that also has `fax()` and `scan()` burdens every simple printer.
 - **D: let business logic declare what it needs.** The logic defines an interface; infrastructure provides the implementation and passes it in as a parameter (called **dependency injection**). [[hexagonal-architecture]] applies this to a whole system.
 
@@ -58,7 +58,7 @@ The rule doesn't know or care about the system clock, so tests are deterministic
 
 - **An interface for everything.** An interface with exactly one implementation and no **test double** (a fake or stub used in tests) is often just noise.
 - **Over-applying S.** Splitting every class into one-method fragments makes code harder to follow, not easier.
-- **Open/closed as an excuse for speculation.** Don't build extension points until a real second case exists ([[dry]] has the wiki's rule for when to abstract).
+- **Open/closed as an excuse for speculation.** Don't build extension points on speculation; [[dry]] has the wiki's rule for when real cases justify one.
 - **Treating SOLID as a review checklist.** It's a vocabulary for discussing trade-offs, not a scoring rubric.
 
 ## When it doesn't apply

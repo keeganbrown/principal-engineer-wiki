@@ -18,7 +18,7 @@ These two words let you judge any design, from a function to a fleet of services
 
 You want **high cohesion, low coupling**: each module is a tight, self-contained unit with a small, stable interface to the rest of the world.
 
-Coupling comes in degrees. This classic ranking comes from *Structured Design* (Yourdon and Constantine, 1979):
+Coupling comes in degrees. This classic ranking comes from the structured-design work of Larry Constantine and colleagues (Stevens, Myers, and Constantine, 1974; Yourdon and Constantine, *Structured Design*, 1979):
 
 | Kind | Example | Why it hurts |
 | --- | --- | --- |
@@ -39,20 +39,18 @@ Cohesion determines **findability**. When related code lives together, you know 
 ## How to apply it
 
 - **Hide internals.** Expose a small interface; keep data structures and helpers private.
-- **Depend on stable things.** Depend on interfaces and well-defined contracts, not on implementations that change often ([[solid-principles|dependency inversion]]).
+- **Depend on stable things.** Depend on interfaces and well-defined contracts, not on implementations that change often ([[hexagonal-architecture|dependency inversion]]).
 - **Pass plain data across boundaries.** Plain data can't call back into the sender, so the receiver depends only on the data's shape, not the sender's code.
 - **Group by domain.** Keep "everything about orders" together rather than scattering it across `models/`, `views/`, `services/`. Code in one domain changes together; code in one technical layer usually doesn't. ([[domain-driven-design]] covers how to find domain boundaries.)
 - **Watch the change log.** If two modules are always edited in the same commit, consider merging them. If one module is edited for unrelated reasons, consider splitting it.
 
 ## Example
 
-This article owns the wiki's explanation of **shared-database coupling**.
-
-Two services, `Orders` and `Shipping`, both read and write the same `orders` table. Shipping adds a column; Orders' reports break. They're coupled through shared storage — and nothing in either codebase shows it.
+A common, invisible kind is **shared-database coupling**. Two services, `Orders` and `Shipping`, both read and write the same `orders` table. Shipping adds a column; Orders' reports break. They're coupled through shared storage — and nothing in either codebase shows it.
 
 **Fix:** `Orders` owns the table. It publishes an `OrderPlaced` event (or offers an API). `Shipping` keeps its own copy of what it needs.
 
-The coupling doesn't disappear — it **moves** to the `OrderPlaced` contract, which now needs careful [[api-versioning]]. Shipping's copy is also eventually consistent: it may lag a few seconds behind. The win is that the coupling is now *explicit and narrow* — one documented message instead of a whole table — not that it's gone.
+The coupling doesn't disappear — it **moves** to the `OrderPlaced` contract, which now needs careful [[api-versioning]]. Shipping's copy is also [[cap-theorem|eventually consistent]]: it may lag a few seconds behind. The win is that the coupling is now *explicit and narrow* — one documented message instead of a whole table — not that it's gone.
 
 ## Common traps
 

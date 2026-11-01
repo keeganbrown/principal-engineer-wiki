@@ -33,12 +33,12 @@ Every distributed database, cache, and multi-service system makes this choice, w
 
 ## How to apply it
 
-This article owns the wiki's **consistency models**, from strongest to weakest:
+Consistency models, from strongest to weakest:
 
 | Model | Plain English | Typical use |
 | --- | --- | --- |
 | Linearizable (strong) | Behaves like one single copy, in real time. | Locks, leader election, unique usernames |
-| Sequential | Everyone sees all operations in the same order, though maybe not instantly. | Replicated logs |
+| Sequential | Everyone sees all operations in the same order, though maybe not instantly. | Reads from replicas that apply one shared log in order (e.g., ZooKeeper followers) |
 | Causal | If B depends on A (a reply to a comment), everyone sees A before B. Unrelated events may appear in different orders. | Comments and replies, chat |
 | Read-your-writes | You always see your own changes. | Profile edits, settings |
 | Eventual | Copies converge "soon" if writes stop. | Like counts, feeds, analytics |
@@ -47,22 +47,22 @@ Then:
 
 - **Default to one strong store.** Every extra consistency model is something every engineer must remember, and bugs live at the seams. Relax consistency only where latency, availability, or cost forces it.
 - **Decide per operation when you do relax.** Checkout payment needs strong consistency; "recommended for you" doesn't.
-- **Ask the business** what being wrong costs. A stale like count costs nothing; overselling the last concert ticket costs a lot.
+- **Ask the business what being wrong costs.** A stale like count costs nothing; overselling the last concert ticket costs a lot.
 - **Know your tools' defaults.** Many databases and caches are eventually consistent unless configured otherwise.
-- **Design the UX for staleness** where you choose availability: "updated a few seconds ago," optimistic updates (show the change immediately, reconcile later), and reading from the primary right after a user's own write.
+- **Design the UX for staleness where you choose availability.** Show "updated a few seconds ago," use optimistic updates (show the change immediately, reconcile later), and read from the **primary** — the main copy that takes writes — right after a user's own write.
 
 ## Example
 
 An airline seat-booking system spans two data centers. The link between them fails.
 
-- **Choose consistency:** one side stops accepting bookings until the link heals. Some users see errors, but no seat is sold twice.
-- **Choose availability:** both sides keep selling. Users are happy — until two passengers hold boarding passes for seat 14C.
+- **Choose consistency** — one side stops accepting bookings until the link heals. Some users see errors, but no seat is sold twice.
+- **Choose availability** — both sides keep selling. Users are happy — until two passengers hold boarding passes for seat 14C.
 
 For seat booking, the airline chooses consistency. For the flight-status page, it chooses availability: slightly stale status beats an error page.
 
 ## Common traps
 
-- **"We picked CA."** Partition tolerance isn't optional in a real network.
+- **Claiming "we picked CA."** Partition tolerance isn't optional in a real network.
 - **Treating the whole system as one choice.** Different data deserves different guarantees.
 - **Confusing CAP consistency with ACID consistency.** ACID (Atomic, Consistent, Isolated, Durable) describes database transactions; its "C" means data obeys rules like constraints. CAP's "C" means all copies agree.
 - **Assuming partitions are rare.** Timeouts, overloaded nodes, and garbage-collection pauses that freeze a process for seconds all look like partitions to the rest of the system.
@@ -77,5 +77,5 @@ Adding read replicas is often the right, simple next step, but it brings back a 
 
 - [[event-driven-architecture]] — choosing async events means choosing eventual consistency for consumers.
 - [[cqrs]] — read models are usually eventually consistent with the write side.
-- [[saga-pattern]] — gives up atomic transactions; these models describe what you're left with.
+- [[saga-pattern]] — multi-service workflows end up eventually consistent; the isolation they lose is a separate problem that article covers.
 - [[idempotency]] — retries during partitions must be safe.
