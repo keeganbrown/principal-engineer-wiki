@@ -17,15 +17,15 @@ There's a spectrum of how to structure a system:
 | --- | --- | --- |
 | Big ball of mud | One | None — everything calls everything |
 | **Modular monolith** | One | Strong — modules talk through public interfaces |
-| Microservices | Many | Enforced by the network |
+| Microservices | Many | Separated by the network (but can still be tangled) |
 
-A modular monolith is one codebase and one deployable, but organized into **modules** around business domains (e.g., `catalog`, `orders`, `billing`). Each module has a small public API and keeps everything else private — including its own database tables. Other modules may only use that API.
+A modular monolith is one codebase and one deployable, organized into **modules** by domain (e.g., `catalog`, `orders`, `billing`). Each module has a small public API and keeps everything else private — including its own database tables. Other modules may only use that API.
 
 ## Why it matters
 
-Microservices solve real problems — independent deploys, team autonomy, independent scaling — but they add heavy costs: network failures, distributed transactions, versioned APIs, complex debugging, and more infrastructure.
+[[microservices|Microservices]] solve real problems — independent deploys, team autonomy, independent scaling — but they add heavy costs: network failures, [[saga-pattern|multi-service transactions]], [[api-versioning|versioned APIs]], harder debugging, and more infrastructure.
 
-Many teams adopt microservices to get *clean boundaries*, but you can get clean boundaries without a network. A modular monolith gives you:
+Many teams adopt microservices to get *clean boundaries*. But you can get clean boundaries without a network ([[kiss]]). A modular monolith gives you:
 
 - **Simple operations** — one deploy, one process, in-process calls, real transactions.
 - **Clear ownership** — teams own modules.
@@ -33,34 +33,36 @@ Many teams adopt microservices to get *clean boundaries*, but you can get clean 
 
 ## How to apply it
 
-- **Draw modules around business capabilities,** not technical layers.
-- **Make each module's public API explicit** — a single entry file or package; everything else internal.
-- **Enforce boundaries with tooling**: architecture tests, import linters, or language-level visibility. Good intentions decay without enforcement.
-- **No shared tables.** Each module owns its data; others go through its API.
-- **Communicate via calls or in-process events.** Use events for side effects ("order placed → send email") to keep modules decoupled.
+- **Draw modules around domains,** not technical layers ([[domain-driven-design]] shows how to find them).
+- **Make each module's public API explicit:** a single entry file or package; everything else internal.
+- **Enforce boundaries with tooling:** architecture tests, import linters, or language-level visibility. Good intentions decay without enforcement ([[paved-roads]]).
+- **Give each module its own tables.** Others go through its API ([[coupling-and-cohesion]] explains why shared tables recouple everything).
+- **Avoid transactions that span modules** where you can. A single transaction across `orders` and `payments` is convenient today, but it's the hidden coupling that turns a later extraction from weeks into a redesign.
+- **Use in-process events for side effects** ("order placed → send email") to keep modules decoupled.
 - **Extract a service only with a reason:** different scaling needs, a different release cadence, or a team that's blocked by the shared deploy.
 
 ## Example
 
-An e-commerce app starts as a single Rails or Spring app. Instead of one giant `models/` folder, the team creates `catalog/`, `orders/`, `payments/`, and `shipping/` modules. `orders` calls `payments.charge(...)` — never `PaymentRecord.where(...)`. A CI check fails any build where one module imports another's internals.
+An e-commerce app starts as a single application. Instead of one giant `models/` folder, the team creates `catalog/`, `orders/`, `payments/`, and `shipping/` modules. `orders` calls `payments.charge(...)` — it never queries the payments tables directly. A CI check fails any build where one module imports another's internals.
 
-Two years in, `payments` needs PCI isolation and its own deploy cadence. Because its boundary is already clean, extracting it into a service takes weeks, not a year-long untangling project.
+Two years in, `payments` needs PCI (payment card industry) compliance isolation and its own deploy cadence. Its code boundary is already clean, so the code moves quickly. The slow part is the two places where `orders` and `payments` still shared a database transaction: each has to become a small saga with explicit failure handling. Because the team had kept those to a minimum, the extraction takes a couple of months instead of a year.
 
 ## Common traps
 
 - **Boundaries in name only.** Folders called "modules" with code reaching freely across them is still a ball of mud.
 - **A shared "common" module** that grows into a dumping ground everyone depends on.
 - **Shared database tables** — the fastest way to recouple modules.
-- **Premature extraction.** Moving to services before the boundaries are proven usually means redrawing them across a network, which is much harder.
+- **Forgetting shared runtime fate.** One module's memory leak, runaway query, or bad deploy takes down every module. Monitor per module, and keep risky work isolated.
+- **Premature extraction.** Moving to services before boundaries are proven usually means redrawing them across a network, which is much harder.
 
 ## When it doesn't apply
 
-If parts of your system have very different scaling, reliability, or technology needs — or you have many teams that are truly blocked by a shared deployment — services may be worth the cost. Very large organizations often outgrow a single deployable. The usual advice is "monolith first," not "monolith forever."
+If parts of your system have very different scaling, reliability, or technology needs — or many teams are truly blocked by a shared deployment — services may be worth the cost. Very large organizations often outgrow a single deployable. The usual advice is "monolith first," not "monolith forever."
 
 ## Related
 
+- [[microservices]] — the alternative, and when it's worth it.
 - [[coupling-and-cohesion]] — the forces a modular monolith manages.
+- [[domain-driven-design]] — bounded contexts are the best guide for drawing module lines.
 - [[conways-law]] — align module ownership with teams.
 - [[strangler-fig]] — the pattern for later extracting modules into services.
-- [[event-driven-architecture]] — in-process events keep modules loosely coupled.
-- [[domain-driven-design]] — bounded contexts are the best guide for drawing module lines.

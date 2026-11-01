@@ -32,12 +32,12 @@ Systems without backpressure fail in the worst way: latency climbs for *everyone
 
 - **Bound every queue.** An unbounded queue is a crash waiting to happen. Decide what happens when it's full.
 - **Reject early and clearly.** Return `429 Too Many Requests` or `503 Service Unavailable` with a `Retry-After` header. A fast "no" beats a slow timeout.
-- **Use pull, not push, where possible.** Consumers that fetch work when ready (Kafka consumers, worker pools) naturally limit their own load.
-- **Limit concurrency.** Cap in-flight requests per service or per client (bulkheads), so one noisy caller can't consume everything.
+- **Let consumers pull.** A worker that takes the next job only after finishing the last naturally limits its own load.
+- **Limit concurrency per caller.** Cap in-flight requests per client or per dependency, so one noisy caller can't use everything. This is the **bulkhead** pattern, named for the sealed compartments that keep one leak from sinking a ship.
 - **Rate-limit at the edge** — per user, per API key — before work reaches expensive layers.
 - **Prioritize when shedding.** Drop analytics events before checkout requests.
-- **Clients must cooperate:** retry with exponential backoff and jitter, and respect `Retry-After`.
-- **Watch queue depth and wait time** as first-class metrics.
+- **Make clients cooperate.** They should retry with exponential backoff and **jitter** (a random extra delay, so clients don't all retry at the same moment), and respect `Retry-After`. See [[retries-and-timeouts]].
+- **Watch queue depth and wait time** as first-class metrics ([[observability]]).
 
 ## Example
 
@@ -45,22 +45,25 @@ An image-processing service accepts uploads and resizes them. A marketing campai
 
 **Without backpressure:** the in-memory job queue grows to millions of items, the service runs out of memory, restarts, loses every queued job, and clients retry all at once — making it worse.
 
-**With backpressure:** jobs go to a bounded queue holding 10,000 items. Workers pull jobs at their own pace. When the queue is full, the upload API returns `503` with `Retry-After: 30`. Clients back off with jitter. Throughput stays at the service's maximum, nothing is lost, and the autoscaler adds workers based on queue depth.
+**With backpressure:** accepted jobs go to a bounded, durable queue holding 10,000 items. Workers pull jobs at their own pace. When the queue is full, the upload API returns `503` with `Retry-After: 30`. The autoscaler adds workers based on queue depth.
+
+No *accepted* job is lost. But rejection doesn't make the extra work disappear — it hands the waiting back to the client. The mobile app can hold the photo and retry later; a browser upload form may simply fail if the user closes the tab. So the team decides per client: the mobile app gets rejections, while the web form gets a "we'll process this shortly" response and its uploads go into cheap durable storage to be processed when capacity frees up.
 
 ## Common traps
 
 - **"Just add a queue."** A queue absorbs bursts but doesn't fix sustained overload; it just delays the failure.
 - **Retries without backoff** that multiply load exactly when the system is weakest (a "retry storm").
-- **Timeouts longer upstream than downstream**, so callers keep waiting for work that's already been abandoned.
+- **Callers that give up before callees.** If the gateway times out after 2s but the service behind it works for 10s, the service keeps doing work nobody is waiting for — and the gateway's retry adds more. Propagate a deadline so each hop gives up before its caller does.
 - **Backpressure that stops at a boundary.** If the service rejects, but the frontend auto-retries instantly, nothing improved.
 
 ## When it doesn't apply
 
-Systems with load that's comfortably and predictably below capacity rarely hit these problems. Low-volume internal tools can often get by with simple timeouts. But any system exposed to the public internet, a batch import, or a marketing launch eventually needs a plan for overload.
+If your load stays predictably below capacity, you'll rarely hit these problems; low-volume internal tools can often get by with simple timeouts. But any system exposed to the public internet, a batch import, or a marketing launch eventually needs a plan for overload.
 
 ## Related
 
 - [[circuit-breaker]] — protects callers from a failing dependency; backpressure protects a service from its callers.
+- [[retries-and-timeouts]] — how clients should behave when they're pushed back.
 - [[event-driven-architecture]] — queues and consumers are where backpressure usually lives.
 - [[observability]] — queue depth and rejection rates are key signals.
 - [[idempotency]] — rejected work will be retried, so it must be safe to repeat.

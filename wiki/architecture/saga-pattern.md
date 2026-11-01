@@ -21,7 +21,9 @@ Reserve flight ✔ → Reserve hotel ✔ → Reserve car ✘
           Cancel flight ◄── Cancel hotel ◄┘   (compensate in reverse)
 ```
 
-The idea dates to a 1987 paper by Hector Garcia-Molina and Kenneth Salem.
+What you give up is atomicity and isolation: other processes can see the half-finished state. [[cap-theorem]] describes the weaker consistency you're left with.
+
+The idea comes from a 1987 paper by Hector Garcia-Molina and Kenneth Salem.
 
 ## Why it matters
 
@@ -34,41 +36,43 @@ There are two ways to coordinate a saga:
 | Style | How it works | Good for |
 | --- | --- | --- |
 | **Choreography** | Each service listens for events and reacts (`FlightReserved` → hotel service reserves). | Short sagas with few steps. |
-| **Orchestration** | A central orchestrator tells each service what to do next and tracks state. | Longer sagas, complex logic, easier debugging. |
+| **Orchestration** | A central orchestrator sends each service a command for the next step and tracks state. | Longer sagas, complex logic, easier debugging. |
 
 Guidelines:
-- **Design compensations with the business.** "Undo" is often not a true rollback — a refund, a cancellation email, a credit. Some things can't be undone (an email already sent); order steps so those come last.
-- **Make every step and compensation idempotent.** Messages get retried and duplicated.
+- **Design compensations with the business.** "Undo" is often not a true rollback — it's a refund, a cancellation email, a credit.
+- **Order steps by how easy they are to undo.** Put cheap, invisible compensations (releasing a reservation) early, and costly or customer-visible ones (a refund) late. Put steps that can't be undone at all — like sending a confirmation email — last.
+- **Make every step and compensation idempotent.** Messages get retried and duplicated ([[idempotency]]).
 - **Persist saga state** so a crash mid-saga can resume, not restart.
-- **Use semantic locks or pending states** ("reservation: PENDING") so other processes know the data is mid-flight.
+- **Mark records as pending.** A status field like `PENDING` acts as a **semantic lock**: other processes see it and avoid acting on the record until the saga finishes.
 - **Consider a workflow engine** (e.g., Temporal, AWS Step Functions) for orchestration instead of building your own.
 
 ## Example
 
 An online store's checkout saga, orchestrated:
 
-1. `Orders`: create order as `PENDING`.
-2. `Payments`: charge card. *Compensation: refund.*
-3. `Inventory`: reserve items. *Compensation: release items.*
-4. `Orders`: mark order `CONFIRMED`; send confirmation email (last, since it can't be undone).
+1. `Orders`: create the order as `PENDING`.
+2. `Inventory`: reserve the items. *Compensation: release them (invisible to the customer).*
+3. `Payments`: **authorize** the card — place a hold, without taking money yet. *Compensation: void the hold.*
+4. `Payments`: **capture** the payment. *Compensation: refund (slow and visible, so it comes late).*
+5. `Orders`: mark the order `CONFIRMED`; send the confirmation email (last, since it can't be undone).
 
-If inventory fails at step 3 (out of stock), the orchestrator refunds the payment and marks the order `CANCELLED`, then tells the customer. Every outcome is planned, logged, and traceable.
+If inventory is out of stock at step 2, nothing has touched the customer's card — the orchestrator just marks the order `CANCELLED` and tells the customer. If authorization fails at step 3, it releases the reservation. Every outcome is planned, logged, and traceable.
 
 ## Common traps
 
 - **Assuming isolation.** Unlike a database transaction, other processes can see intermediate states. Design for it.
 - **Compensations that can fail** with no retry or alert. A failed refund needs a human escalation path.
 - **Choreography sprawl.** With many steps, event chains become impossible to follow. Switch to orchestration.
-- **Using sagas when one service would do.** If all the data could live in one database, a plain transaction is far simpler.
+- **Unordered irreversible steps.** Sending an email or shipping a parcel early means a failed saga can't take it back.
 
 ## When it doesn't apply
 
-If the steps live in one database or one service, use an ordinary transaction. If you're drawing service boundaries so that a single business action regularly needs a saga across many services, consider whether the boundaries are wrong.
+If the steps live in one database or one service, use an ordinary transaction — it's far simpler. If you find a single business action regularly needs a saga across many services, consider whether the service boundaries are wrong ([[domain-driven-design]]).
 
 ## Related
 
 - [[event-driven-architecture]] — choreographed sagas are built on events.
 - [[idempotency]] — every saga step and compensation must tolerate retries.
-- [[cap-theorem]] — sagas accept eventual consistency in exchange for availability.
-- [[domain-driven-design]] — good bounded contexts reduce how many sagas you need.
+- [[transactional-outbox]] — each step publishes its result reliably.
+- [[microservices]] — sagas are a cost of splitting data across services.
 - [[observability]] — trace IDs across steps make sagas debuggable.

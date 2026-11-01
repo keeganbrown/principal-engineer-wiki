@@ -13,7 +13,7 @@ tags: [architecture, distributed-systems, messaging]
 
 In a request-driven system, service A *tells* service B what to do: "send this email." A must know B exists, and if B is down, A fails.
 
-In an event-driven system, A simply *announces what happened*: `OrderPlaced { orderId: 42 }`. It publishes this **event** to a broker (Kafka, RabbitMQ, SNS/SQS, etc.). Any interested service — email, shipping, analytics — **subscribes** and reacts. A doesn't know or care who's listening.
+In an event-driven system, A *announces what happened*: `OrderPlaced { orderId: 42 }`. It publishes this **event** to a **broker** — messaging software such as Kafka, RabbitMQ, or Amazon SNS/SQS. Any interested service — email, shipping, analytics — **subscribes** and reacts. A doesn't know or care who's listening.
 
 ```
 Orders ──publish──► [ OrderPlaced ] ──► Email
@@ -25,30 +25,34 @@ Events are named in the **past tense**, because they're facts that already happe
 
 ## Why it matters
 
-- **Loose coupling.** Add a new consumer (say, fraud detection) without changing the producer.
+- **Looser runtime coupling.** Add a new consumer (say, fraud detection) without changing the producer. The coupling doesn't vanish, though: it moves into the event schema and into flows nobody can see in one place. The producer can no longer tell who will break when it changes.
 - **Resilience.** If Shipping is down, events wait in the queue. Orders keeps working.
-- **Scalability.** Consumers process at their own pace; bursts are absorbed by the queue.
+- **Smoothing bursts.** Consumers process at their own pace; short bursts are absorbed by the queue — as long as it's bounded and consumers can catch up ([[backpressure]]).
 - **Audit trail.** A stream of events is a natural history of what happened.
+
+The price is **eventual consistency**: consumers' views lag behind the producer by a moment ([[cap-theorem]] covers the consistency models).
 
 ## How to apply it
 
-- **Publish facts, not commands.** `OrderPlaced`, not `SendConfirmationEmail`. Commands re-create the coupling.
-- **Design events as public contracts.** Version them, document them, and evolve them compatibly (add fields; don't remove or rename).
-- **Make consumers idempotent.** Most brokers deliver *at least once*, so the same event may arrive twice.
-- **Use a dead-letter queue** for events that repeatedly fail, and alert on it.
-- **Use the outbox pattern** to avoid "saved to DB but failed to publish": write the event to an outbox table in the same transaction, then relay it to the broker.
-- **Propagate correlation IDs** in event metadata so you can trace a flow across services.
+- **Publish facts for broadcast, not disguised commands.** `OrderPlaced`, not `SendConfirmationEmail`. A "command" dressed as an event re-creates the coupling you were avoiding. Commands are fine when one component deliberately owns a workflow — that's an [[saga-pattern|orchestrated saga]].
+- **Design events as public contracts.** Version them, document them, and evolve them compatibly ([[api-versioning]]).
+- **Make consumers idempotent.** Most brokers deliver *at least once*, so the same event may arrive twice ([[idempotency]]).
+- **Use a dead-letter queue** — a holding queue for events that keep failing — and alert on it.
+- **Publish reliably with an outbox.** Saving to the database and publishing to the broker are two separate writes. Write the event to an outbox table in the same transaction, and let a separate process relay it ([[transactional-outbox]]).
+- **Propagate trace IDs** in event metadata, so you can follow a flow across services ([[observability]]).
 
 ## Example
 
 Checkout used to call five services synchronously; if any was slow, checkout was slow. Now `Orders` saves the order, writes `OrderPlaced` to its outbox, and returns immediately. Email, Shipping, Loyalty, and Analytics each consume the event independently. When Loyalty has an outage, its events pile up and are processed when it recovers — customers never notice.
 
+The trade-off: right after checkout, the "My Shipments" page may not show the new order for a few seconds. The team shows "Processing…" instead of an empty list.
+
 ## Common traps
 
-- **Assuming instant consistency.** After placing an order, the "My Shipments" page might not show it for a few seconds. Design the UX for this.
+- **Assuming instant consistency.** Design the UX for a short lag.
 - **Event spaghetti.** Long chains of events triggering events become impossible to follow. Document flows and keep chains short.
-- **Fat events vs. thin events.** Events with only an ID force consumers to call back (re-coupling). Events with everything leak internals. Include what consumers commonly need.
-- **Ignoring ordering.** Events can arrive out of order; design for it or use partitioning keys.
+- **Getting event size wrong.** Events with only an ID force every consumer to call back for details (re-coupling them). Events carrying everything leak internals. Include what consumers commonly need.
+- **Ignoring ordering.** Events can arrive out of order. Design for it, or use a **partitioning key** (e.g., `orderId`) so all events for one order go through the same ordered stream.
 - **No observability.** Without tracing, debugging async flows is guesswork.
 
 ## When it doesn't apply
@@ -57,12 +61,10 @@ When the caller needs an immediate answer — "is this card valid?" — a synchr
 
 ## Related
 
+- [[transactional-outbox]] — how to publish events without losing or inventing them.
 - [[idempotency]] — essential for safely handling duplicate events.
-- [[cqrs]] — often paired with events to update read models.
-- [[observability]] — tracing is critical for async flows.
-- [[coupling-and-cohesion]] — events trade runtime coupling for contract coupling.
-- [[circuit-breaker]] — the complementary tool when calls must stay synchronous.
-- [[cap-theorem]] — why choosing events usually means choosing eventual consistency.
 - [[saga-pattern]] — coordinating multi-step workflows over events.
+- [[cqrs]] — events often keep read models up to date.
 - [[backpressure]] — what to do when consumers can't keep up.
-- [[api-versioning]] — event schemas are APIs and need the same care.
+- [[cap-theorem]] — why choosing async events means choosing eventual consistency.
+- [[circuit-breaker]] — the complementary tool when calls must stay synchronous.
