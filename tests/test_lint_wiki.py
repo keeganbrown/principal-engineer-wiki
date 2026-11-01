@@ -83,6 +83,12 @@ class LintArticleTest(unittest.TestCase):
         problems = lint_article(parse_article("kiss", "principles", text))
         self.assertIn("kiss: missing section '## Example'", problems)
 
+    def test_reports_sections_out_of_order(self):
+        swapped = list(REQUIRED_SECTIONS)
+        swapped[0], swapped[1] = swapped[1], swapped[0]
+        problems = lint_article(parse_article("kiss", "principles", make_article(sections=swapped)))
+        self.assertIn("kiss: required sections are out of order", problems)
+
     def test_reports_article_that_is_too_long(self):
         text = make_article(extra_words=2000)
         problems = lint_article(parse_article("kiss", "principles", text))

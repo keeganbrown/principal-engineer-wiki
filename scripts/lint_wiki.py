@@ -92,6 +92,11 @@ def lint_article(article: Article) -> List[str]:
         if section not in article.sections:
             problems.append(f"{article.slug}: missing section '## {section}'")
 
+    present_in_order = [s for s in article.sections if s in REQUIRED_SECTIONS]
+    expected_order = [s for s in REQUIRED_SECTIONS if s in article.sections]
+    if present_in_order != expected_order:
+        problems.append(f"{article.slug}: required sections are out of order")
+
     words = len(article.body.split())
     if words > MAX_WORDS:
         problems.append(f"{article.slug}: too long ({words} words, max {MAX_WORDS})")
