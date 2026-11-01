@@ -23,9 +23,13 @@ Reviewers live in `.claude/agents/`:
 
 1. Resolve the article list (check each slug exists under `wiki/`).
 2. Launch the chosen reviewers **in parallel**, one Agent call each, passing
-   the article paths. For more than ~10 articles, split the per-article
-   reviewers into batches of about 8 articles each; `wiki-gardener` always
-   gets one run over the whole wiki.
+   the article paths. For more than ~15 articles, split the per-article
+   reviewers into batches of about 15 articles each (articles are short, so
+   bigger batches keep the agent count down); `wiki-gardener` always gets
+   one run over the whole wiki.
+   If the agent types above aren't loaded in the session, launch
+   general-purpose agents told to read `.claude/agents/<name>.md` and adopt
+   that role, with an explicit read-only instruction.
 3. When all have returned, merge into a single report:
    - Group by article, then by severity (`must-fix` → `should-fix` → `consider`).
    - Tag each finding with the reviewer that raised it.
