@@ -20,6 +20,7 @@ Timeless rules of thumb for judging any design.
 - [[coupling-and-cohesion]] — Keep related things together, unrelated things apart.
 - [[solid-principles]] — Five heuristics for code that's safe to change.
 - [[conways-law]] — Systems mirror the teams that build them.
+- [[cap-theorem]] — In a network split, choose consistency or availability.
 
 ## Practices
 
@@ -32,6 +33,9 @@ Habits that make teams faster and systems safer.
 - [[observability]] — Systems that explain themselves in production.
 - [[technical-debt]] — Borrow deliberately, pay down on purpose.
 - [[feature-flags]] — Deploy and release are separate events.
+- [[api-versioning]] — An API is a promise; evolve it without breaking callers.
+- [[design-docs]] — Find the flaws while they're still cheap to fix.
+- [[blameless-postmortems]] — Fix the system that made the mistake easy.
 
 ## Architecture patterns
 
@@ -41,12 +45,21 @@ Proven structures for organizing systems.
 - [[functional-core-imperative-shell]] — Pure decisions inside, thin I/O outside.
 - [[hexagonal-architecture]] — Business logic at the center, plugged in via ports.
 - [[modular-monolith]] — Clean boundaries without a network.
+- [[domain-driven-design]] — Model the business; split by bounded context.
 
 **Distributed systems**
 - [[event-driven-architecture]] — Announce facts; let others react.
 - [[cqrs]] — Separate models for writing and reading.
+- [[saga-pattern]] — Multi-service workflows with planned undo steps.
 - [[idempotency]] — Doing it twice equals doing it once.
 - [[circuit-breaker]] — Fail fast when a dependency is down.
+- [[backpressure]] — Push back when work arrives faster than you can handle it.
 
 **Evolving systems**
 - [[strangler-fig]] — Replace legacy one slice at a time.
+
+## Leadership
+
+The non-code half of the principal role.
+
+- [[influencing-without-authority]] — Lead through trust, framing, and paved roads.

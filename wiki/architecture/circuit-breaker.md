@@ -65,3 +65,4 @@ In-process function calls don't need breakers. For background jobs where waiting
 - [[observability]] — monitor breaker state as a key health signal.
 - [[event-driven-architecture]] — an alternative that removes the synchronous dependency entirely.
 - [[idempotency]] — needed so that retries after recovery are safe.
+- [[backpressure]] — the mirror image: protecting a service from overload by its callers.

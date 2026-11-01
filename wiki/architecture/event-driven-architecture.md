@@ -62,3 +62,7 @@ When the caller needs an immediate answer — "is this card valid?" — a synchr
 - [[observability]] — tracing is critical for async flows.
 - [[coupling-and-cohesion]] — events trade runtime coupling for contract coupling.
 - [[circuit-breaker]] — the complementary tool when calls must stay synchronous.
+- [[cap-theorem]] — why choosing events usually means choosing eventual consistency.
+- [[saga-pattern]] — coordinating multi-step workflows over events.
+- [[backpressure]] — what to do when consumers can't keep up.
+- [[api-versioning]] — event schemas are APIs and need the same care.

@@ -73,3 +73,4 @@ Small, easily reversed decisions — a variable name, a minor library inside one
 - [[conways-law]] — ADRs are a key communication channel across teams.
 - [[technical-debt]] — record deliberate shortcuts so they can be repaid later.
 - [[code-review]] — propose ADRs as PRs to get the same review benefits.
+- [[design-docs]] — explore the problem in a design doc; record the outcome in an ADR.

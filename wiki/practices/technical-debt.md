@@ -62,3 +62,4 @@ Code that will be thrown away — a prototype, an experiment, a one-time migrati
 - [[strangler-fig]] — a safe way to pay down large debt without a rewrite.
 - [[architecture-decision-records]] — a place to record deliberate debt.
 - [[code-review]] — a natural checkpoint for spotting and naming new debt.
+- [[blameless-postmortems]] — incidents are often where hidden debt surfaces.

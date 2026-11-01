@@ -66,3 +66,4 @@ Most systems — and most parts of any system — don't need CQRS. Use it for sp
 - [[idempotency]] — projectors must handle duplicate events safely.
 - [[kiss]] — the strongest argument against using CQRS where it isn't needed.
 - [[separation-of-concerns]] — CQRS separates the concern of deciding from the concern of displaying.
+- [[cap-theorem]] — the consistency trade-off behind stale read models.

@@ -63,3 +63,4 @@ Pair or ensemble (mob) programming provides continuous review, so a separate asy
 - [[architecture-decision-records]] — big design decisions deserve a review before code exists.
 - [[technical-debt]] — reviews are a key point for spotting and naming debt.
 - [[feature-flags]] — let you merge small, reviewable slices of unfinished features.
+- [[design-docs]] — review the design before the code exists.

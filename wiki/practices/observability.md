@@ -61,3 +61,4 @@ A small internal tool or batch script needs little more than basic logs and a fa
 - [[event-driven-architecture]] — async flows are especially hard to debug without tracing.
 - [[feature-flags]] — pair flag rollouts with metrics to see their impact.
 - [[idempotency]] — request IDs serve both deduplication and tracing.
+- [[blameless-postmortems]] — turning what telemetry reveals into lasting fixes.

@@ -63,3 +63,4 @@ If parts of your system have very different scaling, reliability, or technology 
 - [[conways-law]] — align module ownership with teams.
 - [[strangler-fig]] — the pattern for later extracting modules into services.
 - [[event-driven-architecture]] — in-process events keep modules loosely coupled.
+- [[domain-driven-design]] — bounded contexts are the best guide for drawing module lines.

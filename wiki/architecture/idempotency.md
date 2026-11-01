@@ -72,3 +72,4 @@ Pure reads are already idempotent. Operations that are inherently "do it again" 
 - [[circuit-breaker]] — retries after recovery must be safe.
 - [[cqrs]] — read model projectors must handle replayed events.
 - [[observability]] — request and idempotency IDs double as tracing aids.
+- [[saga-pattern]] — every saga step and compensation must be idempotent.

@@ -55,3 +55,5 @@ For a single small team, Conway's Law has little bite — everyone talks to ever
 - [[modular-monolith]] — module ownership lets multiple teams share one deployable.
 - [[event-driven-architecture]] — a common way to decouple team-owned services.
 - [[architecture-decision-records]] — a channel for cross-team design communication.
+- [[domain-driven-design]] — bounded contexts give teams natural ownership boundaries.
+- [[influencing-without-authority]] — reshaping team boundaries is mostly persuasion.

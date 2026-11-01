@@ -24,6 +24,7 @@ templates/article.md  Copy this to start a new article.
 wiki/principles/      Timeless design rules (KISS, coupling, ...).
 wiki/practices/       Things teams do (TDD, code review, ADRs, ...).
 wiki/architecture/    Structural patterns (hexagonal, CQRS, ...).
+wiki/leadership/      Influence, communication, and the non-code skills.
 scripts/lint_wiki.py  Enforces the rules below.
 tests/                Tests for the linter.
 ```
