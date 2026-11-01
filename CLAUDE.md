@@ -26,6 +26,10 @@ wiki/practices/       Things teams do (TDD, code review, ADRs, ...).
 wiki/architecture/    Structural patterns (hexagonal, CQRS, ...).
 wiki/leadership/      Influence, communication, and the non-code skills.
 scripts/lint_wiki.py  Enforces the rules below.
+docs/review-guide.md  Shared rules + output format for reviewer agents.
+.claude/agents/       Reviewer agents, one perspective each.
+.claude/skills/       /review-wiki — runs the reviewers and merges results.
+reviews/              Saved review reports.
 tests/                Tests for the linter.
 ```
 
@@ -72,3 +76,11 @@ with `[[links]]`. If the answer is reusable, offer to file it as an article.
 **Health check:** run lint; also look for contradictions between articles,
 stale claims, and concepts mentioned in several articles that deserve
 their own page.
+
+**Content review:** run `/review-wiki [slugs…] [reviewers…]`. It fans out to
+five read-only reviewer agents in `.claude/agents/` — `newcomer-reader`,
+`technical-accuracy`, `principal-skeptic`, `style-editor`, `wiki-gardener` —
+and merges their findings into `reviews/YYYY-MM-DD-<scope>.md`. Shared rules
+and output format live in `docs/review-guide.md`; change them there, not in
+each agent. Reviewers never edit articles; fixes are applied after the user
+picks which to take.
