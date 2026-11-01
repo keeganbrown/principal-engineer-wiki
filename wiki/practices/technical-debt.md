@@ -41,7 +41,7 @@ As a principal engineer, your job is to **translate debt into business terms** �
 - **Pay down principal where you work.** Follow the "boy scout rule": leave the code a bit better than you found it.
 - **Prioritize by interest rate.** Fix debt in code that changes often first.
 - **Watch for debt that carries risk, not interest.** A rarely touched module can wait — *unless* it runs on an unsupported runtime, has unpatched dependencies, or only one person understands it. That debt comes due on someone else's schedule: a security advisory, a forced upgrade, a resignation.
-- **Find the debt nobody recorded.** Look for **hotspots**: files with high churn and frequent bug fixes. Measure lead time for changes there before and after paying debt down, to show it worked.
+- **Find the debt nobody recorded.** Look for **hotspots**: files with high churn and frequent bug fixes. Measure lead time for changes (from commit to production) there before and after paying debt down, to show it worked.
 - **Budget for it.** Many teams reserve roughly 10–20% of capacity for paying down debt continuously.
 - **Record deliberate debt when you take it.** Note the shortcut, the reason, and the trigger for repaying it.
 - **Frame it in outcomes.** Not "refactor the order module," but "cut time-to-ship for checkout features from 2 weeks to 3 days."

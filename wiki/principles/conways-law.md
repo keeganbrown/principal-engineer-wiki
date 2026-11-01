@@ -43,7 +43,7 @@ They reorganize into domain teams — Search, Checkout, Accounts — each with f
 
 It isn't free: the database experts are now spread thin across three teams, and schema quality starts to slip.
 
-Shared infrastructure that the old DBA team ran has no obvious owner. The company responds by forming a small platform team for shared databases and standards. Domain teams trade hand-off cost for some duplication and thinner specialist depth — usually a good trade, but a trade.
+Shared infrastructure that the old database team ran has no obvious owner. The company forms a small [[paved-roads|platform team]] for shared databases and standards — which works only if it ships self-service tools rather than taking tickets; otherwise it becomes the old hand-off with a new name. Domain teams trade hand-off cost for some duplication and thinner specialist depth — usually a good trade, but a trade.
 
 ## Common traps
 

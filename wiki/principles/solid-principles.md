@@ -58,7 +58,7 @@ The rule doesn't know or care about the system clock, so tests are deterministic
 
 - **An interface for everything.** An interface with exactly one implementation and no **test double** (a fake or stub used in tests) is often just noise.
 - **Over-applying S.** Splitting every class into one-method fragments makes code harder to follow, not easier.
-- **Open/closed as an excuse for speculation.** Don't build extension points on speculation; [[dry]] has the wiki's rule for when real cases justify one.
+- **Open/closed as an excuse for speculation.** Don't build extension points on speculation; [[dry]] explains when real cases justify one.
 - **Treating SOLID as a review checklist.** It's a vocabulary for discussing trade-offs, not a scoring rubric.
 
 ## When it doesn't apply
@@ -68,6 +68,6 @@ In functional or data-oriented code, some principles translate differently — "
 ## Related
 
 - [[separation-of-concerns]] — the broader idea behind single responsibility.
-- [[hexagonal-architecture]] — owns ports, adapters, and dependency inversion at system scale.
+- [[hexagonal-architecture]] — dependency inversion applied to a whole system.
 - [[dry]] — single responsibility helps you tell real duplication from coincidence.
 - [[yagni]] — the counterweight to building extension points too early.

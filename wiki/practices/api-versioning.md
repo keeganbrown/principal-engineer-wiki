@@ -27,7 +27,7 @@ Breaking changes are among the most expensive mistakes in software because their
 ## How to apply it
 
 - **Make clients tolerant readers.** Clients should ignore fields they don't recognize, so you can add new ones safely. (Martin Fowler calls this the *Tolerant Reader* pattern.)
-- **Make servers strict from day one.** Anything you tolerate becomes behavior someone depends on, and tightening it later is a breaking change. This is why the old robustness principle — "be liberal in what you accept" (Jon Postel) — is now treated with caution; RFC 9413 (Internet Architecture Board, 2023) explains why.
+- **Make servers strict from day one.** Anything you tolerate becomes behavior someone depends on, and tightening it later is a breaking change. This is why the old robustness principle — "be liberal in what you accept" (Jon Postel) — is now treated with caution; RFC 9413 explains why. (An RFC — "request for comments" — is one of the Internet's standards documents; this one is from the Internet Architecture Board, 2023.)
 - **Never reuse or repurpose a field.** Add a new one and deprecate the old.
 - **Evolve additively.** Add the new alongside the old, migrate consumers, then remove the old ([[expand-and-contract]]).
 - **Version explicitly when you must break.** Common approaches:
@@ -43,7 +43,7 @@ Breaking changes are among the most expensive mistakes in software because their
 
 An orders API returns money as a float: `"total": 19.99`. Rounding errors are causing billing disputes, and the team needs integer cents with an explicit currency: `"total": {"amountCents": 1999, "currency": "USD"}`. The *type* of `total` changes, so this can't be done additively under the same name.
 
-The team ships `/v2/orders` with the new shape and leaves `/v1` unchanged. `/v1` responses start carrying `Deprecation` and `Sunset: Sat, 31 Oct 2027 00:00:00 GMT` headers. Per-client usage dashboards show which partners still call `/v1`; the team emails each one twice and offers migration help.
+The team ships `/v2/orders` with the new shape and leaves `/v1` unchanged. `/v1` responses start carrying `Deprecation` and `Sunset: Sun, 31 Oct 2027 00:00:00 GMT` headers. Per-client usage dashboards show which partners still call `/v1`; the team emails each one twice and offers migration help.
 
 A year later, two partners still haven't moved. Rather than break them on the sunset date, the team extends the date by three months for those two and switches `/v1` off afterward — a decision recorded in an [[architecture-decision-records|ADR (architecture decision record)]].
 

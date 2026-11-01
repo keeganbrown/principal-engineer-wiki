@@ -68,4 +68,4 @@ Watch for the process turning into bureaucracy. If doc review routinely takes lo
 - [[reversible-decisions]] — one-way doors are the strongest reason to write one.
 - [[influencing-without-authority]] — clear writing is a principal engineer's main lever.
 - [[code-review]] — design review is code review moved earlier.
-- [[yagni]] — non-goals are where YAGNI gets written down.
+- [[yagni]] — non-goals are where YAGNI ("you aren't gonna need it") gets written down.

@@ -28,9 +28,9 @@ Picture your application as a hexagon (the number of sides doesn't matter):
      [ Postgres ]   [ Stripe API ]   [ Email ]
 ```
 
-- **Core** — business rules and use cases. It knows nothing about HTTP, SQL, or vendors. The use cases are a thin layer that calls ports; the domain rules they call can be a pure [[functional-core-imperative-shell|functional core]].
+- **Core** — business rules and use cases. It knows nothing about HTTP, SQL, or vendors. The use cases are a thin layer that calls ports (below); the domain rules they call can be a pure [[functional-core-imperative-shell|functional core]] — no I/O, and the same input always gives the same output.
 - **Ports** — interfaces the core defines, in its own language: "I need a way to save orders" (`OrderRepository`), "I need to charge cards" (`PaymentGateway`).
-- **Driving adapters** — call *into* the core: a web controller, a command-line tool, a test.
+- **Driving adapters** — call *into* the core: a web controller, a command-line interface (CLI), a test.
 - **Driven adapters** — are called *by* the core: `PostgresOrderRepository`, `StripeGateway`, or an `InMemoryOrderRepository` fake for tests.
 
 Dependencies always point **inward**. That can seem impossible — how does the core save to Postgres without depending on it?
@@ -60,17 +60,24 @@ Alistair Cockburn proposed the pattern in 2005. *Clean Architecture* and *Onion 
 ```
 # core
 interface OrderRepository:
-    save(order)
+    find(id)
+    insertIfAbsent(order)
+    completeIfPending(id, receipt)
+    cancelIfPending(id)
 
 interface PaymentGateway:
     charge(customerId, amount, idempotencyKey) -> Receipt
 
 function placeOrder(cart, checkoutAttemptId, repo, payments):
+    existing = repo.find(checkoutAttemptId)
+    if existing and existing.isPaid(): return existing       # retry after success
+    if existing and existing.isCancelled(): return Rejected  # never revive it
+
     order = Order.from(cart, id=checkoutAttemptId)   # pure domain rules
-    repo.save(order.asPending())                     # record intent first
+    repo.insertIfAbsent(order.asPending())           # record intent first
     receipt = payments.charge(cart.customerId, order.total,
                               idempotencyKey=checkoutAttemptId)
-    repo.save(order.withReceipt(receipt))
+    repo.completeIfPending(order.id, receipt)        # loses to a cancel
     return order
 
 # adapters
@@ -81,7 +88,7 @@ class StripeGateway implements PaymentGateway: ...
 
 The `checkoutAttemptId` comes from the caller, so if the client retries the whole request, both attempts carry the same key and the provider charges once ([[idempotency]]).
 
-Saving the order as pending *before* charging means a crash between the steps leaves a pending order, not a charged customer with no order. A background reconciler finds pending orders older than a few minutes and asks the provider, by the same key, whether the charge happened — then completes or cancels each one.
+Saving the order as pending *before* charging means a crash between the steps leaves a pending order, not a charged customer with no order. A background reconciler finds pending orders older than a few minutes, looks each charge up by the order's own reference, and completes or cancels it. Completing and cancelling are both conditional on the order still being pending, so a late retry and the reconciler can't both win; if a cancelled order turns out to have been charged, cancelling means refunding.
 
 ## Common traps
 

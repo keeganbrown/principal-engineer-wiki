@@ -50,7 +50,7 @@ For *why* grouping by domain reduces coupling, see [[coupling-and-cohesion]]; th
 
 An insurance company has one `Policy` table used by underwriting, billing, and claims. Each team keeps adding columns; changes require three-team sign-off.
 
-Using DDD, they map three bounded contexts. *Underwriting* models a policy as a risk assessment. *Billing* models it as a payment schedule. *Claims* models it as a coverage contract. Their context map shows Underwriting publishing a `PolicyIssued` event that Billing and Claims consume, linked by a shared `policyId`.
+Using DDD, they map three bounded contexts: *Underwriting* models a policy as a risk assessment, *Billing* as a payment schedule, and *Claims* as a coverage contract. Their context map shows Underwriting publishing a `PolicyIssued` event that Billing and Claims consume, linked by a shared `policyId`.
 
 The split takes several quarters. The hardest part isn't code — it's agreeing which context owns fields everyone touches, like policy status, and migrating data without downtime. Once done, the teams ship independently.
 

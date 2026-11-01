@@ -15,7 +15,7 @@ Every codebase is full of decisions: why Postgres and not MongoDB, why events in
 
 An **architecture decision record (ADR)** is a record, a page or two long, of one decision. ADRs are numbered, stored in the repo next to the code (e.g., `docs/adr/0007-use-postgres.md`), and never deleted — only superseded by newer ADRs.
 
-**ADRs and design docs do different jobs.** A [[design-docs|design doc]] is for *deliberation*: exploring a big problem and getting feedback. An ADR is the *record*: what was decided and why, in a page. A big design doc usually ends in one or more ADRs. Many decisions are too small for a design doc but still deserve an ADR.
+**ADRs and design docs do different jobs.** A [[design-docs|design doc]] is for *deliberation*: exploring a big problem and getting feedback. An ADR is the *record*: what was decided and why, in a page. A big design doc usually ends in one or more ADRs, but many decisions are too small for a design doc and still deserve an ADR.
 
 Michael Nygard popularized the format in a 2011 blog post.
 

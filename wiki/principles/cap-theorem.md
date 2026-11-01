@@ -49,7 +49,7 @@ Then:
 - **Decide per operation when you do relax.** Checkout payment needs strong consistency; "recommended for you" doesn't.
 - **Ask the business what being wrong costs.** A stale like count costs nothing; overselling the last concert ticket costs a lot.
 - **Know your tools' defaults.** Many databases and caches are eventually consistent unless configured otherwise.
-- **Design the UX for staleness where you choose availability.** Show "updated a few seconds ago," use optimistic updates (show the change immediately, reconcile later), and read from the **primary** — the main copy that takes writes — right after a user's own write.
+- **Design the user experience (UX) for staleness where you choose availability.** Show "updated a few seconds ago," use optimistic updates (show the change immediately, reconcile later), and read from the **primary** — the main copy that takes writes — right after a user's own write.
 
 ## Example
 

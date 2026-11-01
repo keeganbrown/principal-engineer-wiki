@@ -2,6 +2,7 @@
 
 Newest first.
 
+- 2026-11-01 — Applied pass-3 findings: recovery-job and example-consistency conventions, UPPER_CASE constants allowed, linter catches 'owns' in Related and "the wiki's rule". Fixed expand-and-contract step-4 must-fix, races in hexagonal/idempotency/outbox/backfill, and remaining definitions.
 - 2026-11-01 — Third review (focused, 6 agents). 1 must-fix, 4 minor unfixed; main theme is unstated limits of recovery mechanisms added in pass 2. Report: `reviews/2026-11-01-full-wiki-pass3.md`.
 - 2026-11-01 — Applied pass-2 findings to all 37 articles. Linter now enforces bold lead-ins and bans maintainer notes in reader text. Deferred: proposed articles spikes-and-prototypes, progressive-delivery, event-sourcing.
 - 2026-11-01 — Second full review (37 articles). Pass-1 must-fixes verified fixed. Report: `reviews/2026-11-01-full-wiki-pass2.md` (2 must-fix, mostly in new articles; convention rulings proposed).

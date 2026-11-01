@@ -37,9 +37,9 @@ Teams that never split, at large scale, can end up with one codebase where hundr
 - **Draw service boundaries around domains.** Never around technical layers; a "database service" couples everything to it ([[domain-driven-design]]).
 - **Give each database one owner.** Shared databases recreate the monolith's coupling ([[coupling-and-cohesion]]).
 - **Prefer async events for side effects.** Use synchronous calls only when you need an answer now ([[event-driven-architecture]]).
-- **Invest in the platform first.** That means automated deploys, [[observability]] with trace IDs across services, [[retries-and-timeouts]], and [[contract-testing]]. Without these, microservices are painful.
+- **Invest in the platform first.** That means automated deploys, [[observability]] with trace IDs (one ID that follows a request across services, also called a correlation ID), [[retries-and-timeouts]], and [[contract-testing]]. Without these, microservices are painful.
 - **Plan for partial failure.** Patterns like [[circuit-breaker]], [[saga-pattern]], and [[idempotency]] become everyday tools.
-- **Measure what you split for.** Track deploys per team, the share of releases that need cross-team coordination, and lead time for changes. If they don't improve, stop extracting.
+- **Measure what you split for.** Track deploys per team, the share of releases that need cross-team coordination, and lead time for changes (from commit to running in production). If they don't improve, stop extracting.
 
 ## Example
 
@@ -47,7 +47,7 @@ A company runs one large Rails app with 80 engineers. Deploys happen weekly and 
 
 They don't rewrite into 40 services. They first enforce module boundaries inside the monolith — and that alone takes deploys from weekly to several times a week. Then they extract the two modules with a clear reason: **search** (very different scaling and its own index) and **payments** (payment card industry (PCI) compliance isolation).
 
-The extractions weren't free. Each service needed its own deploy pipeline, tracing, dashboards, and on-call rotation — roughly two engineers' full-time work to build and keep running. Payments was the hardest: two places where orders and payments had shared a database transaction had to become sagas. Two years later they have three more services, each extracted for a named reason, and deploy daily.
+The extractions weren't free. Each service needed its own deploy pipeline, tracing, dashboards, and on-call rotation — roughly two engineers' full-time work to build and keep running. Payments was the hardest; [[modular-monolith]] tells that part of the story. Two years later they have three more services, each extracted for a named reason, and deploy daily.
 
 ## Common traps
 

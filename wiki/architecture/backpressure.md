@@ -36,7 +36,7 @@ Systems without backpressure fail in the worst way: latency climbs for *everyone
 - **Limit concurrency per caller.** Cap in-flight requests per client or per dependency, so one noisy caller can't use everything. This is the **bulkhead** pattern, named for the sealed compartments that keep one leak from sinking a ship.
 - **Rate-limit at the edge** — per user, per API key — before work reaches expensive layers.
 - **Prioritize when shedding.** Drop analytics events before checkout requests.
-- **Make clients cooperate.** They should retry with exponential backoff and **jitter** (a random extra delay, so clients don't all retry at the same moment), and respect `Retry-After`. See [[retries-and-timeouts]].
+- **Make clients cooperate.** They should retry with exponential backoff (each wait longer than the last) and **jitter** (a random extra delay, so clients don't all retry at the same moment), and respect `Retry-After`. See [[retries-and-timeouts]].
 - **Watch queue depth and wait time.** Treat them as first-class metrics ([[observability]]).
 
 ## Example

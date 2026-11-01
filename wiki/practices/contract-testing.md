@@ -36,11 +36,11 @@ Ian Robinson named consumer-driven contracts in a 2006 article on martinfowler.c
 
 - **Start where it hurts.** Pick the API boundary that breaks most often, or the one between two teams who rarely talk.
 - **Have consumers specify only what they use.** A contract that asserts every field leaves the provider unable to change anything.
-- **Verify against every consumer version still in production.** For a mobile app, that's every supported release, not just the latest. Old app versions stay installed for years.
+- **Verify against every consumer version still in production.** For a mobile app, that's every supported release, not just the latest. Old app versions stay installed for years. This set only grows, so pair it with a published support window: when a release falls out of support, its contracts retire. Otherwise the oldest client sets the pace for every provider change.
 - **Run a contract broker.** A broker is a shared store for contracts; it answers "is it safe to deploy?" against what's actually live.
 - **Diff schemas automatically.** Even without consumer-driven contracts, checking an OpenAPI or Protobuf schema for breaking changes catches structural breaks cheaply.
 - **Remember contracts check shape, not meaning.** Changed sort order, stricter validation, or different error codes still pass. Those need review ([[api-versioning]] lists them).
-- **Budget for the organizational cost.** Consumers write contracts that mostly protect them; providers maintain test fixtures that put the service into each contract's assumed state; someone runs the broker. Adoption stalls when only one side sees the payoff, so start where both teams feel the pain.
+- **Budget for the organizational cost.** Consumers write contracts that mostly protect them; providers maintain test fixtures that put the service into each contract's assumed state (for example, "order 42 exists and is paid"); someone runs the broker. Adoption stalls when only one side sees the payoff, so start where both teams feel the pain.
 
 ## Example
 

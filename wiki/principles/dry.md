@@ -40,7 +40,7 @@ The current sales-tax rate `0.0825` is hard-coded in the checkout page, the invo
 
 The fix is one owner for the fact. The pricing service owns the tax rate and exposes it through its API. Checkout reads the rate when an order is placed and **stores the rate it applied on the order**. Invoices and refunds then use the rate on the original order, never today's rate — refunding a 2025 purchase at a 2026 rate would be wrong.
 
-Refunds is a separate service, so a shared library constant would have tied its releases to everyone else's. Instead, knowledge crosses the boundary through a contract: the pricing API and the stored order record.
+Refunds is a separate service, so a shared library constant would have tied its releases to everyone else's. Instead, knowledge crosses the boundary through a contract: the pricing API and the stored order record. That trades release coupling for a runtime dependency: checkout now needs pricing to be up, or a cached rate to fall back on.
 
 Counter-example: `validateShippingAddress` and `validateBillingAddress` look identical today. Merging them seems DRY — until billing must match the card issuer's format and shipping must support PO boxes. They were different knowledge all along.
 
@@ -53,7 +53,7 @@ Counter-example: `validateShippingAddress` and `validateBillingAddress` look ide
 
 ## When it doesn't apply
 
-Prototypes and spikes don't live long enough for duplication to hurt. Generated code is fine to repeat, because the generator is the single source. And sometimes two teams *should* keep separate copies of similar logic so they can evolve independently — that's a deliberate trade, not a DRY violation.
+Prototypes and spikes (throwaway code written to answer one question) don't live long enough for duplication to hurt. Generated code is fine to repeat, because the generator is the single source. And sometimes two teams *should* keep separate copies of similar logic so they can evolve independently — that's a deliberate trade, not a DRY violation.
 
 ## Related
 

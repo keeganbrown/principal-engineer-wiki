@@ -11,7 +11,7 @@ tags: [distributed-systems, transactions, microservices]
 
 ## The idea
 
-Booking a trip means reserving a flight, a hotel, and a car. In a single database, you'd wrap all three in a transaction: either everything succeeds, or nothing does. But when flights, hotels, and cars are separate services with separate databases, there's no shared transaction to lean on. (Distributed transactions like two-phase commit exist, but they're slow, fragile, and poorly supported across modern services.)
+Booking a trip means reserving a flight, a hotel, and a car. In a single database, you'd wrap all three in a transaction: either everything succeeds, or nothing does. But when flights, hotels, and cars are separate services with separate databases, there's no shared transaction to lean on. (Distributed transactions like two-phase commit — a coordinator asks every database to prepare, then tells all of them to commit — exist, but they're slow, fragile, and poorly supported across modern services.)
 
 A **saga** breaks the process into steps. Each step is a local transaction in one service. If a later step fails, the saga runs **compensating actions** to undo the earlier steps:
 
@@ -21,7 +21,7 @@ Reserve flight ✔ → Reserve hotel ✔ → Reserve car ✘
           Cancel flight ◄── Cancel hotel ◄┘   (compensate in reverse)
 ```
 
-What you give up is **isolation**: other processes can see the half-finished state until the saga completes or compensates. You also lose *instant* all-or-nothing — it's restored only eventually, by running compensations. Across services, the end state is eventually consistent ([[cap-theorem]]).
+What you give up is **isolation**: other processes can see the half-finished state until the saga completes or compensates. You also lose *instant* all-or-nothing — it's restored only eventually, by running compensations. Across services, the end state is eventually consistent: every service agrees, but only after the remaining steps or compensations finish ([[cap-theorem]]).
 
 The idea comes from a 1987 paper by Hector Garcia-Molina and Kenneth Salem.
 
@@ -40,11 +40,11 @@ There are two ways to coordinate a saga:
 
 Guidelines:
 - **Design compensations with the business.** "Undo" is often not a true rollback — it's a refund, a cancellation email, a credit.
-- **Order steps by how easy they are to undo.** Put cheap, invisible compensations (releasing a reservation) early, and costly or customer-visible ones (a refund) late. Put steps that can't be undone at all — like sending a confirmation email — last. This is [[reversible-decisions|two-way-door]] thinking applied to one workflow.
+- **Order steps by how easy they are to undo.** Put cheap, invisible compensations (releasing a reservation) early, and costly or customer-visible ones (a refund) late. Put steps that can't be undone at all — like sending a confirmation email — last. This is *two-way-door* thinking — a two-way door is a decision you can cheaply undo ([[reversible-decisions]]) — applied to one workflow.
 - **Make every step and compensation idempotent.** Messages get [[retries-and-timeouts|retried]] and duplicated ([[idempotency]]).
 - **Persist saga state.** A crash mid-saga should resume, not restart.
-- **Mark records as pending.** A status field like `PENDING` acts as a **semantic lock**: other processes see it and avoid acting on the record until the saga finishes.
-- **Consider a workflow engine for orchestration.** Temporal or AWS Step Functions usually beat building your own.
+- **Mark records as pending.** A status field like `PENDING` acts as a **semantic lock**: other processes see it and avoid acting on the record until the saga finishes. Give every pending lock a timeout and an owner, or a stalled saga leaves records locked forever.
+- **Consider a workflow engine for orchestration.** Temporal or AWS Step Functions usually beat building your own, but an engine is one more critical system to run, with its own constraints — Temporal workflow code, for example, must be deterministic.
 
 ## Example
 
@@ -75,4 +75,4 @@ If the steps live in one database or one service, use an ordinary transaction �
 - [[idempotency]] — every saga step and compensation must tolerate retries.
 - [[transactional-outbox]] — each step publishes its result reliably.
 - [[microservices]] — sagas are a cost of splitting data across services.
-- [[observability]] — trace IDs across steps make sagas debuggable.
+- [[observability]] — trace IDs (one ID that follows a request across services) make sagas debuggable.

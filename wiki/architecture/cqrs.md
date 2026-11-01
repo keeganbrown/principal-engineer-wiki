@@ -34,14 +34,14 @@ Greg Young described CQRS around 2010, building on Bertrand Meyer's *command–q
 
 - **Each side gets simpler.** The write model enforces rules; the read model serves fast lookups.
 - **Performance.** Read views can be pre-joined and cached — no expensive queries at request time.
-- **Independent scaling.** Many systems read far more than they write; scale each side separately. Try read replicas and caching first — a separate read model is for when the *shape* of reads differs, not just the volume.
+- **Independent scaling.** Many systems read far more than they write; scale each side separately. Try read replicas (read-only copies of the database) and caching first — a separate read model is for when the *shape* of reads differs, not just the volume.
 - **Multiple views.** Build several read models (search index, dashboard, mobile feed) from the same writes.
 
 ## How to apply it
 
 - **Start small.** Even in one database, separating command handlers from query handlers in code is a light form of CQRS.
 - **Keep it in one transaction while you can.** If the read model lives in the same database, update it in the same transaction as the write. That's simplest and stays fully consistent.
-- **Use events or CDC once stores are separate.** For a separate read store, update it from events or **change-data-capture (CDC)** — streaming the database's own change log to other systems ([[transactional-outbox]]). Don't have the write path write to both stores directly; if one write fails, they drift apart.
+- **Use events or change-data-capture once stores are separate.** For a separate read store, update it from events or **change-data-capture (CDC)** — streaming the database's own change log to other systems ([[transactional-outbox]]). Don't have the write path write to both stores directly; if one write fails, they drift apart.
 - **Make projectors idempotent and rebuildable.** You should be able to regenerate a read model — by replaying events if you keep them, or by re-projecting from the write store.
 - **Set expectations for staleness.** How far behind may the read side be? Design the UI accordingly ([[cap-theorem]] covers the patterns).
 

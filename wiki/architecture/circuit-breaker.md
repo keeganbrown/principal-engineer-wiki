@@ -49,15 +49,15 @@ Michael Nygard popularized the pattern in *Release It!* (2007).
 
 A product page calls a recommendations service. One day the recommendations service starts timing out after 5 seconds. Without a breaker, every product page takes 5+ seconds and web servers run out of threads — the whole site goes down.
 
-With a breaker: after a burst of failures, the breaker opens. Product pages instantly render with a generic "Popular items" list instead. The site stays up and an alert fires. When recommendations recovers, the half-open trial calls succeed and personalized results return automatically.
+With a breaker: after a burst of failures, the breaker opens. Product pages instantly render with a generic "Popular items" list instead. The site stays up; the breaker's state change shows on the dashboard, and nobody is paged because users still see a working page. When recommendations recovers, the half-open trial calls succeed and personalized results return automatically.
 
 ## Common traps
 
-- **No fallback.** An open breaker that just throws an error everywhere only moves the failure.
+- **No decided fallback.** An open breaker that throws an unplanned error everywhere only moves the failure; a deliberate, clear, fast error *is* a fallback.
 - **Retrying inside the breaker without backoff.** It multiplies load on a struggling service ([[retries-and-timeouts]]).
 - **Counting the wrong errors.** A `404 Not Found` or validation error isn't a sign the service is unhealthy; don't let it trip the breaker.
 - **Thresholds set once and forgotten.** Traffic patterns change; revisit settings.
-- **Never exercised.** Breaker code paths only run during incidents, so they're often broken when finally needed. Test open and half-open behavior with fault injection or game days (planned failure drills).
+- **Never exercised.** Breaker code paths only run during incidents, so they're often broken when finally needed. Test open and half-open behavior with fault injection (deliberately making a dependency fail or slow down) or game days (planned failure drills).
 
 ## When it doesn't apply
 

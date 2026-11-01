@@ -48,7 +48,7 @@ Users report checkout is slow:
 
 - **Logging everything.** Huge, noisy logs are expensive and hide the signal. Log meaningful events with context.
 - **Alert fatigue.** Too many non-actionable alerts teach people to ignore pages. Every alert should require a human action.
-- **High-cardinality metric labels.** Each unique label value creates a separate time series; a `user_id` label with millions of values creates millions of series and explodes costs. Put high-cardinality fields like user ID, app version, and region on **traces and structured logs** instead — that's exactly the data that answers questions like the Android example above.
+- **High-cardinality metric labels.** Each unique label value creates a separate time series; a `userId` label with millions of values creates millions of series and explodes costs. Put high-cardinality fields like user ID, app version, and region on **traces and structured logs** instead — that's exactly the data that answers questions like the Android example above.
 - **Sampling away what you need.** Random sampling can drop the one failing request you're looking for. Keep errors and slow requests.
 - **Logging secrets or personal data.** Scrub tokens, passwords, and personally identifiable information (PII) at the source.
 - **Adding telemetry only after an incident.** Make it part of "done" for every feature.

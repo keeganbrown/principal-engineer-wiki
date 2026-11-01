@@ -29,7 +29,7 @@ Without idempotency, normal network hiccups cause real damage: customers charged
 - **Prefer naturally idempotent operations.** "Set status to SHIPPED" is idempotent; "toggle status" is not. "Set balance to 50" is idempotent; "add 10" is not.
 - **Use idempotency keys for operations that aren't naturally idempotent.** The client generates a unique ID per *intended action* and sends it with every retry. The server remembers each key and its result; if it sees the key again, it returns the stored result instead of redoing the work.
 - **Claim the key before doing the work.** Insert the key with status `IN_PROGRESS` under a unique index *first*. A concurrent duplicate fails that insert and backs off.
-- **Pass idempotency downstream.** Most real effects — charging a card, sending an email — happen in *other* systems, outside your database transaction. You can't make them atomic with your write. Instead, pass your key to the downstream service as *its* idempotency key, so a repeated call has no extra effect there either. If it doesn't accept a key — many email and legacy systems don't — query its status by your own reference before retrying, or accept at-most-once and reconcile. Choose by which hurts more: a duplicate or a miss.
+- **Pass idempotency downstream.** Most real effects — charging a card, sending an email — happen in *other* systems, outside your database transaction. You can't make them succeed or fail together with your write. Instead, pass your key to the downstream service as *its* idempotency key, so a repeated call has no extra effect there either. If it doesn't accept a key — many email and legacy systems don't — query its status by your own reference before retrying, or don't retry at all — *at-most-once*: the effect may be lost, never doubled — and run a periodic check that finds and repairs misses. Choose by which hurts more: a duplicate or a miss.
 - **Deduplicate messages in consumers.** Track processed message IDs.
 - **Use database constraints as a last line of defense.** Unique indexes catch duplicates everything else missed.
 - **Know your HTTP semantics.** `GET`, `PUT`, and `DELETE` are meant to be idempotent; `POST` is not, unless you add a key.
@@ -61,7 +61,9 @@ server:
     return response
 ```
 
-The hard case is a crash *after* the provider charges the card but *before* the result is saved. The key is stuck in `IN_PROGRESS`. Because the same key was passed to the provider, retrying the charge is safe: the provider recognizes the key and returns the original result instead of charging again. A background sweeper finds keys stuck in progress and re-runs the *stored* request with the same key.
+The hard case is a crash *after* the provider charges the card but *before* the result is saved. The key is stuck in `IN_PROGRESS`. Because the same key was passed to the provider, retrying the charge is safe: the provider recognizes the key and returns the original result instead of charging again.
+
+A background sweeper finds keys stuck in progress for more than a few minutes — after a crash *or* a provider timeout — and re-runs the *stored* request with the same key. It must finish well inside the provider's key-retention window (Stripe keeps keys for about 24 hours). Past that window, it looks the charge up by your own order reference instead of re-sending, and keys that old page someone.
 
 Stripe's API works this way: it accepts an `Idempotency-Key` header on requests that create or change things.
 
@@ -71,7 +73,7 @@ Stripe's API works this way: it accepts an `Idempotency-Key` header on requests 
 - **Assuming one transaction covers everything.** It only covers your own database. External calls need downstream idempotency or an [[transactional-outbox|outbox]].
 - **Keys with no expiry.** Store them long enough to cover realistic retries (often 24 hours or more), then clean them up.
 - **Same key, different payload.** If a client reuses a key with a different request body, reject it rather than silently returning the old result.
-- **Confusing keys with trace IDs.** A trace ID follows one *request*; an idempotency key follows one *intended action* across many requests. Log both.
+- **Confusing keys with trace IDs.** A trace ID (also called a correlation ID) follows one *request*; an idempotency key follows one *intended action* across many requests. Log both.
 
 ## When it doesn't apply
 

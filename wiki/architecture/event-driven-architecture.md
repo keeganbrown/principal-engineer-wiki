@@ -26,7 +26,7 @@ Events are named in the **past tense**, because they're facts that already happe
 ## Why it matters
 
 - **Looser runtime coupling.** Add a new consumer (say, fraud detection) without changing the producer. The coupling doesn't vanish, though: it moves into the event schema and into flows nobody can see in one place. The producer can no longer tell who will break when it changes.
-- **Resilience.** If Shipping is down, events wait in the queue and Orders keeps working. The broker itself becomes critical infrastructure, though, and every dead-letter queue needs an owner who replays it.
+- **Resilience.** If Shipping is down, events wait in the queue and Orders keeps working. The broker itself becomes critical infrastructure, though, and every dead-letter queue (a holding queue for events that keep failing) needs an owner who replays it. Replays arrive late and out of order, so consumers must ignore events older than the state they hold, using a version or timestamp check.
 - **Smoothing bursts.** Consumers process at their own pace; short bursts are absorbed by the queue — as long as it's bounded and consumers can catch up ([[backpressure]]).
 - **Audit trail.** A stream of events is a natural history of what happened.
 
@@ -37,9 +37,9 @@ The price is **eventual consistency**: consumers' views lag behind the producer 
 - **Publish facts for broadcast, not disguised commands.** `OrderPlaced`, not `SendConfirmationEmail`. A "command" dressed as an event re-creates the coupling you were avoiding. Commands are fine when one component deliberately owns a workflow — that's an [[saga-pattern|orchestrated saga]], where one coordinator sends each step its command.
 - **Design events as public contracts.** Version them, document them, and evolve them compatibly ([[api-versioning]]).
 - **Make consumers idempotent.** Most brokers deliver *at least once*, so the same event may arrive twice ([[idempotency]]).
-- **Use a dead-letter queue** — a holding queue for events that keep failing — and alert on it.
+- **Use a dead-letter queue and alert on it.**
 - **Publish reliably with an outbox.** Saving to the database and publishing to the broker are two separate writes. Write the event to an outbox table in the same transaction, and let a separate process relay it ([[transactional-outbox]]).
-- **Propagate trace IDs in event metadata.** A trace ID follows one flow across services ([[observability]]).
+- **Propagate trace IDs in event metadata.** A trace ID (also called a correlation ID) follows one flow across services ([[observability]]).
 
 ## Example
 
@@ -49,7 +49,7 @@ The trade-off: right after checkout, the "My Shipments" page may not show the ne
 
 ## Common traps
 
-- **Assuming instant consistency.** Design the UX for a short lag.
+- **Assuming instant consistency.** Design the user experience (UX) for a short lag.
 - **Event spaghetti.** Long chains of events triggering events become impossible to follow. Document flows and keep chains short.
 - **Getting event size wrong.** Events with only an ID force every consumer to call back for details (re-coupling them). Events carrying everything leak internals. Include what consumers commonly need.
 - **Ignoring ordering.** Events can arrive out of order. Design for it, or use a **partitioning key** (e.g., `orderId`) so all events for one order go through the same ordered stream.

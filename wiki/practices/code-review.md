@@ -70,6 +70,6 @@ Pair or ensemble (mob) programming provides continuous review, so a separate rev
 
 - [[test-driven-development]] — tests make changes easier to review and trust.
 - [[design-docs]] — review the *design* before the code exists.
-- [[architecture-decision-records]] — propose ADRs as PRs so decisions get the same review as code.
+- [[architecture-decision-records]] — propose architecture decision records (ADRs) as PRs so decisions get the same review as code.
 - [[technical-debt]] — reviews are a key point for spotting and naming debt.
 - [[feature-flags]] — let you merge small, reviewable slices of unfinished features.

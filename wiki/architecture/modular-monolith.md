@@ -39,7 +39,7 @@ Many teams adopt microservices to get *clean boundaries*. But you can get clean 
 - **Give each module its own tables.** Others go through its API ([[coupling-and-cohesion]] explains why shared tables recouple everything).
 - **Avoid transactions that span modules.** A single transaction across `orders` and `payments` is convenient today, but it's the hidden coupling that turns a later extraction from weeks into a redesign.
 - **Use in-process events for side effects.** "Order placed → send email" keeps modules decoupled.
-- **Extract a service only with a reason.** Good reasons are different scaling needs, a different release cadence, or a team blocked by the shared deploy.
+- **Extract a service only for a reason you can name.** [[microservices]] lists the good ones.
 
 ## Example
 

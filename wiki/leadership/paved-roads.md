@@ -25,11 +25,11 @@ A paved road changes the default. When the good way is also the fastest way, ado
 
 ## How to apply it
 
-- **Pave where people already walk.** Look at what teams are building repeatedly and painfully — new services, deploy pipelines, auth integration — and start there.
+- **Pave where people already walk.** Look at what teams are building repeatedly and painfully — new services, deploy pipelines, auth integration — and start there. Each is a small two-way door that adds up ([[reversible-decisions]]).
 - **Build it with a real team.** Pair with one team that needs it now. Their feedback makes it usable; their success makes it credible.
 - **Make it faster than the alternative.** If the paved road takes longer to set up than doing it by hand, nobody will use it.
 - **Bake standards in, don't bolt them on.** Logging, trace IDs (one ID that follows a request across services, also called a correlation ID), security checks, and dashboards come free with the template.
-- **Allow exits, but not free ones.** Teams with genuinely different needs can leave the road, but they still meet the mandatory guardrails and own their own upgrades, on-call, and compliance evidence. Learn from why they left.
+- **Allow exits, but not free ones.** Teams with genuinely different needs can leave the road, but they still meet the mandatory guardrails (the few checks every service must pass) and own their own upgrades, on-call, and compliance evidence. Learn from why they left.
 - **Treat it as a product.** It needs an owner, a roadmap, versioned upgrades, documentation, and support. Measure adoption and time-to-first-deploy.
 - **Automate the guardrails.** Linters and CI checks enforce the few things that truly must be consistent, so humans don't have to police them.
 
@@ -41,7 +41,7 @@ A principal engineer and one product team build a service template. Running one 
 
 Within a year, 90% of new services use it, and incidents get easier to debug because every service logs the same way.
 
-Existing services were harder. Most didn't migrate until an upgrade offered something they wanted, and keeping generated repos upgradable meant moving shared logic into versioned libraries. The road also costs a permanent two-to-three-person platform team.
+Existing services were harder. Most didn't migrate until an upgrade offered something they wanted, and keeping generated repos upgradable meant moving shared logic into versioned *infrastructure* libraries — never domain logic ([[dry]]) — and then supporting the two or three versions teams lagged on. The road also costs a permanent two-to-three-person platform team.
 
 ## Common traps
 

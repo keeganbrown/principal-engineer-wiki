@@ -19,7 +19,7 @@ In a running system, you can't change everything at once. During a deploy, old a
 2. **Migrate** — move every reader and writer to the new thing, and copy existing data across.
 3. **Contract** — once nothing uses the old thing, remove it.
 
-Between steps, the system is always fully working. Until you stop writing the old shape, any step can be rolled back by redeploying the previous version. The contract step deletes the old thing, so it's a [[reversible-decisions|one-way door]] — measure before you take it.
+Between steps, the system is always fully working. Until you stop writing the old shape, any step can be rolled back by redeploying the previous version. Stopping writes to the old shape (step 4) is the real [[reversible-decisions|one-way door]], so measure before you take it. Dropping the old thing (step 5) just makes that permanent.
 
 The technique is also called *parallel change*, a name from Danilo Sato's 2014 article on martinfowler.com.
 
@@ -39,7 +39,7 @@ Renaming a database column `name` → `fullName`, in five deploys:
 
 **Migrate**
 
-2. **Backfill.** Copy `name` into `fullName` for existing rows, in batches to avoid locking the table.
+2. **Backfill.** Once step 1 is on every server, copy `name` into `fullName` in batches, each one a single in-database statement: `UPDATE users SET fullName = name WHERE fullName IS NULL AND id BETWEEN …`.
 3. **Switch reads.** Deploy code that reads `fullName`. Keep writing both, so you can still roll back.
 4. **Stop writing the old.** Deploy code that writes only `fullName`. From here, rolling back would read stale data from `name`.
 
@@ -50,7 +50,7 @@ Renaming a database column `name` → `fullName`, in five deploys:
 Guidelines:
 
 - **Don't merge two steps into one deploy.** That recreates the breaking change.
-- **Measure before contracting.** Use query logs or usage metrics to confirm nothing still touches the old thing.
+- **Measure before you stop writing the old.** Use query logs or usage metrics to confirm nothing still reads it; after step 4, anything that does reads stale data.
 - **Make backfills safe to rerun.** Each batch should be [[idempotency|idempotent]] — running it twice has the same effect as once — and resumable after a failure.
 - **Decide on purpose whether to contract.** For a public API, usage of an old field may never reach zero. Keeping a cheap deprecated field forever is a legitimate choice — make it deliberately and record it.
 
@@ -58,9 +58,11 @@ Guidelines:
 
 The hard part of the rename isn't the steps — it's the writes that happen *during* them.
 
-The backfill copies row 42's `name` at 10:00. At 10:01, a user edits their profile, and the request lands on a server still running *old* code, which writes only `name`. Row 42's `fullName` is now stale. This is exactly why step 1 dual-writes: once every server writes both columns, edits during the backfill update both, and the backfill can't miss them.
+Suppose the team starts the backfill before step 1 has reached every server. The backfill copies row 42's `name` at 10:00. At 10:01, a user edits their profile on a server still running *old* code, which writes only `name` — and row 42's `fullName` is now stale for good. That's why the backfill waits until the dual write is fully deployed.
 
-The team also finds a nightly report, owned by the finance team, that queries `name` directly. It isn't in any codebase they own. They only spot it because they checked database query logs before step 5.
+The backfill's form matters too. If it read `name` in application code and wrote `fullName` a moment later, it could overwrite a dual-written edit made in between. A single `UPDATE … WHERE fullName IS NULL` per batch is atomic per row, safe to rerun, and never touches a value the dual write already set.
+
+The team also finds a nightly report, owned by the finance team, that queries `name` directly; it isn't in any codebase they own. They spot it in database query logs *before* step 4. Had they found it after, the report would already have been showing stale names.
 
 ## Common traps
 
@@ -79,4 +81,4 @@ If you control every reader and writer and can take a short downtime — an inte
 - [[feature-flags]] — a flag can control the read switch in step 3.
 - [[strangler-fig]] — the same idea, applied to replacing a whole system.
 - [[contract-testing]] — tells you when a change would break a consumer.
-- [[reversible-decisions]] — every step but the last keeps the change reversible.
+- [[reversible-decisions]] — every step before you stop writing the old shape is reversible.

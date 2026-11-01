@@ -42,7 +42,7 @@ Even a correct guess costs delay and carry. A wrong guess — which is common �
 
 You're building export-to-CSV. A teammate suggests a generic `Exporter` interface with pluggable formats (CSV, JSON, XML, Parquet).
 
-**YAGNI response:** write an `exportCsv(rows)` function with tests. Six months later, a customer asks for JSON, so you add `exportJson(rows)` next to it. Two plain functions are fine; the wiki's rule is to extract a shared abstraction for look-alike code at the third copy ([[dry|the rule of three]]). Meanwhile you never wasted time on XML or Parquet, which nobody asked for.
+**YAGNI response:** write an `exportCsv(rows)` function with tests. Six months later, a customer asks for JSON, so you add `exportJson(rows)` next to it. Two plain functions are fine; the rule of thumb is to extract a shared abstraction for look-alike code at the third copy ([[dry|the rule of three]]). Meanwhile you never wasted time on XML or Parquet, which nobody asked for.
 
 ## Common traps
 
@@ -62,7 +62,7 @@ Most decisions are two-way doors, and there YAGNI applies.
 ## Related
 
 - [[kiss]] — keep the solution simple; YAGNI keeps the *scope* simple.
-- [[dry]] — has the wiki's rule for *when* to extract an abstraction.
+- [[dry]] — when to extract an abstraction.
 - [[reversible-decisions]] — where YAGNI stops applying.
 - [[api-versioning]] — public API shapes are a classic one-way door.
 - [[test-driven-development]] — the safety net that makes deferring decisions cheap.

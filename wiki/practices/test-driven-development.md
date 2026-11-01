@@ -75,7 +75,7 @@ Each step is tiny, and the boundary case (`100`) is pinned down by a test.
 
 Exploratory spikes — where you don't yet know what you're building — are often better done without tests, then thrown away and rebuilt with TDD. Visual design, performance tuning, and integration with poorly documented systems may need other feedback loops (screenshots, benchmarks, [[contract-testing|contract tests]]).
 
-In untested legacy code, TDD often stalls because there are no **seams** — places where you can swap in a test double without editing the code. Start with **characterization tests** that pin down what the code does today, then test-drive your changes.
+In untested legacy code, TDD often stalls because there are no **seams** — places where you can swap in a test double (a mock, fake, or stub) without editing the code. Start with **characterization tests** that pin down what the code does today, then test-drive your changes.
 
 ## Related
 

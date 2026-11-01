@@ -33,7 +33,7 @@ The flag types below follow Pete Hodgson's widely used taxonomy, published on ma
 - **Rollouts can be gradual.** Turn a feature on for 1% of users, watch the metrics, then 10%, 50%, 100%.
 - **Behavior rolls back fast.** Flipping a flag takes seconds; redeploying takes minutes or more. But it rolls back *code paths*, not *side effects*: anything the new path wrote, sent, or charged stays done. Make sure the old path can read data the new path produced.
 - **Experiments become cheap.** Show variants to different groups and measure which works better (A/B testing).
-- **Releases stay reversible.** A flag turns many release decisions into [[reversible-decisions|two-way doors]].
+- **Releases stay reversible.** A flag turns many release decisions into [[reversible-decisions|two-way doors]] — choices you can cheaply undo.
 
 ## How to apply it
 
@@ -51,8 +51,8 @@ Guidelines:
 - **Give every release flag an owner and an expiry date.** Delete it soon after full rollout.
 - **Keep flag checks at the edges.** One decision point, not checks scattered through the code.
 - **Test both paths.** Keep tests for each side while the flag exists ([[testing-pyramid]]).
-- **Choose a safe fallback.** When the flag service is unreachable, use the last known value, cached locally. Without one, fall back to what's safe to show everyone: *the old path* for a release flag, *the feature still running* for a kill switch, and *access denied* for a permission flag — never fail open on access.
-- **Treat the flag service as a production dependency.** Monitor it and cache its values.
+- **Choose a safe fallback.** When the flag service is unreachable, use the last known value, cached locally. Without one, fall back to what's safe to show everyone: *the old path* for a release flag, *the feature still running* for a kill switch, and *access denied* for a permission flag — never *fail open* by granting access because the check couldn't run.
+- **Treat the flag service as a production dependency.** Monitor it and cache its values. A cached value can't be changed while the service is down, so give critical kill switches a path that doesn't depend on it, such as an environment variable or a config push.
 - **Watch each rollout step.** Pair rollouts with dashboards ([[observability]]).
 
 ## Example

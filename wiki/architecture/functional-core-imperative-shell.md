@@ -60,15 +60,15 @@ function overdueReminders(invoices, today):
 # shell: thin and dumb
 function remindOverdueInvoices():
     for inv in overdueReminders(db.loadUnpaid(), clock.today()):
-        if db.markReminded(inv.id, onlyIfNotAlready=True):   # conditional write
+        if db.markRemindedIfStillDue(inv.id):   # only if still unpaid and not yet reminded
             email.send(inv.customer, "Your invoice is overdue")
 ```
 
 Every edge case of "who gets a reminder?" is now a fast test of `overdueReminders`.
 
-Note the conditional write. The core decides on a *snapshot* of the data. If two copies of the job run at once, both see the same unpaid invoice. Marking it reminded "only if not already" — and sending the email only if that succeeded — keeps customers from getting two emails.
+Note the conditional write. The core decides on a *snapshot* of the data. If two copies of the job run at once, both see the same unpaid invoice. Marking it reminded only if it's still unpaid and not yet reminded — and sending the email only if that succeeded — keeps customers from getting two emails, or one after they've paid.
 
-The fix has a price: if the process crashes between the mark and the send, that customer gets no reminder at all. For a reminder, that's acceptable. For an effect that must happen, record it durably in the same write and send it from a relay ([[transactional-outbox]]).
+The fix has a price: if the process crashes between the mark and the send, that customer gets no reminder at all. For a reminder, that's acceptable. For an effect that must happen, record it durably in the same write and send it from a relay ([[transactional-outbox]]) — which brings back possible duplicates, so the sender must be idempotent.
 
 ## Common traps
 
@@ -85,5 +85,5 @@ Some logic is inherently interleaved with I/O — e.g., "keep fetching pages unt
 
 - [[hexagonal-architecture]] — the two fit together: in a hexagon, the *use case* is a small shell that calls ports, and the *domain rules* it calls are the functional core.
 - [[separation-of-concerns]] — this pattern is separation between deciding and doing.
-- [[test-driven-development]] — a pure core makes TDD fast and pleasant.
+- [[test-driven-development]] — a pure core makes test-driven development (TDD) fast and pleasant.
 - [[testing-pyramid]] — pushes most of your tests to the cheap bottom layer.

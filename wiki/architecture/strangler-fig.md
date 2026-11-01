@@ -48,7 +48,7 @@ The strangler fig approach:
 - **Protect the new system's model.** An **anti-corruption layer** — a translation module between old and new — keeps legacy concepts out ([[domain-driven-design]]).
 - **Handle data carefully.** Decide which system owns each piece of data during the transition. Sync with events or change-data-capture (CDC), which streams one database's changes to another ([[transactional-outbox]]).
 - **Shift traffic gradually.** Use [[feature-flags]] or percentage routing so you can route back quickly — though data the new system wrote while live still has to reach the old one.
-- **Compare outputs.** For critical logic, run old and new side by side ("shadow mode") and diff the results before switching.
+- **Compare outputs.** For critical logic, run old and new side by side ("shadow mode") and diff the results before switching. Shadow only reads and calculations, or stub the new system's side effects — on a write path, shadowing would send every email and charge twice.
 - **Actually delete the old code.** Track progress by what's been turned off, not just what's been built.
 
 ## Example
