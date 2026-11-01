@@ -11,46 +11,54 @@ tags: [maintainability, planning, communication]
 
 ## The idea
 
-Ward Cunningham coined the metaphor. When you ship code that isn't quite right — to hit a deadline, or because you didn't yet understand the problem — you're borrowing. The **principal** is the work needed to fix it. The **interest** is the extra effort every future change costs because the code is harder to work with.
+When you ship code that isn't quite right — to hit a deadline, or because you didn't yet understand the problem — you're borrowing:
+
+- The **principal** is the work needed to fix it properly.
+- The **interest** is the extra effort every future change costs because the code is harder to work with.
 
 Debt isn't automatically bad. Like a mortgage, it can be a smart investment. The problem is debt you didn't know you took on, or never pay back.
 
-Martin Fowler's **debt quadrant** is a helpful lens:
+Martin Fowler's **debt quadrant**:
 
 | | Reckless | Prudent |
 | --- | --- | --- |
 | **Deliberate** | "We don't have time for design." | "Ship now, fix after launch — we've noted it." |
 | **Inadvertent** | "What's layering?" | "Now we know how we *should* have built it." |
 
-Prudent debt is normal. Reckless debt is a problem to address.
+*Deliberate* means you knew you were borrowing; *inadvertent* means you didn't. *Prudent* debt is a reasonable trade; *reckless* debt comes from ignoring good practice. Prudent debt is normal. Reckless debt is what to stamp out.
+
+Ward Cunningham coined the metaphor in 1992.
 
 ## Why it matters
 
 Interest compounds. A codebase with heavy debt gets slower to change every quarter, until simple features take weeks and nobody wants to touch certain files. Velocity collapses gradually, so it's easy to miss until it's severe.
 
-For principal engineers, a key skill is **translating debt into business terms** — risk, delay, cost — so it can be prioritized alongside features.
+As a principal engineer, your job is to **translate debt into business terms** — risk, delay, cost — so the business can weigh it against features.
 
 ## How to apply it
 
 - **Make it visible.** Keep a debt register (tickets labeled `tech-debt`, or a short doc) with the *impact* of each item.
-- **Pay interest where you work.** Follow the "boy scout rule": leave the code a bit better than you found it.
-- **Prioritize by interest rate.** Fix debt in code that changes often. Debt in a stable, rarely touched module can wait forever.
-- **Budget for it.** Many teams reserve ~10–20% of capacity for paying down debt continuously.
-- **Record deliberate debt** at the time you take it: what shortcut, why, and the trigger for repaying it.
+- **Pay down principal where you work.** Follow the "boy scout rule": leave the code a bit better than you found it.
+- **Prioritize by interest rate.** Fix debt in code that changes often first.
+- **Watch for debt that carries risk, not interest.** A rarely touched module can wait — *unless* it runs on an unsupported runtime, has unpatched dependencies, or only one person understands it. That debt comes due on someone else's schedule: a security advisory, a forced upgrade, a resignation.
+- **Find the debt nobody recorded.** Look for **hotspots**: files with high churn and frequent bug fixes. Measure lead time for changes there before and after paying debt down, to show it worked.
+- **Budget for it.** Many teams reserve roughly 10–20% of capacity for paying down debt continuously.
+- **Record deliberate debt when you take it:** what shortcut, why, and what will trigger repaying it.
 - **Frame it in outcomes.** Not "refactor the order module," but "cut time-to-ship for checkout features from 2 weeks to 3 days."
 
 ## Example
 
-A team hard-codes support for one currency to launch in the US on time — a prudent, deliberate choice, noted in an ADR with the trigger "before any international launch."
+A team hard-codes support for one currency to launch in the US on time — a prudent, deliberate choice. They note it in an architecture decision record ([[architecture-decision-records|ADR]]) with the trigger "before any international launch."
 
-A year later, international expansion is on the roadmap. Because the debt was recorded and scoped, the team can estimate the payoff work accurately and schedule it before the launch, rather than discovering it mid-project.
+A year later, international expansion is on the roadmap. Because the debt was recorded and scoped, the team estimates the payoff work accurately and schedules it before the launch, instead of discovering it mid-project.
 
 ## Common traps
 
-- **"Debt" as a label for code you don't like.** Debt should have measurable interest: bugs, slowness, risk.
-- **The big rewrite.** Halting features to rewrite everything usually fails. Pay down incrementally instead.
+- **"Debt" as a label for code you don't like.** Debt should have measurable interest or risk: bugs, slowness, exposure.
+- **The big rewrite.** Halting features to rewrite everything usually fails. Pay down incrementally instead ([[strangler-fig]]).
 - **Invisible debt.** If only engineers know about it, it will never be prioritized.
 - **Never taking any.** Refusing all shortcuts can be its own waste. Speed sometimes really matters.
+- **Forgotten scaffolding.** Stale [[feature-flags]], dead code paths, and abandoned migrations are debt too.
 
 ## When it doesn't apply
 

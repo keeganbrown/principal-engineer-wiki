@@ -1,37 +1,39 @@
 ---
 title: Architecture Decision Records (ADRs)
 category: practices
-summary: Write a short document for each significant technical decision — the context, the choice, and the consequences — so future teammates know why things are the way they are.
+summary: Write a short record of each significant technical decision — the context, the choice, and the consequences — so future teammates know why things are the way they are.
 tags: [documentation, decision-making, communication]
 ---
 
 # Architecture Decision Records (ADRs)
 
-> **In one sentence:** Write a short document for each significant technical decision — the context, the choice, and the consequences — so future teammates know why things are the way they are.
+> **In one sentence:** Write a short record of each significant technical decision — the context, the choice, and the consequences — so future teammates know why things are the way they are.
 
 ## The idea
 
-Every codebase is full of decisions: why Postgres and not Mongo, why events instead of direct calls, why this library. Months later, nobody remembers the reasons. New engineers either fear changing anything or change things without understanding the trade-offs.
+Every codebase is full of decisions: why Postgres and not MongoDB, why events instead of direct calls, why this library. Months later, nobody remembers the reasons. New engineers either fear changing anything or change things without understanding the trade-offs.
 
-An **ADR** is a one-to-two-page record of one decision. They're numbered, stored in the repo next to the code (e.g., `docs/adr/0007-use-postgres.md`), and never deleted — only superseded by newer ADRs.
+An **architecture decision record (ADR)** is a one-to-two-page record of one decision. ADRs are numbered, stored in the repo next to the code (e.g., `docs/adr/0007-use-postgres.md`), and never deleted — only superseded by newer ADRs.
 
-The format was popularized by Michael Nygard in 2011 and remains one of the cheapest, highest-value habits a team can adopt.
+**ADRs and design docs do different jobs.** A [[design-docs|design doc]] is for *deliberation*: exploring a big problem and getting feedback. An ADR is the *record*: what was decided and why, in a page. A big design doc usually ends in one or more ADRs. Many decisions are too small for a design doc but still deserve an ADR.
+
+Michael Nygard popularized the format in a 2011 blog post.
 
 ## Why it matters
 
 - **Preserves the "why."** Code shows *what* was built; ADRs explain *why*, including options rejected.
 - **Speeds onboarding.** Reading ten ADRs gives a newcomer the history of the architecture in an hour.
-- **Improves decisions.** Writing forces clear thinking. Many bad ideas die in the "Consequences" section.
-- **Enables async decision-making.** A proposed ADR can be reviewed like a pull request across time zones.
+- **Makes decisions transparent.** Anyone can see what was decided, by whom, and on what basis.
+- **Cheap.** A good ADR takes under an hour to write.
 
 ## How to apply it
 
-Use a simple template:
+Nygard's template, plus an "Options considered" section (as in the popular MADR variant):
 
 ```
 # ADR 0007: Use PostgreSQL for the order service
 
-Status: Accepted (2026-03-14)    # or Proposed / Superseded by ADR 0012
+Status: Accepted (2026-03-14)  — or: Proposed, Superseded by ADR 0012
 
 ## Context
 What problem are we solving? What constraints and forces apply?
@@ -47,21 +49,31 @@ What becomes easier, what becomes harder, what we must now do.
 ```
 
 Guidelines:
-- Write one when a decision is **costly to reverse** or **affects multiple teams**.
-- Keep it short. If it's more than two pages, you may be documenting several decisions.
-- Propose it as a PR. Discussion happens in review; the merged ADR is the record.
-- Never edit an accepted ADR's decision. Write a new ADR that supersedes it.
+- **Write one for every significant decision.** "Significant" means costly to reverse, or affecting other teams ([[reversible-decisions]]).
+- **Write it while the decision is live.** Reasons reconstructed months later are guesses.
+- **Keep it short.** If it's more than two pages, you may be recording several decisions.
+- **Propose it as a pull request (PR).** Discussion happens in review; the merged ADR is the record.
+- **Supersede, don't edit.** Never change an accepted ADR's decision; write a new one that replaces it.
 
 ## Example
 
-ADR 0012, "Move from synchronous REST calls to events for order fulfillment," notes the context (fulfillment outages were taking down checkout), the options (retries with circuit breakers, a queue, a full event bus), the decision (publish `OrderPlaced` events to a queue), and consequences (fulfillment becomes eventually consistent; we need idempotent consumers and a dead-letter queue). Two years later, a new engineer asks "why is this async?" — and the answer is one link away.
+ADR 0012, "Move order fulfillment from synchronous calls to events":
+
+- **Context:** when the fulfillment service was down, checkout failed too.
+- **Options:** add [[retries-and-timeouts|retries]] and a [[circuit-breaker]]; put a queue between them; adopt a full event bus.
+- **Decision:** checkout publishes an `OrderPlaced` event to a queue ([[event-driven-architecture]]).
+- **Consequences:** fulfillment now lags checkout by a few seconds; consumers must handle duplicate messages safely ([[idempotency]]); failed messages go to a dead-letter queue (a holding queue for messages that keep failing) that someone must watch.
+
+Two years later, a new engineer asks "why is this async?" — and the answer is one link away.
 
 ## Common traps
 
-- **Writing ADRs after the fact, for everything.** They become busywork. Focus on significant decisions as they happen.
+- **Writing them for everything.** Small, easily reversed decisions turn ADRs into busywork.
+- **Backfilling everything at once.** When adopting ADRs on an existing system, backfill only the three to five decisions people most often ask "why?" about.
 - **Hiding them in a wiki** far from the code, where they go stale and unseen.
 - **Skipping rejected options.** The alternatives are often the most valuable part.
-- **Treating ADRs as permission slips.** They record decisions; they don't replace conversation.
+- **Using an ADR to skip the conversation.** Filing an ADR doesn't make a decision agreed. Talk to the affected teams first.
+- **Quiet abandonment.** Most ADR habits fade within months. A quick health check: do recent significant decisions have ADRs, and do people link to them in reviews?
 
 ## When it doesn't apply
 
@@ -69,8 +81,8 @@ Small, easily reversed decisions — a variable name, a minor library inside one
 
 ## Related
 
-- [[yagni]] — ADRs are a good place to note "we chose not to build this yet."
+- [[design-docs]] — explore the problem in a design doc; record the outcome in an ADR.
+- [[reversible-decisions]] — one-way doors are the decisions most worth recording.
 - [[conways-law]] — ADRs are a key communication channel across teams.
 - [[technical-debt]] — record deliberate shortcuts so they can be repaid later.
 - [[code-review]] — propose ADRs as PRs to get the same review benefits.
-- [[design-docs]] — explore the problem in a design doc; record the outcome in an ADR.

@@ -11,7 +11,7 @@ tags: [testing, quality, ci]
 
 ## The idea
 
-Not all tests are equal. They trade off **speed and precision** against **realism**:
+Tests trade **speed and precision** against **realism**:
 
 ```
         /\        End-to-end   — few; slow; test whole user journeys
@@ -21,11 +21,13 @@ Not all tests are equal. They trade off **speed and precision** against **realis
     /--------\    Unit         — many; fast; test small pieces of logic
 ```
 
-- **Unit tests** check one function or module in isolation. Milliseconds each. When one fails, you know exactly where.
-- **Integration tests** check that components work together — your code against a real database, a real queue, or another module.
+- **Unit tests** check one unit of *behavior* — often several real objects working together — isolated only from slow or unpredictable things like the network, the clock, or the database. Milliseconds each. When one fails, you know where to look.
+- **Integration tests** check that your code works with real infrastructure or other modules: a real database, a real queue, a real HTTP client.
 - **End-to-end (E2E) tests** drive the whole system like a user would, through the UI or public API.
 
 The pyramid shape says: most of your confidence should come from the cheap, fast layer at the bottom.
+
+Mike Cohn popularized the pyramid in *Succeeding with Agile* (2009).
 
 ## Why it matters
 
@@ -35,22 +37,22 @@ A suite that's *only* unit tests misses the bugs that live between components: w
 
 ## How to apply it
 
-- Put business logic where unit tests can reach it without I/O — then test it thoroughly there.
-- Write integration tests for each **boundary**: database queries, message formats, external API clients.
-- Keep E2E tests for a few **critical user journeys**: sign up, checkout, login. Not every edge case.
-- Use **contract tests** between services so each side can verify the API without spinning up the other.
-- Track suite time. If CI is creeping past ~10 minutes, find the slow tests and push them down the pyramid.
-- Quarantine and fix flaky tests fast. A flaky test teaches people to ignore red builds.
+- **Put business logic where unit tests can reach it** without I/O, then test it thoroughly there.
+- **Write integration tests for each boundary:** database queries, message formats, external API clients.
+- **Keep E2E tests for a few critical user journeys** — sign up, checkout, login. Not every edge case.
+- **Use contract tests between services,** so each side can verify the API without running the other ([[contract-testing]]).
+- **Track suite time.** If CI is creeping past ~10 minutes, find the slow tests and push them down the pyramid.
+- **Fix flaky tests fast.** A flaky test teaches people to ignore red builds.
 
 ## Example
 
 Testing a discount feature:
 
 - **Unit (20 tests):** `calculateDiscount` with every coupon type, expiry, stacking rule, and rounding edge case.
-- **Integration (3 tests):** coupon repository saves and loads correctly against a real test database; the checkout API returns the discounted total in its JSON.
+- **Integration (2 tests):** the coupon repository saves and loads correctly against a real test database; the checkout API returns the discounted total in its JSON.
 - **E2E (1 test):** a user applies a coupon in the browser and sees the new total.
 
-Total runtime: a few seconds for the first 23, maybe 30 seconds for the last one.
+The first 22 run in a few seconds; the last takes about 30 seconds.
 
 ## Common traps
 
@@ -61,11 +63,17 @@ Total runtime: a few seconds for the first 23, maybe 30 seconds for the last one
 
 ## When it doesn't apply
 
-The ideal shape varies. A thin CRUD service with little logic may get more value from integration tests (sometimes called a "testing trophy"). A UI-heavy app may lean on component tests. The principle holds, though: prefer the fastest test that gives you real confidence.
+The ideal shape depends on where your risk lives:
+
+- **Spotify's "testing honeycomb"** (2018): for microservices with little internal logic, most risk is in how the service talks to its database and neighbors, so integration tests form the bulk.
+- **Kent C. Dodds' "testing trophy"** (2018): for frontend apps, a base of static checks (types, linting), a thick middle of integration tests, and fewer pure unit tests. Here, "integration" often means **component tests** — rendering one UI component with its real children and checking what the user sees.
+
+The principle holds in every shape: prefer the fastest test that gives you real confidence.
 
 ## Related
 
 - [[test-driven-development]] — produces a strong base of unit tests.
+- [[contract-testing]] — replaces many slow E2E tests between services.
 - [[hexagonal-architecture]] — makes it easy to unit-test logic and integration-test adapters separately.
 - [[functional-core-imperative-shell]] — pushes most logic into the cheap-to-test layer.
-- [[feature-flags]] — let you test in production safely, complementing the pyramid.
+- [[feature-flags]] — let you test both code paths, and test in production safely.
