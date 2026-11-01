@@ -16,9 +16,8 @@ Each reviewer checked its pass-1 findings against the new text. Tags such as
 
 | Severity | Count |
 | --- | --- |
-| must-fix | 2 |
-| should-fix | 99 |
-| consider | 82 |
+| must-fix | 2 (both in new articles) |
+| should-fix / consider | Not tallied exactly. Duplicates are merged per article below. About half of them are bullet-style (lead-in) fixes that the convention rulings would settle. |
 
 ### How pass 1 held up
 
