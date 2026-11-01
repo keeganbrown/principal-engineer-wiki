@@ -31,6 +31,24 @@ MAX_WORDS = 1200
 
 WIKILINK = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]*)?\]\]")
 HEADING = re.compile(r"^## (.+?)\s*$", re.MULTILINE)
+CODE_BLOCK = re.compile(r"^```.*?^```", re.MULTILINE | re.DOTALL)
+BULLET_LEAD_IN = re.compile(r"^\s*(?:[-*]|\d+\.)\s+(\*\*.+?\*\*)(.*)$", re.MULTILINE)
+CLAUSE_ENDINGS = (".", "?", "!")
+CLOSING_QUOTES = "\"'”’"
+DEFINITION_SEPARATOR = " — "
+MAINTAINER_NOTE = "this article owns"
+
+
+def _bad_lead_ins(body: str) -> List[str]:
+    """Bold bullet lead-ins must be complete clauses, except in definition lists."""
+    prose = CODE_BLOCK.sub("", body)
+    bad = []
+    for lead_in, rest in BULLET_LEAD_IN.findall(prose):
+        is_clause = lead_in[2:-2].rstrip().rstrip(CLOSING_QUOTES).endswith(CLAUSE_ENDINGS)
+        is_definition = rest.startswith(DEFINITION_SEPARATOR)
+        if not (is_clause or is_definition):
+            bad.append(lead_in)
+    return bad
 
 
 @dataclass
@@ -96,6 +114,12 @@ def lint_article(article: Article) -> List[str]:
     expected_order = [s for s in REQUIRED_SECTIONS if s in article.sections]
     if present_in_order != expected_order:
         problems.append(f"{article.slug}: required sections are out of order")
+
+    for lead_in in _bad_lead_ins(article.body):
+        problems.append(f"{article.slug}: bold lead-in must end with a period: '{lead_in}'")
+
+    if MAINTAINER_NOTE in article.body.lower():
+        problems.append(f"{article.slug}: maintainer note in reader text ('{MAINTAINER_NOTE}')")
 
     words = len(article.body.split())
     if words > MAX_WORDS:

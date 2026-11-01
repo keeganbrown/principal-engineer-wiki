@@ -89,6 +89,42 @@ class LintArticleTest(unittest.TestCase):
         problems = lint_article(parse_article("kiss", "principles", make_article(sections=swapped)))
         self.assertIn("kiss: required sections are out of order", problems)
 
+    def test_accepts_bold_lead_ins_that_are_complete_clauses(self):
+        text = make_article(body_links=(
+            "[[yagni]]\n\n"
+            "- **Bound every queue.** Unbounded ones crash.\n"
+            "- **Which framework?** A two-way door.\n"
+            "1. **Red** — write a failing test.\n"
+            "- Plain bullet with **a defined term** inside.\n"
+            '- **"Just add a queue."** It only delays failure.\n'
+            '- **Ask: "What would undoing this cost?"** Then decide.\n'
+        ))
+        self.assertEqual(lint_article(parse_article("kiss", "principles", text)), [])
+
+    def test_reports_bold_lead_in_ending_mid_sentence(self):
+        text = make_article(body_links="[[yagni]]\n\n- **Keep tests fast** so people run them.\n")
+        problems = lint_article(parse_article("kiss", "principles", text))
+        self.assertIn(
+            "kiss: bold lead-in must end with a period: '**Keep tests fast**'", problems
+        )
+
+    def test_reports_bold_lead_in_ending_with_colon(self):
+        text = make_article(body_links="[[yagni]]\n\n2. **Integration (2 tests):** the repo saves.\n")
+        problems = lint_article(parse_article("kiss", "principles", text))
+        self.assertIn(
+            "kiss: bold lead-in must end with a period: '**Integration (2 tests):**'",
+            problems,
+        )
+
+    def test_ignores_bold_lead_ins_inside_code_blocks(self):
+        text = make_article(body_links="[[yagni]]\n\n```\n- **not markdown** here\n```\n")
+        self.assertEqual(lint_article(parse_article("kiss", "principles", text)), [])
+
+    def test_reports_maintainer_notes_in_reader_text(self):
+        text = make_article(body_links="[[yagni]] This article owns the rule of three.")
+        problems = lint_article(parse_article("kiss", "principles", text))
+        self.assertIn("kiss: maintainer note in reader text ('this article owns')", problems)
+
     def test_reports_article_that_is_too_long(self):
         text = make_article(extra_words=2000)
         problems = lint_article(parse_article("kiss", "principles", text))
