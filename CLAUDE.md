@@ -60,6 +60,51 @@ get it on the first read.
 - Second person, active voice, no filler ("It is important to note that…").
 - Use the **In one sentence** callout under the H1 — it should match `summary`.
 
+### House conventions
+
+Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
+
+- **Every article stands alone.** Expand every acronym and define every
+  term of art at first use *in that article*, even if another article
+  defines it. Link to the owning article where one exists.
+- **Credit after the idea.** Attribution (who, where, when) goes at the end
+  of "The idea", never as the opening sentence.
+- **Titles:** `Full Name (ACRONYM)` when there's an acronym, e.g.
+  `Command Query Responsibility Segregation (CQRS)`.
+- **Bullets:** a bold lead-in is a short, complete clause ending in a
+  period (`**Bound every queue.** An unbounded…`), or no bold at all.
+  Don't bold mid-sentence.
+- **Pseudocode:** Python-like, colon-and-indent, no braces —
+  `interface Clock:` / `    now()`. Comments with `#`.
+- **Examples show the hard part.** If the happy path hides a race, a
+  partial failure, or a cost, the example says so.
+- **Benefits come with their limits.** Every claimed benefit gets its
+  caveat in the same article.
+- **Canonical terms:**
+  - *trace ID* (mention "also called a correlation ID" once) — follows one
+    request. Distinct from an *idempotency key*, which follows one
+    *intended action* across retries.
+  - *group by domain* (not "feature" or "business capability").
+  - *paved road* (not "golden path").
+  - *eventual consistency*, *change-data-capture (CDC)*, *pull request (PR)*.
+- **Concept owners.** One article explains a cross-cutting idea; the rest
+  give one sentence and link:
+
+  | Concept | Owner |
+  | --- | --- |
+  | When to abstract (rule of three) | `dry` |
+  | Why group by domain | `coupling-and-cohesion` |
+  | How to find domain boundaries | `domain-driven-design` |
+  | Shared-database coupling | `coupling-and-cohesion` |
+  | Consistency models, staleness UX | `cap-theorem` |
+  | Ports, adapters, dependency inversion | `hexagonal-architecture` |
+  | Timeouts, retries, backoff, jitter | `retries-and-timeouts` |
+  | Outbox, CDC | `transactional-outbox` |
+  | Expand-and-contract migrations | `expand-and-contract` |
+  | Contract tests | `contract-testing` |
+  | One-way vs two-way doors | `reversible-decisions` |
+  | Design docs = deliberation; ADRs = the record | `design-docs` / `architecture-decision-records` |
+
 ## Workflows
 
 **Add an article:** copy `templates/article.md` → fill it in → add it to
