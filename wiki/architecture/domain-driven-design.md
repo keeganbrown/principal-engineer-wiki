@@ -56,7 +56,7 @@ The split takes several quarters. The hardest part isn't code — it's agreeing 
 ## Common traps
 
 - **Tactical-only DDD.** Adding "repositories" and "aggregates" without doing the strategic work misses the point.
-- **Contexts drawn around technology** (a "database context") instead of business capabilities.
+- **Contexts drawn around technology** (a "database context") instead of domains.
 - **One canonical enterprise model.** The urge to create a single "true" `Customer` for the whole company is exactly what DDD warns against. ([[dry]] makes the same point from the other side: don't share domain-model libraries across services.)
 - **Huge aggregates.** Keep aggregates small. A large one means many users try to change the same object at once, and they block each other.
 

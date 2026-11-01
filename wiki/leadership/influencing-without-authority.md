@@ -25,26 +25,31 @@ The best technical idea is worthless if nobody adopts it. Many senior engineers 
 
 ## How to apply it
 
-- **Start by listening.** Before proposing a change, understand each team's goals, constraints, and pain. People back solutions to problems *they* feel.
-- **Frame in their terms.** To a product manager: faster delivery. To a director: risk and cost. To engineers: fewer pages at 3 a.m. Same proposal, different "why."
-- **Write it down.** A clear design doc travels further than any meeting and lets people think on their own time.
-- **Socialize before you decide.** Talk one-on-one with key stakeholders before the big review. No one should be surprised in the meeting.
+**Before proposing:**
+- **Start by listening.** Understand each team's goals, constraints, and pain. People back solutions to problems *they* feel.
+- **Frame it in their terms.** To a product manager: faster delivery. To a director: risk and cost. To engineers: fewer pages at 3 a.m. Same proposal, different "why."
+- **Pre-wire key stakeholders.** Talk one-on-one with the people most affected before the big review, so no one is surprised. Use these conversations to surface objections early — not to settle the decision before the open review. Record what changed as a result.
+
+**While driving it:**
+- **Write it down.** A clear [[design-docs|design doc]] travels further than any meeting and lets people think on their own time.
+- **Make the right path the easy one.** Build a [[paved-roads|paved road]] — a template, library, or automated check that makes the good way the default — instead of issuing a mandate. Then maintain it; an abandoned paved road costs more credibility than never building one.
 - **Give credit generously** and share ownership. Ideas spread faster when others feel they co-own them.
-- **Make the right thing the easy thing.** Paved roads — templates, libraries, linters, golden paths — beat mandates. If the good way is also the convenient way, adoption takes care of itself.
-- **Pick your battles.** Spend your credibility on decisions that are high-impact and hard to reverse. Let small things go.
-- **Disagree and commit.** When a decision goes the other way, say so once, clearly — then help it succeed.
 - **Build sponsors.** Find leaders who care about the outcome and can provide the authority you don't have.
+
+**Choosing your fights:**
+- **Spend credibility on one-way doors.** Save your energy for decisions that are high-impact and hard to reverse ([[reversible-decisions]]). Let small things go.
+- **Disagree and commit.** When a decision goes the other way, say so once, clearly — then help it succeed.
 
 ## Example
 
-A principal engineer wants all services to adopt structured logging and trace IDs. A memo mandating it would be ignored.
+A principal engineer wants all services to adopt structured logging and trace IDs ([[observability]]). A memo mandating it would be ignored.
 
 Instead, they:
 1. Interview on-call engineers and collect stories about painful incidents caused by missing logs.
 2. Write a short design doc framing the problem as "incident time," with data from recent postmortems.
-3. Build a drop-in logging library with one team that was eager for it, and measure their faster incident resolution.
-4. Share that team's results at an engineering all-hands — with that team presenting.
-5. Add the library to the service template so new services get it for free.
+3. Build a drop-in logging library with one team that was eager for it, and measure how much faster that team resolves incidents.
+4. Have that team present the results at an engineering all-hands.
+5. Add the library to the service template, with a named owner, so new services get it for free.
 
 Within two quarters, most teams have adopted it — and nobody was ordered to.
 
@@ -53,16 +58,18 @@ Within two quarters, most teams have adopted it — and nobody was ordered to.
 - **Being right loudly.** Winning a debate in public often loses the person.
 - **Borrowing authority** ("the VP wants this") too often. It works once and erodes your own credibility.
 - **Influence by exhaustion** — out-arguing people until they give up. They'll comply, not commit.
+- **Backchannel decisions.** Pre-wiring that turns the open review into theater loses the trust of everyone who wasn't consulted.
 - **Only influencing upward.** Trust from the engineers doing the work matters as much as trust from leadership.
 - **Never building anything.** Credibility needs occasional proof that your ideas work in practice.
 
 ## When it doesn't apply
 
-Some situations call for direct authority: security incidents, legal compliance, or an outage in progress. In those cases, be clear about who's deciding and why, then return to collaborative influence afterward. And if influence repeatedly fails on something critical, escalating through your sponsors is a legitimate, not a failed, move.
+Some situations call for direct authority: security incidents, legal compliance, or an outage in progress. Be clear about who's deciding and why, then return to collaborative influence afterward. And if influence repeatedly fails on something critical, escalating through your sponsors is legitimate, not a failure.
 
 ## Related
 
+- [[paved-roads]] — influence that scales without meetings.
 - [[design-docs]] — the primary tool for influence at scale.
+- [[reversible-decisions]] — where to spend your credibility.
 - [[conways-law]] — changing architecture often means changing how teams work together.
-- [[architecture-decision-records]] — makes decisions transparent so people can trust the process.
 - [[blameless-postmortems]] — modeling blamelessness is a form of cultural influence.
