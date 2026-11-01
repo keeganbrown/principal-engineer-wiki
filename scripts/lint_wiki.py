@@ -36,7 +36,13 @@ BULLET_LEAD_IN = re.compile(r"^\s*(?:[-*]|\d+\.)\s+(\*\*.+?\*\*)(.*)$", re.MULTI
 CLAUSE_ENDINGS = (".", "?", "!")
 CLOSING_QUOTES = "\"'”’"
 DEFINITION_SEPARATOR = " — "
-MAINTAINER_NOTE = "this article owns"
+MAINTAINER_NOTES = ("this article owns", "the wiki's rule")
+RELATED_OWNS = re.compile(r"\bowns\b", re.IGNORECASE)
+
+
+def _related_section(body: str) -> str:
+    _, _, after = body.partition("\n## Related")
+    return after
 
 
 def _bad_lead_ins(body: str) -> List[str]:
@@ -118,8 +124,11 @@ def lint_article(article: Article) -> List[str]:
     for lead_in in _bad_lead_ins(article.body):
         problems.append(f"{article.slug}: bold lead-in must end with a period: '{lead_in}'")
 
-    if MAINTAINER_NOTE in article.body.lower():
-        problems.append(f"{article.slug}: maintainer note in reader text ('{MAINTAINER_NOTE}')")
+    for note in MAINTAINER_NOTES:
+        if note in article.body.lower():
+            problems.append(f"{article.slug}: maintainer note in reader text ('{note}')")
+    if RELATED_OWNS.search(_related_section(article.body)):
+        problems.append(f"{article.slug}: maintainer note in Related ('owns')")
 
     words = len(article.body.split())
     if words > MAX_WORDS:

@@ -82,8 +82,15 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   - A term of art may be bolded once, mid-sentence, where it is defined.
 - **Paragraphs:** at most four sentences, including in Examples.
 - **Pseudocode:** Python-like, colon-and-indent, no braces —
-  `interface Clock:` / `    now()`. Identifiers in camelCase. Comments
-  with `#`.
+  `interface Clock:` / `    now()`. Identifiers in camelCase; constants
+  and enum values may be UPPER_CASE (`IN_PROGRESS`, `MAX_RETRIES`).
+  Comments with `#`.
+- **Recovery jobs state their limits.** Any sweeper, reconciler, relay,
+  replay, or backfill says (1) its time window or age threshold, (2) how
+  it stays idempotent and handles ordering, and (3) who owns it. If it
+  races with the normal path, the article says how the race resolves.
+- **Re-read the example after changing a rule.** Examples must obey the
+  article's own guidelines.
 - **Acronyms that never need expanding:** API, HTTP, URL, SQL, JSON, UI, ID.
   Everything else (CI, CRUD, PR, ADR, CDC, …) is expanded once per article.
 - **No maintainer notes in reader text.** Never write "this article owns…";

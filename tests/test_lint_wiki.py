@@ -125,6 +125,25 @@ class LintArticleTest(unittest.TestCase):
         problems = lint_article(parse_article("kiss", "principles", text))
         self.assertIn("kiss: maintainer note in reader text ('this article owns')", problems)
 
+    def test_reports_ownership_notes_in_related_lines(self):
+        text = make_article(body_links="[[yagni]]").replace(
+            "## Related\n\nSome text. [[yagni]]",
+            "## Related\n\n- [[yagni]] — owns the rule for when to abstract.",
+        )
+        problems = lint_article(parse_article("kiss", "principles", text))
+        self.assertIn("kiss: maintainer note in Related ('owns')", problems)
+
+    def test_allows_owns_outside_related(self):
+        text = make_article(body_links="[[yagni]] Each service owns its own data.")
+        text = text.replace("## Related\n\nSome text. [[yagni]] Each service owns its own data.",
+                            "## Related\n\n- [[yagni]] — scope.")
+        self.assertEqual(lint_article(parse_article("kiss", "principles", text)), [])
+
+    def test_reports_wikis_rule_phrasing(self):
+        text = make_article(body_links="[[yagni]] The wiki's rule is three.")
+        problems = lint_article(parse_article("kiss", "principles", text))
+        self.assertIn("kiss: maintainer note in reader text ('the wiki's rule')", problems)
+
     def test_reports_article_that_is_too_long(self):
         text = make_article(extra_words=2000)
         problems = lint_article(parse_article("kiss", "principles", text))
