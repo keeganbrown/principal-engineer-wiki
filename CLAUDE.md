@@ -70,12 +70,29 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
 - **Credit after the idea.** Attribution (who, where, when) goes at the end
   of "The idea", never as the opening sentence.
 - **Titles:** `Full Name (ACRONYM)` when there's an acronym, e.g.
-  `Command Query Responsibility Segregation (CQRS)`.
+  `Command Query Responsibility Segregation (CQRS)`. Exceptions: acronyms
+  of lists (CAP, SOLID) keep the acronym; a well-known alias may go in
+  parentheses (`Hexagonal Architecture (Ports and Adapters)`). No leading
+  "The", no trailing "Pattern".
 - **Bullets:** a bold lead-in is a short, complete clause ending in a
   period (`**Bound every queue.** An unbounded…`), or no bold at all.
-  Don't bold mid-sentence.
+  Never end a bold lead-in at a colon, comma, or mid-sentence.
+  Two allowed exceptions:
+  - *Definition lists* may use `**Term** — definition.`
+  - A term of art may be bolded once, mid-sentence, where it is defined.
+- **Paragraphs:** at most four sentences, including in Examples.
 - **Pseudocode:** Python-like, colon-and-indent, no braces —
-  `interface Clock:` / `    now()`. Comments with `#`.
+  `interface Clock:` / `    now()`. Identifiers in camelCase. Comments
+  with `#`.
+- **Acronyms that never need expanding:** API, HTTP, URL, SQL, JSON, UI, ID.
+  Everything else (CI, CRUD, PR, ADR, CDC, …) is expanded once per article.
+- **No maintainer notes in reader text.** Never write "this article owns…";
+  ownership lives only in the table below.
+- **Every fix gets its own cost check.** When adding a mechanism to fix a
+  problem (a buffer, a retry, a fallback), say what it costs or where it
+  stops working.
+- **New owner → trim neighbours.** When an article becomes a concept's
+  owner, cut other articles' copies to one sentence and a link.
 - **Examples show the hard part.** If the happy path hides a race, a
   partial failure, or a cost, the example says so.
 - **Benefits come with their limits.** Every claimed benefit gets its
