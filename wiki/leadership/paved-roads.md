@@ -13,7 +13,7 @@ tags: [leadership, platform, developer-experience]
 
 Imagine a park where people keep cutting across the grass. You can put up "Keep off" signs, or you can pave the path people actually want to walk. The second works better.
 
-In engineering, a **paved road** is a supported, ready-made way to do a common job: a service template that already has logging, metrics, CI, and security scanning wired in; a library that handles retries correctly; a one-command deploy. Teams *can* go off-road, but the paved road is so much easier that most don't.
+In engineering, a **paved road** is a supported, ready-made way to do a common job: a service template that already has logging, metrics, continuous integration (CI), and security scanning wired in; a library that handles retries correctly; a one-command deploy. Teams *can* go off-road, but the paved road is so much easier that most don't.
 
 Netflix popularized the term "paved road"; Spotify calls the same idea a "golden path."
 
@@ -21,15 +21,15 @@ Netflix popularized the term "paved road"; Spotify calls the same idea a "golden
 
 Principal engineers often know the right way to build things across an organization, but can't order teams to follow it. Mandates get ignored, worked around, or followed grudgingly. Documentation goes unread.
 
-A paved road changes the default. When the good way is also the fastest way, adoption happens on its own — and standards spread without a single meeting. It's one of the most powerful forms of [[influencing-without-authority]].
+A paved road changes the default. When the good way is also the fastest way, adoption needs far less pushing — though it still takes a pilot team, docs, support, and someone championing it. It's [[influencing-without-authority|influence]] that scales without endless meetings.
 
 ## How to apply it
 
 - **Pave where people already walk.** Look at what teams are building repeatedly and painfully — new services, deploy pipelines, auth integration — and start there.
 - **Build it with a real team.** Pair with one team that needs it now. Their feedback makes it usable; their success makes it credible.
 - **Make it faster than the alternative.** If the paved road takes longer to set up than doing it by hand, nobody will use it.
-- **Bake standards in, don't bolt them on.** Logging, trace IDs, security checks, and dashboards come for free with the template.
-- **Allow exits.** Teams with genuinely different needs should be able to leave the road — and you should learn from why they did.
+- **Bake standards in, don't bolt them on.** Logging, trace IDs (one ID that follows a request across services, also called a correlation ID), security checks, and dashboards come free with the template.
+- **Allow exits, but not free ones.** Teams with genuinely different needs can leave the road, but they still meet the mandatory guardrails and own their own upgrades, on-call, and compliance evidence. Learn from why they left.
 - **Treat it as a product.** It needs an owner, a roadmap, versioned upgrades, documentation, and support. Measure adoption and time-to-first-deploy.
 - **Automate the guardrails.** Linters and CI checks enforce the few things that truly must be consistent, so humans don't have to police them.
 
@@ -39,13 +39,15 @@ Every new service at a company takes two weeks to set up: CI, deploy scripts, lo
 
 A principal engineer and one product team build a service template. Running one command creates a repo with all of that wired in, deployed to staging in 20 minutes. A small platform team owns it and ships monthly upgrades that existing services can pull in.
 
-Within a year, 90% of new services use it. Nobody was required to. Incidents get easier to debug because every service now logs the same way.
+Within a year, 90% of new services use it, and incidents get easier to debug because every service logs the same way.
+
+Existing services were harder. Most didn't migrate until an upgrade offered something they wanted, and keeping generated repos upgradable meant moving shared logic into versioned libraries. The road also costs a permanent two-to-three-person platform team.
 
 ## Common traps
 
 - **Build it and walk away.** An unmaintained paved road decays into the thing teams route around — and costs more credibility than never building it.
 - **Paving for imagined needs.** A platform built without real users usually solves the wrong problems.
-- **Paving a cow path that shouldn't exist.** Make sure what you're standardizing is actually good.
+- **Paving a shortcut that leads somewhere bad.** Make sure what you're standardizing is actually good.
 - **No exits.** A paved road that's mandatory and inflexible is just a mandate with extra steps.
 - **Too many roads.** Three competing templates is no standard at all.
 

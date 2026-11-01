@@ -27,13 +27,13 @@ The best technical idea is worthless if nobody adopts it. Many senior engineers 
 
 **Before proposing:**
 - **Start by listening.** Understand each team's goals, constraints, and pain. People back solutions to problems *they* feel.
-- **Frame it in their terms.** To a product manager: faster delivery. To a director: risk and cost. To engineers: fewer pages at 3 a.m. Same proposal, different "why."
+- **Frame it in their terms.** To a product manager: faster delivery. To a director: risk and cost. To engineers: fewer on-call alerts at 3 a.m. Same proposal, different "why."
 - **Pre-wire key stakeholders.** Talk one-on-one with the people most affected before the big review, so no one is surprised. Use these conversations to surface objections early — not to settle the decision before the open review. Record what changed as a result.
 
 **While driving it:**
 - **Write it down.** A clear [[design-docs|design doc]] travels further than any meeting and lets people think on their own time.
 - **Make the right path the easy one.** Build a [[paved-roads|paved road]] — a template, library, or automated check that makes the good way the default — instead of issuing a mandate. Then maintain it; an abandoned paved road costs more credibility than never building one.
-- **Give credit generously** and share ownership. Ideas spread faster when others feel they co-own them.
+- **Give credit and share ownership.** Ideas spread faster when others feel they co-own them.
 - **Build sponsors.** Find leaders who care about the outcome and can provide the authority you don't have.
 
 **Choosing your fights:**
@@ -42,7 +42,7 @@ The best technical idea is worthless if nobody adopts it. Many senior engineers 
 
 ## Example
 
-A principal engineer wants all services to adopt structured logging and trace IDs ([[observability]]). A memo mandating it would be ignored.
+A principal engineer wants all services to adopt structured logging (logs as named fields, not free text) and trace IDs (one ID that follows a request across services, also called a correlation ID; see [[observability]]). A memo mandating it would be ignored.
 
 Instead, they:
 1. Interview on-call engineers and collect stories about painful incidents caused by missing logs.
@@ -51,13 +51,13 @@ Instead, they:
 4. Have that team present the results at an engineering all-hands.
 5. Add the library to the service template, with a named owner, so new services get it for free.
 
-Within two quarters, most teams have adopted it — and nobody was ordered to.
+Within two quarters, most teams have adopted it — and nobody was ordered to. The last few holdouts moved only after a sponsor added "trace ID present?" to the incident-review checklist: escalation, used legitimately.
 
 ## Common traps
 
 - **Being right loudly.** Winning a debate in public often loses the person.
-- **Borrowing authority** ("the VP wants this") too often. It works once and erodes your own credibility.
-- **Influence by exhaustion** — out-arguing people until they give up. They'll comply, not commit.
+- **Borrowing authority too often.** "The VP wants this" works once and erodes your own credibility.
+- **Influencing by exhaustion.** Out-argue people until they give up, and they'll comply, not commit.
 - **Backchannel decisions.** Pre-wiring that turns the open review into theater loses the trust of everyone who wasn't consulted.
 - **Only influencing upward.** Trust from the engineers doing the work matters as much as trust from leadership.
 - **Never building anything.** Credibility needs occasional proof that your ideas work in practice.

@@ -5,8 +5,8 @@ shape: the idea → why it matters → how to apply it → an example → common
 traps → when it doesn't apply.
 
 **New here?** A good first path:
-[[kiss]] → [[yagni]] → [[coupling-and-cohesion]] → [[separation-of-concerns]] →
-[[functional-core-imperative-shell]] → [[test-driven-development]] →
+[[kiss]] → [[yagni]] → [[reversible-decisions]] → [[separation-of-concerns]] →
+[[coupling-and-cohesion]] → [[functional-core-imperative-shell]] → [[test-driven-development]] →
 [[conways-law]] → [[influencing-without-authority]].
 
 ## Principles
@@ -17,6 +17,8 @@ Timeless rules of thumb for judging any design.
 - [[kiss]] — Choose the simplest design that solves today's problem.
 - [[yagni]] — Don't build for imagined futures; most guesses are wrong.
 - [[dry]] — One home for each piece of knowledge, but don't abstract too early.
+
+**Judgment**
 - [[reversible-decisions]] — Move fast on two-way doors; slow down on one-way doors.
 
 **Structure**
@@ -43,7 +45,7 @@ Habits that make teams faster and systems safer.
 - [[api-versioning]] — An API is a promise; evolve it without breaking callers.
 - [[expand-and-contract]] — Add the new, migrate, then remove the old.
 
-**Decisions**
+**Decisions** (see also [[reversible-decisions]])
 - [[design-docs]] — Think it through in writing, while flaws are cheap.
 - [[architecture-decision-records]] — Record what you decided and why.
 
@@ -79,6 +81,7 @@ Proven structures for organizing systems.
 
 **Evolving systems**
 - [[strangler-fig]] — Replace legacy one slice at a time.
+- See also: [[expand-and-contract]], the same idea for one field or column.
 
 ## Leadership
 
