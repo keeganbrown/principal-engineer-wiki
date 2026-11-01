@@ -24,21 +24,24 @@ The **outbox pattern** fixes this by making it one write:
 
 Because the event and the change commit together, they either both happen or neither does.
 
-A close cousin is **change-data-capture (CDC)**: instead of an outbox table, a tool like Debezium reads the database's own change log and turns committed changes into events.
+A close cousin is **change-data-capture (CDC)**: a tool like Debezium reads the database's own change log and turns committed changes into events.
 
 ## Why it matters
 
-Lost or phantom events are some of the hardest bugs to find in an event-driven system. They're rare, they don't throw errors, and they show up weeks later as "why didn't this customer get a shipping email?" The outbox removes the whole class of bug with a simple table and a small background job.
+Lost or phantom events are some of the hardest bugs to find in an event-driven system. They're rare, they don't throw errors, and they show up weeks later as "why didn't this customer get a shipping email?" The outbox removes them.
+
+The trade: you get duplicates instead of losses, an extra write per change, and one more process to deploy, monitor, and page on.
 
 ## How to apply it
 
-- **Write the outbox row in the same transaction** as the state change. That's the whole trick.
-- **Run the relay as its own process** (or a scheduled job), not in the request handler.
+- **Write the outbox row in the same transaction.** That's the whole trick.
+- **Run the relay separately.** Use its own process or a scheduled job, never the request handler.
 - **Expect duplicates.** If the relay crashes after publishing but before marking a row sent, it will publish again. Consumers must be idempotent ([[idempotency]]).
-- **Preserve order where it matters.** Publish rows for the same entity (e.g., same `orderId`) in the order they were written.
-- **Clean up.** Delete or archive sent rows so the table doesn't grow forever.
-- **Monitor the lag** between a row being written and being published. A growing lag means the relay is stuck.
-- **Choose CDC instead** when you have many services or high volume and already run the infrastructure for it — it avoids an extra write and a polling job.
+- **Run exactly one active relay, or make relays claim rows.** Two naive relays polling the same table publish every row twice and scramble the order. Use leader election, or have each relay claim rows with `SELECT … FOR UPDATE SKIP LOCKED`.
+- **Don't trust ID order as commit order.** With concurrent writers, row 11 can commit before row 10. If per-entity order matters, run one relay per partition key (e.g., per `orderId` hash), or give each entity's events a sequence number consumers can check.
+- **Clean up sent rows.** Delete or archive them so the table doesn't grow forever.
+- **Monitor the lag.** A growing gap between a row being written and being published means the relay is stuck.
+- **Point CDC at the outbox, not your business tables.** CDC on business tables publishes your internal schema as events. Many teams write an outbox row and let CDC relay *that* — a designed event contract without a polling job.
 
 ## Example
 
@@ -47,24 +50,26 @@ Lost or phantom events are some of the hardest bugs to find in an event-driven s
 with db.transaction():
     db.insert("orders", order)
     db.insert("outbox", {
-        "event_type": "OrderPlaced",
+        "eventType": "OrderPlaced",
         "payload": {"orderId": order.id, "total": order.total},
     })
 
-# Separate relay process, running every second
-for row in db.query("SELECT * FROM outbox WHERE sent_at IS NULL ORDER BY id LIMIT 100"):
-    broker.publish(row.event_type, row.payload, message_id=row.id)
-    db.update("outbox", row.id, sent_at=now())
+# The single active relay, running every second
+for row in db.query("SELECT * FROM outbox WHERE sentAt IS NULL ORDER BY id LIMIT 100"):
+    broker.publish(row.eventType, row.payload, messageId=row.id)
+    db.update("outbox", row.id, sentAt=now())
 ```
 
-If the service crashes after the commit, the relay publishes the event when it next runs. If the transaction rolls back, there's no outbox row and no event. The `message_id` lets consumers drop duplicates.
+If the service crashes after the commit, the relay publishes the event when it next runs. If the transaction rolls back, there's no outbox row and no event. The `messageId` lets consumers drop duplicates.
+
+For high availability, the team runs a second relay on standby. It takes over only when it wins leader election — otherwise both would publish every row.
 
 ## Common traps
 
-- **Publishing from the request handler "after commit"** — this is the dual-write problem again.
-- **Non-idempotent consumers** that break on the duplicates the outbox will produce.
-- **A single relay as a bottleneck** at very high volume. Partition or switch to CDC.
-- **Leaking internal table structure** into events. Design the event payload as a public contract.
+- **Publishing "after commit" from the request handler.** That's the dual-write problem again.
+- **Writing consumers that break on duplicates.** The outbox *will* produce them.
+- **Hitting a single-relay bottleneck.** At very high volume, run several relays that each own a slice of rows (by key hash), or switch to CDC.
+- **Leaking internal table structure into events.** Design the event payload as a public contract.
 
 ## When it doesn't apply
 
@@ -76,3 +81,4 @@ If losing an occasional event is acceptable (analytics pings, cache warm-ups), a
 - [[idempotency]] — consumers must handle the duplicates the relay can produce.
 - [[cqrs]] — CDC and outbox events are common ways to update read models.
 - [[saga-pattern]] — each saga step usually publishes its result through an outbox.
+- [[strangler-fig]] — CDC keeps old and new systems in sync during a migration.

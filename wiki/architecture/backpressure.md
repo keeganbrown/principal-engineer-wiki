@@ -37,7 +37,7 @@ Systems without backpressure fail in the worst way: latency climbs for *everyone
 - **Rate-limit at the edge** — per user, per API key — before work reaches expensive layers.
 - **Prioritize when shedding.** Drop analytics events before checkout requests.
 - **Make clients cooperate.** They should retry with exponential backoff and **jitter** (a random extra delay, so clients don't all retry at the same moment), and respect `Retry-After`. See [[retries-and-timeouts]].
-- **Watch queue depth and wait time** as first-class metrics ([[observability]]).
+- **Watch queue depth and wait time.** Treat them as first-class metrics ([[observability]]).
 
 ## Example
 
@@ -45,15 +45,16 @@ An image-processing service accepts uploads and resizes them. A marketing campai
 
 **Without backpressure:** the in-memory job queue grows to millions of items, the service runs out of memory, restarts, loses every queued job, and clients retry all at once — making it worse.
 
-**With backpressure:** accepted jobs go to a bounded, durable queue holding 10,000 items. Workers pull jobs at their own pace. When the queue is full, the upload API returns `503` with `Retry-After: 30`. The autoscaler adds workers based on queue depth.
+**With backpressure:** accepted jobs go to a bounded, durable queue holding 10,000 items. Workers pull jobs at their own pace. When the queue is full, the upload API returns `503` with `Retry-After: 30`. The autoscaler adds workers based on queue depth — up to what the database behind them can take; past that, more workers just move the overload.
 
-No *accepted* job is lost. But rejection doesn't make the extra work disappear — it hands the waiting back to the client. The mobile app can hold the photo and retry later; a browser upload form may simply fail if the user closes the tab. So the team decides per client: the mobile app gets rejections, while the web form gets a "we'll process this shortly" response and its uploads go into cheap durable storage to be processed when capacity frees up.
+No *accepted* job is lost. But rejection doesn't make the extra work disappear — it hands the waiting back to the client. The mobile app can hold the photo and retry later; a browser upload form fails if the user closes the tab.
+
+So the team decides per client. The mobile app gets rejections. The web form gets a "we'll process this shortly" response, and its uploads go to cheap object storage that can hold far more than the work queue. That store is still a queue, so it has its own cap and an alert on the age of its oldest item; once the backlog is older than users will tolerate, the form stops promising "shortly" and starts rejecting too.
 
 ## Common traps
 
 - **"Just add a queue."** A queue absorbs bursts but doesn't fix sustained overload; it just delays the failure.
-- **Retries without backoff** that multiply load exactly when the system is weakest (a "retry storm").
-- **Callers that give up before callees.** If the gateway times out after 2s but the service behind it works for 10s, the service keeps doing work nobody is waiting for — and the gateway's retry adds more. Propagate a deadline so each hop gives up before its caller does.
+- **Letting retry and timeout settings amplify load.** Retries without backoff, and callers that give up before their callees, both add work exactly when you're weakest; see [[retries-and-timeouts]].
 - **Backpressure that stops at a boundary.** If the service rejects, but the frontend auto-retries instantly, nothing improved.
 
 ## When it doesn't apply

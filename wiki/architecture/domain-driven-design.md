@@ -30,20 +30,21 @@ Eric Evans introduced DDD in his 2003 book *Domain-Driven Design*.
 
 Big systems fail when one giant model tries to mean everything to everyone. The `Customer` class grows 80 fields, every team edits it, and every change breaks someone. Bounded contexts give you natural boundaries for modules, services, and teams — boundaries that follow the business, so they stay stable as the code changes.
 
-This article owns the wiki's guidance on **how to find domain boundaries**. ([[coupling-and-cohesion]] explains *why* grouping by domain works.)
+For *why* grouping by domain reduces coupling, see [[coupling-and-cohesion]]; the rest of this article is about *how* to find the boundaries.
 
 ## How to apply it
 
 - **Classify your subdomains first.** The **core domain** is what makes your business different — invest deep modeling there. **Supporting** subdomains are needed but not special. **Generic** subdomains (authentication, invoicing engines) are solved problems — buy them or keep them simple. Applying DDD evenly everywhere is the most common way it gets expensive.
-- **Talk to domain experts early and often.** Try *Event Storming*: map business events on a wall with sticky notes.
-- **Write a glossary** of key terms per context, and use those exact words in code.
+- **Talk to domain experts early and often.** Try *Event Storming*, Alberto Brandolini's workshop format: map business events on a wall with sticky notes.
+- **Write a glossary per context.** Use those exact words in code.
 - **Look for language shifts.** When the same word means different things to different groups, you've found a context boundary.
-- **Give each bounded context one owning team** and its own data.
-- **Translate at the edges** with an **anti-corruption layer** — a small translation module — when talking to another context or a legacy system, so its model doesn't leak into yours ([[strangler-fig]] uses this heavily).
-- **Use tactical patterns where the logic is rich:**
+- **Give each bounded context one owning team.** The context also owns its data.
+- **Translate at the edges.** When talking to another context or a legacy system, use an **anti-corruption layer** — a small translation module — so its model doesn't leak into yours ([[strangler-fig]] uses this heavily).
+- **Use tactical patterns only where the logic is rich.** The main ones:
   - *Entity* — has an identity that persists (order #42).
   - *Value object* — defined only by its values, immutable (`Money(10, "USD")`).
   - *Aggregate* — a cluster of objects changed as a unit through one **root**. Outside code may only change an order's `LineItems` by calling methods on `Order` (the root), so `Order` can enforce rules like "the total can't be negative."
+  - *Repository* — loads and saves whole aggregates, hiding the database.
 
 ## Example
 
@@ -56,13 +57,13 @@ The split takes several quarters. The hardest part isn't code — it's agreeing 
 ## Common traps
 
 - **Tactical-only DDD.** Adding "repositories" and "aggregates" without doing the strategic work misses the point.
-- **Contexts drawn around technology** (a "database context") instead of domains.
+- **Drawing contexts around technology.** A "database context" isn't a domain.
 - **One canonical enterprise model.** The urge to create a single "true" `Customer` for the whole company is exactly what DDD warns against. ([[dry]] makes the same point from the other side: don't share domain-model libraries across services.)
-- **Huge aggregates.** Keep aggregates small. A large one means many users try to change the same object at once, and they block each other.
+- **Huge aggregates.** Keep aggregates small. Because an aggregate is saved as one unit, two edits anywhere inside it conflict — and a large one is edited by many users at once.
 
 ## When it doesn't apply
 
-For simple CRUD apps, data pipelines, or domains with little business logic, full DDD is overkill. The strategic ideas — shared language and clear boundaries — are cheap and useful almost everywhere; the tactical patterns pay off only where the rules are genuinely complex.
+For simple CRUD (create, read, update, delete) apps, data pipelines, or domains with little business logic, full DDD is overkill. The strategic ideas — shared language and clear boundaries — are cheap and useful almost everywhere; the tactical patterns pay off only where the rules are genuinely complex.
 
 ## Related
 

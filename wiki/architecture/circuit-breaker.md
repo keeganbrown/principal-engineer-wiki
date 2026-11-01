@@ -31,19 +31,19 @@ Michael Nygard popularized the pattern in *Release It!* (2007).
 ## Why it matters
 
 - **Prevents cascading failures.** Callers stop wasting threads and connections on a dead dependency.
-- **Gives the dependency room to recover** instead of being hammered by retries.
+- **The dependency gets room to recover.** It isn't hammered by retries.
 - **Faster user experience.** An instant fallback beats a 30-second timeout.
-- **Clear signal.** A breaker opening is a precise, actionable alert.
+- **You get a precise diagnostic signal.** Dashboard breaker state, and page only if the fallback itself degrades something users feel ([[observability]]).
 
 ## How to apply it
 
-- **Use breakers where they pay off:** on calls with a meaningful fallback, or where hung calls threaten the caller's thread or connection pools. Elsewhere — for example, your primary database with no fallback — a good timeout and a bounded retry are often enough ([[retries-and-timeouts]]); a breaker there just turns slow errors into fast ones.
+- **Use breakers where they pay off.** That means calls with a meaningful fallback, or calls whose hangs threaten the caller's thread or connection pools. Elsewhere — for example, a database call with a tight timeout and no fallback — a timeout and a bounded retry are often enough ([[retries-and-timeouts]]); a breaker there just turns slow errors into fast ones.
 - **Always pair breakers with timeouts.** A call without a timeout can hang forever and never count as a failure.
-- **Decide on a fallback** for each call: cached data, a default value, a degraded feature, or a clear error.
+- **Decide on a fallback for each call.** Options are cached data, a default value, a degraded feature, or a clear error.
 - **Tune thresholds from real traffic.** For example: open after 50% failures over at least 20 calls in 10 seconds; try again after 30 seconds.
-- **Use one breaker per dependency** (or per endpoint), so one bad API doesn't block healthy ones.
-- **Emit metrics on state changes** and dashboard them ([[observability]]).
-- **Use a well-tested library** (resilience4j, Polly) or your **service mesh** — infrastructure that manages calls between services for you — rather than writing your own.
+- **Use one breaker per dependency or endpoint.** One bad API shouldn't block healthy ones.
+- **Emit metrics on state changes.** Put them on a dashboard.
+- **Don't write your own.** Use a well-tested library (resilience4j, Polly) or a **service mesh** — infrastructure that manages calls between services for you.
 
 ## Example
 
@@ -54,14 +54,14 @@ With a breaker: after a burst of failures, the breaker opens. Product pages inst
 ## Common traps
 
 - **No fallback.** An open breaker that just throws an error everywhere only moves the failure.
-- **Retries without backoff** inside the breaker, multiplying load on a struggling service.
+- **Retrying inside the breaker without backoff.** It multiplies load on a struggling service ([[retries-and-timeouts]]).
 - **Counting the wrong errors.** A `404 Not Found` or validation error isn't a sign the service is unhealthy; don't let it trip the breaker.
 - **Thresholds set once and forgotten.** Traffic patterns change; revisit settings.
 - **Never exercised.** Breaker code paths only run during incidents, so they're often broken when finally needed. Test open and half-open behavior with fault injection or game days (planned failure drills).
 
 ## When it doesn't apply
 
-In-process function calls don't need breakers. For background jobs where waiting is fine, a queue with retries and backoff may be simpler. When a call is absolutely required (e.g., charging a payment with no fallback), a breaker still helps — but the right response is a clear, fast failure to the user, not a fake success.
+In-process function calls don't need breakers. For background jobs where waiting is fine, a queue with retries and backoff may be simpler. When a call has no fallback, a breaker earns its place only if hung calls threaten the caller's pools — payment calls often qualify. Then the right response is a clear, fast failure to the user, not a fake success.
 
 ## Related
 

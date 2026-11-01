@@ -13,16 +13,16 @@ tags: [architecture, distributed-systems, organization]
 
 A microservice architecture builds one product out of many small services. Each service:
 
-- does one business job (orders, payments, search),
-- **owns its own data** — no other service reads its database directly,
-- is **deployed independently**, on its own schedule,
-- is usually owned by one team.
+- **Does one business job.** Orders, payments, search.
+- **Owns its own data.** No other service reads its database directly.
+- **Deploys independently.** It ships on its own schedule.
+- **Has one owning team.**
 
 Services talk over the network, through APIs or events.
 
-The promise is **independence**: teams ship without waiting on each other, each service scales on its own, and a failure in one doesn't have to take down the rest.
+The promise is **independence**: teams ship without waiting on each other, each service scales on its own, and a failure in one doesn't have to take down the rest. The price is **distribution**: every call between services can be slow, fail, or arrive twice. You no longer have one database transaction, one log file, or one deploy, and data copied between services is [[cap-theorem|eventually consistent]].
 
-The price is **distribution**: every call between services can be slow, fail, or arrive twice. You no longer have one database transaction, one log file, or one deploy.
+James Lewis and Martin Fowler's 2014 article popularized the term.
 
 ## Why it matters
 
@@ -32,26 +32,29 @@ Teams that never split, at large scale, can end up with one codebase where hundr
 
 ## How to apply it
 
-- **Start with a [[modular-monolith]]** unless you have a specific reason not to. Clean module boundaries are the prerequisite; services just put a network between them.
-- **Split for a reason you can name:** a part with very different scaling needs, a team blocked by a shared release, stricter security or compliance isolation, or a different technology need.
-- **Draw service boundaries around business domains** ([[domain-driven-design]]), never around technical layers. A "database service" or "validation service" couples everything to it.
-- **One owner per service, one owner per database.** Shared databases recreate the monolith's coupling ([[coupling-and-cohesion]]).
-- **Prefer async events for side effects,** sync calls only when you need an answer now ([[event-driven-architecture]]).
-- **Invest in the platform first:** automated deploys, [[observability]] with trace IDs across services, [[retries-and-timeouts]], and [[contract-testing]]. Without these, microservices are painful.
-- **Expect to handle partial failure** with patterns like [[circuit-breaker]], [[saga-pattern]], and [[idempotency]].
+- **Start with a [[modular-monolith]].** Clean module boundaries are the prerequisite; services just put a network between them. Martin Fowler calls this "monolith first."
+- **Split only for a reason you can name.** Good reasons: very different scaling needs, a team blocked by a shared release, or stricter security or compliance isolation. Rarely, a genuinely different technology need — every extra stack is one more thing to hire for, patch, and keep on call.
+- **Draw service boundaries around domains.** Never around technical layers; a "database service" couples everything to it ([[domain-driven-design]]).
+- **Give each database one owner.** Shared databases recreate the monolith's coupling ([[coupling-and-cohesion]]).
+- **Prefer async events for side effects.** Use synchronous calls only when you need an answer now ([[event-driven-architecture]]).
+- **Invest in the platform first.** That means automated deploys, [[observability]] with trace IDs across services, [[retries-and-timeouts]], and [[contract-testing]]. Without these, microservices are painful.
+- **Plan for partial failure.** Patterns like [[circuit-breaker]], [[saga-pattern]], and [[idempotency]] become everyday tools.
+- **Measure what you split for.** Track deploys per team, the share of releases that need cross-team coordination, and lead time for changes. If they don't improve, stop extracting.
 
 ## Example
 
 A company runs one large Rails app with 80 engineers. Deploys happen weekly and often get rolled back because one team's change broke another's.
 
-They don't rewrite into 40 services. They first enforce module boundaries inside the monolith. Then they extract the two modules with a clear reason: **search** (needs very different scaling and its own index) and **payments** (needs PCI — payment card industry — compliance isolation). Everything else stays in the monolith. Two years later they have five services and a healthy monolith, and deploy daily.
+They don't rewrite into 40 services. They first enforce module boundaries inside the monolith — and that alone takes deploys from weekly to several times a week. Then they extract the two modules with a clear reason: **search** (very different scaling and its own index) and **payments** (payment card industry (PCI) compliance isolation).
+
+The extractions weren't free. Each service needed its own deploy pipeline, tracing, dashboards, and on-call rotation — roughly two engineers' full-time work to build and keep running. Payments was the hardest: two places where orders and payments had shared a database transaction had to become sagas. Two years later they have three more services, each extracted for a named reason, and deploy daily.
 
 ## Common traps
 
-- **Microservices as a default** for a small team — operational overhead swamps the product work.
-- **Too fine-grained.** A service per entity (`UserService`, `AddressService`) creates chatty calls and distributed transactions for every feature.
-- **Shared libraries of domain models** across services, which couple their releases.
-- **Synchronous call chains** five services deep — the slowest link sets everyone's latency, and any failure cascades.
+- **Defaulting to microservices on a small team.** Operational overhead swamps the product work.
+- **Splitting too fine.** A service per entity (`UserService`, `AddressService`) creates chatty calls and distributed transactions for every feature.
+- **Sharing libraries of domain models.** They couple services' releases ([[dry]] explains why knowledge should cross boundaries through contracts instead).
+- **Building synchronous call chains.** Five services deep, the slowest link sets everyone's latency and any failure cascades.
 - **Ignoring [[conways-law]].** Services that don't match team boundaries need constant cross-team coordination.
 
 ## When it doesn't apply

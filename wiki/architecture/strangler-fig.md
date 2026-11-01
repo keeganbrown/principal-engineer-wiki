@@ -1,11 +1,11 @@
 ---
-title: Strangler Fig Pattern
+title: Strangler Fig
 category: architecture
 summary: Replace a legacy system gradually by routing one piece of functionality at a time to new code, until the old system can be switched off — no big-bang rewrite.
 tags: [architecture, migration, legacy]
 ---
 
-# Strangler Fig Pattern
+# Strangler Fig
 
 > **In one sentence:** Replace a legacy system gradually by routing one piece of functionality at a time to new code, until the old system can be switched off — no big-bang rewrite.
 
@@ -15,11 +15,11 @@ The strangler fig tree grows around a host tree, slowly replacing it until the o
 
 Instead of rewriting a legacy system from scratch and switching over on one risky day, you:
 
-1. **Put a routing layer in front** of the old system (a proxy, API gateway, or facade).
-2. **Build one slice** of functionality in the new system.
-3. **Route that slice's traffic** to the new system. Everything else still goes to the old one.
-4. **Repeat** until nothing is left in the old system.
-5. **Decommission** the legacy code.
+1. Put a routing layer — a proxy, API gateway, or facade — in front of the old system.
+2. Build one slice of functionality in the new system.
+3. Route that slice's traffic to the new system. Everything else still goes to the old one.
+4. Repeat until nothing is left in the old system.
+5. Decommission the legacy code.
 
 ```
              ┌──► /invoices  ──► New system
@@ -36,7 +36,7 @@ Big-bang rewrites are famously risky. They take longer than planned, the old sys
 The strangler fig approach:
 
 - **Delivers value continuously** — each migrated slice is in production.
-- **Limits risk** — if a slice fails, route it back.
+- **Limits risk** — if a slice fails, route it back, as long as the old system can read whatever the new one wrote while it was live.
 - **Keeps learning** — each slice teaches you more about the legacy system's hidden behaviors.
 - **Can pause safely** — if priorities change, you still have a working system. But a half-strangled system means running two systems, a router, and data sync, which can be worse than either alone. Budget for that overlap, and don't pause for long.
 
@@ -45,9 +45,9 @@ The strangler fig approach:
 - **Start with a slice that's valuable but low-risk.** Valuable: it changes often, so you benefit quickly. Low-risk: clear boundaries and moderate traffic.
 - **Stop the old system from growing.** Set a policy that new features go only to the new system. Otherwise you're chasing a moving target.
 - **Find the seams.** URLs, message types, or modules make natural cut points.
-- **Protect the new system's model** with an **anti-corruption layer** — a translation module between old and new — so legacy concepts don't leak in ([[domain-driven-design]]).
+- **Protect the new system's model.** An **anti-corruption layer** — a translation module between old and new — keeps legacy concepts out ([[domain-driven-design]]).
 - **Handle data carefully.** Decide which system owns each piece of data during the transition. Sync with events or change-data-capture (CDC), which streams one database's changes to another ([[transactional-outbox]]).
-- **Shift traffic gradually** with [[feature-flags]] or percentage routing, so you can roll back instantly.
+- **Shift traffic gradually.** Use [[feature-flags]] or percentage routing so you can route back quickly — though data the new system wrote while live still has to reach the old one.
 - **Compare outputs.** For critical logic, run old and new side by side ("shadow mode") and diff the results before switching.
 - **Actually delete the old code.** Track progress by what's been turned off, not just what's been built.
 
@@ -55,7 +55,7 @@ The strangler fig approach:
 
 A company's 15-year-old billing system is slowing every product launch. They place an API gateway in front of it and declare that no new features go into the old system.
 
-First, they rebuild the read-only "view invoice PDF" endpoint and route 5% of traffic, then 100%. Next, they migrate tax calculation, running both versions in shadow mode for a month to catch discrepancies. Eighteen months and twelve slices later, the last legacy endpoint is switched off.
+First, they rebuild the read-only "view invoice PDF" endpoint and route 5% of traffic, then 100%. Next, they migrate tax calculation, running both versions in shadow mode for a month to catch discrepancies. Eighteen months and twelve slices later, the last legacy endpoint is switched off. The final two slices, which touched shared customer data, took as long as the first ten.
 
 ## Common traps
 

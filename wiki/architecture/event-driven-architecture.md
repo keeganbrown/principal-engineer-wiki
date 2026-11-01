@@ -13,7 +13,7 @@ tags: [architecture, distributed-systems, messaging]
 
 In a request-driven system, service A *tells* service B what to do: "send this email." A must know B exists, and if B is down, A fails.
 
-In an event-driven system, A *announces what happened*: `OrderPlaced { orderId: 42 }`. It publishes this **event** to a **broker** — messaging software such as Kafka, RabbitMQ, or Amazon SNS/SQS. Any interested service — email, shipping, analytics — **subscribes** and reacts. A doesn't know or care who's listening.
+In an event-driven system, A *announces what happened*: `OrderPlaced { orderId: 42 }`. It publishes this **event** to a **broker** — messaging software such as Kafka, RabbitMQ, or a cloud queue service. Any interested service — email, shipping, analytics — **subscribes** and reacts. A doesn't know or care who's listening.
 
 ```
 Orders ──publish──► [ OrderPlaced ] ──► Email
@@ -26,7 +26,7 @@ Events are named in the **past tense**, because they're facts that already happe
 ## Why it matters
 
 - **Looser runtime coupling.** Add a new consumer (say, fraud detection) without changing the producer. The coupling doesn't vanish, though: it moves into the event schema and into flows nobody can see in one place. The producer can no longer tell who will break when it changes.
-- **Resilience.** If Shipping is down, events wait in the queue. Orders keeps working.
+- **Resilience.** If Shipping is down, events wait in the queue and Orders keeps working. The broker itself becomes critical infrastructure, though, and every dead-letter queue needs an owner who replays it.
 - **Smoothing bursts.** Consumers process at their own pace; short bursts are absorbed by the queue — as long as it's bounded and consumers can catch up ([[backpressure]]).
 - **Audit trail.** A stream of events is a natural history of what happened.
 
@@ -34,16 +34,16 @@ The price is **eventual consistency**: consumers' views lag behind the producer 
 
 ## How to apply it
 
-- **Publish facts for broadcast, not disguised commands.** `OrderPlaced`, not `SendConfirmationEmail`. A "command" dressed as an event re-creates the coupling you were avoiding. Commands are fine when one component deliberately owns a workflow — that's an [[saga-pattern|orchestrated saga]].
+- **Publish facts for broadcast, not disguised commands.** `OrderPlaced`, not `SendConfirmationEmail`. A "command" dressed as an event re-creates the coupling you were avoiding. Commands are fine when one component deliberately owns a workflow — that's an [[saga-pattern|orchestrated saga]], where one coordinator sends each step its command.
 - **Design events as public contracts.** Version them, document them, and evolve them compatibly ([[api-versioning]]).
 - **Make consumers idempotent.** Most brokers deliver *at least once*, so the same event may arrive twice ([[idempotency]]).
 - **Use a dead-letter queue** — a holding queue for events that keep failing — and alert on it.
 - **Publish reliably with an outbox.** Saving to the database and publishing to the broker are two separate writes. Write the event to an outbox table in the same transaction, and let a separate process relay it ([[transactional-outbox]]).
-- **Propagate trace IDs** in event metadata, so you can follow a flow across services ([[observability]]).
+- **Propagate trace IDs in event metadata.** A trace ID follows one flow across services ([[observability]]).
 
 ## Example
 
-Checkout used to call five services synchronously; if any was slow, checkout was slow. Now `Orders` saves the order, writes `OrderPlaced` to its outbox, and returns immediately. Email, Shipping, Loyalty, and Analytics each consume the event independently. When Loyalty has an outage, its events pile up and are processed when it recovers — customers never notice.
+Checkout used to call five services synchronously; if any was slow, checkout was slow. Now payment stays synchronous, because checkout needs the answer, while `Orders` saves the order, writes `OrderPlaced` to its outbox, and returns immediately. Email, Shipping, Loyalty, and Analytics each consume the event independently. When Loyalty has an outage, its events pile up and are processed when it recovers — customers never notice.
 
 The trade-off: right after checkout, the "My Shipments" page may not show the new order for a few seconds. The team shows "Processing…" instead of an empty list.
 

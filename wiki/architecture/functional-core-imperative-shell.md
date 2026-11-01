@@ -27,15 +27,15 @@ Gary Bernhardt named the pattern in a 2012 *Destroy All Software* screencast and
 - **Testing becomes easy.** The core needs no mocks — just call a function and check the return value. Thousands of tests run in seconds.
 - **Reasoning becomes easy.** Pure functions can be read in isolation. No hidden state changes.
 - **The risky part shrinks.** The shell is so simple it needs only a few integration tests.
-- **Portability.** The core can move to a new framework, platform, or language binding unchanged.
+- **Portability.** The core can move to a new framework unchanged; the shell, and any assumptions baked into the data you load, still need rewriting.
 
 ## How to apply it
 
 - **Ask of each function: "Does this decide, or does this do?"** Split ones that do both.
-- **Pass everything the core needs as arguments** — including "now" and random seeds.
-- **Return a description of what to do** (e.g., a list of emails to send) instead of doing it.
-- **Keep the shell boring:** fetch, call, execute. If the shell has `if` statements about business rules, move them inward.
-- **Represent results as plain data** (records, structs, dictionaries).
+- **Pass everything the core needs as arguments.** That includes "now" and random seeds.
+- **Return a description of what to do.** For example, return a list of emails to send instead of sending them.
+- **Keep the shell boring.** Fetch, call, execute. If the shell has `if` statements about business rules, move them inward.
+- **Represent results as plain data.** Use records, structs, or dictionaries.
 
 ## Example
 
@@ -60,7 +60,7 @@ function overdueReminders(invoices, today):
 # shell: thin and dumb
 function remindOverdueInvoices():
     for inv in overdueReminders(db.loadUnpaid(), clock.today()):
-        if db.markReminded(inv.id, only_if_not_already=True):   # conditional write
+        if db.markReminded(inv.id, onlyIfNotAlready=True):   # conditional write
             email.send(inv.customer, "Your invoice is overdue")
 ```
 
@@ -68,9 +68,11 @@ Every edge case of "who gets a reminder?" is now a fast test of `overdueReminder
 
 Note the conditional write. The core decides on a *snapshot* of the data. If two copies of the job run at once, both see the same unpaid invoice. Marking it reminded "only if not already" — and sending the email only if that succeeded — keeps customers from getting two emails.
 
+The fix has a price: if the process crashes between the mark and the send, that customer gets no reminder at all. For a reminder, that's acceptable. For an effect that must happen, record it durably in the same write and send it from a relay ([[transactional-outbox]]).
+
 ## Common traps
 
-- **Leaking effects into the core** through "just one" logger call or `now()`. Pass them in.
+- **Leaking effects into the core.** "Just one" logger call or `now()` breaks purity. Pass them in.
 - **A fat shell.** If the shell grows business logic, you've lost the benefit.
 - **Stale snapshots.** The core's decision can be out of date by the time the shell acts. Use conditional writes or idempotent effects ([[idempotency]]).
 - **Loading too much.** For huge datasets, loop in pages: the shell loads a page, the core decides, the shell writes, repeat.

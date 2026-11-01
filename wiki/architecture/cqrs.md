@@ -13,8 +13,8 @@ tags: [architecture, data, performance]
 
 Most apps use one model for everything: the same `Order` class and table handles both "place an order" and "show my order history." That works until reads and writes start needing very different things.
 
-- **Writes (commands)** — here, "command" just means *a request to change state*. Writes must enforce business rules and stay consistent: "you can't ship an order that hasn't been paid."
-- **Reads (queries)** need to be fast and shaped for screens: "show the last 20 orders with product names, thumbnails, and shipping status."
+- **Writes (commands)** — a command is *a request to change state*. Writes must enforce business rules and stay consistent: "you can't ship an order that hasn't been paid."
+- **Reads (queries)** — must be fast and shaped for screens: "show the last 20 orders with product names, thumbnails, and shipping status."
 
 CQRS splits these into two sides:
 
@@ -34,7 +34,7 @@ Greg Young described CQRS around 2010, building on Bertrand Meyer's *command–q
 
 - **Each side gets simpler.** The write model enforces rules; the read model serves fast lookups.
 - **Performance.** Read views can be pre-joined and cached — no expensive queries at request time.
-- **Independent scaling.** Many systems read far more than they write; scale each side separately.
+- **Independent scaling.** Many systems read far more than they write; scale each side separately. Try read replicas and caching first — a separate read model is for when the *shape* of reads differs, not just the volume.
 - **Multiple views.** Build several read models (search index, dashboard, mobile feed) from the same writes.
 
 ## How to apply it
@@ -49,15 +49,15 @@ Greg Young described CQRS around 2010, building on Bertrand Meyer's *command–q
 
 A marketplace's product page needs data from inventory, pricing, reviews, and seller ratings. Assembling it on each request takes 800ms.
 
-With CQRS, each of those services publishes change events. A `ProductPageView` projector listens and keeps one pre-built document per product in a fast key-value store. The page now loads with a single lookup in 10ms. Writes still go through each service's own rules.
+Here the write side is four services, and each publishes change events. A `ProductPageView` projector listens and keeps one pre-built document per product in a fast key-value store. The page now loads with a single lookup in 10ms. Writes still go through each service's own rules.
 
 The trade-off: the price or stock level shown on the page can lag by a few seconds. So checkout doesn't trust the page — it re-checks price and stock with the owning services before charging.
 
 ## Common traps
 
-- **Applying it everywhere.** CQRS for a simple CRUD form adds two models, sync logic, and eventual consistency for no gain.
+- **Applying it everywhere.** CQRS for a simple CRUD (create, read, update, delete) form adds two models, sync logic, and eventual consistency for no gain.
 - **Confusing CQRS with event sourcing.** Event sourcing stores the history of events as the source of truth. It pairs well with CQRS, but they're separate ideas.
-- **Forgetting read-your-own-writes.** A user who just updated their profile expects to see the change. Read from the write side right after a change.
+- **Forgetting read-your-writes.** A user who just updated their profile expects to see the change. Read from the write side right after a change ([[cap-theorem]]).
 - **No rebuild path.** If a read model gets corrupted and can't be regenerated, your only fix is a manual data repair.
 
 ## When it doesn't apply

@@ -28,31 +28,32 @@ Picture your application as a hexagon (the number of sides doesn't matter):
      [ Postgres ]   [ Stripe API ]   [ Email ]
 ```
 
-- **The core** holds business rules and use cases. It knows nothing about HTTP, SQL, or vendors.
-- **Ports** are interfaces the core defines, in its own language: "I need a way to save orders" (`OrderRepository`), "I need to charge cards" (`PaymentGateway`).
-- **Adapters** implement ports for specific technology.
-  - **Driving adapters** *call into* the core: a web controller, a command-line tool, a test.
-  - **Driven adapters** *are called by* the core: `PostgresOrderRepository`, `StripeGateway`, or an `InMemoryOrderRepository` fake for tests.
+- **Core** — business rules and use cases. It knows nothing about HTTP, SQL, or vendors. The use cases are a thin layer that calls ports; the domain rules they call can be a pure [[functional-core-imperative-shell|functional core]].
+- **Ports** — interfaces the core defines, in its own language: "I need a way to save orders" (`OrderRepository`), "I need to charge cards" (`PaymentGateway`).
+- **Driving adapters** — call *into* the core: a web controller, a command-line tool, a test.
+- **Driven adapters** — are called *by* the core: `PostgresOrderRepository`, `StripeGateway`, or an `InMemoryOrderRepository` fake for tests.
 
-Dependencies always point **inward**. That can seem impossible — how does the core save to Postgres without depending on it? The trick: the core calls `OrderRepository`, an interface it *owns*. `PostgresOrderRepository` implements that interface. So at runtime the call goes outward, but in the code, the adapter depends on the core, not the reverse. This is dependency inversion; this article owns it for the wiki.
+Dependencies always point **inward**. That can seem impossible — how does the core save to Postgres without depending on it?
+
+The core calls `OrderRepository`, an interface it *owns*, and `PostgresOrderRepository` implements it. At runtime the call goes outward, but in the code the adapter depends on the core, not the reverse. This is **dependency inversion**: high-level code owns the interface, and low-level code implements it.
 
 Alistair Cockburn proposed the pattern in 2005. *Clean Architecture* and *Onion Architecture* are close relatives.
 
 ## Why it matters
 
-- **Testability.** Run every use case against in-memory fakes — fast, deterministic tests with no infrastructure. This is the dependable win.
-- **Clarity.** It's always obvious where business rules live.
-- **Longevity.** Frameworks come and go; your business logic doesn't need to go with them.
-- **Partial replaceability.** You *can* switch providers by writing a new adapter, but be honest: a port designed around one vendor rarely fits the second without reshaping, and database transaction behavior leaks through repository ports. Don't justify a port by a swap you've never planned ([[yagni]]).
+- **Use cases are easy to test.** Run every one against in-memory fakes — fast, deterministic tests with no infrastructure. This is the dependable win.
+- **Business rules are easy to find.** It's always obvious where they live.
+- **Logic outlives frameworks.** Frameworks come and go; your business logic doesn't need to go with them.
+- **Adapters can be swapped, partly.** You *can* switch providers by writing a new adapter, but a port designed around one vendor rarely fits the second without reshaping, and database transaction behavior leaks through repository ports. Don't justify a port by a swap you've never planned ([[yagni]]).
 
 ## How to apply it
 
-- **Start from the use case.** What does the application *do*? Write that as plain code first.
-- **Define ports in the core's language** when the use case needs the outside world: `findOrder(id)`, not `executeSql(...)`.
-- **Keep adapters thin:** translate, call, translate back.
-- **Wire everything together in one place at startup** (the "composition root").
-- **Test the core with fakes,** and test each adapter with focused integration tests against the real technology.
-- **Decide where the unit of work lives.** If a use case calls two ports, what happens when the second fails after the first succeeded?
+- **Start from the use case.** Write what the application *does* as plain code first.
+- **Define ports in the core's language.** `findOrder(id)`, not `executeSql(...)`.
+- **Keep adapters thin.** Translate, call, translate back.
+- **Wire everything in one place.** At startup, a single *composition root* builds the adapters and passes them in.
+- **Test the core with fakes.** Test each adapter separately, with focused integration tests against the real technology.
+- **Decide what must succeed or fail together.** That's the **unit of work**, usually one database transaction. If a use case calls two ports and the second fails after the first succeeded, what happens?
 
 ## Example
 
@@ -64,10 +65,11 @@ interface OrderRepository:
 interface PaymentGateway:
     charge(customerId, amount, idempotencyKey) -> Receipt
 
-function placeOrder(cart, repo, payments):
-    order = Order.from(cart)                 # pure domain rules (a functional core)
-    repo.save(order.asPending())             # record intent first
-    receipt = payments.charge(cart.customerId, order.total, idempotencyKey=order.id)
+function placeOrder(cart, checkoutAttemptId, repo, payments):
+    order = Order.from(cart, id=checkoutAttemptId)   # pure domain rules
+    repo.save(order.asPending())                     # record intent first
+    receipt = payments.charge(cart.customerId, order.total,
+                              idempotencyKey=checkoutAttemptId)
     repo.save(order.withReceipt(receipt))
     return order
 
@@ -77,19 +79,21 @@ class InMemoryOrderRepository implements OrderRepository: ...   # fake, for test
 class StripeGateway implements PaymentGateway: ...
 ```
 
-Saving the order as pending *before* charging, and passing an idempotency key, means a crash between the two steps leaves a recoverable pending order — not a charged customer with no order ([[idempotency]]).
+The `checkoutAttemptId` comes from the caller, so if the client retries the whole request, both attempts carry the same key and the provider charges once ([[idempotency]]).
+
+Saving the order as pending *before* charging means a crash between the steps leaves a pending order, not a charged customer with no order. A background reconciler finds pending orders older than a few minutes and asks the provider, by the same key, whether the charge happened — then completes or cancels each one.
 
 ## Common traps
 
-- **Ports shaped like the technology.** A port named `saveRowToOrdersTable` leaks the database into the core.
-- **Too many layers.** You don't need a port for every class — only at real external boundaries.
-- **An anemic core.** If all the logic ends up in adapters, the hexagon is just ceremony.
-- **Mapping fatigue.** Translating between domain and database models has a cost; accept it where the boundary pays off.
-- **Ignoring partial failure across ports,** as the example shows.
+- **Shaping ports like the technology.** A port named `saveRowToOrdersTable` leaks the database into the core.
+- **Adding too many layers.** You don't need a port for every class — only at real external boundaries.
+- **Leaving the core anemic.** If all the logic ends up in adapters, the hexagon is just ceremony.
+- **Underestimating mapping cost.** Translating between domain and database models has a cost; accept it where the boundary pays off.
+- **Ignoring partial failure across ports.** See the example.
 
 ## When it doesn't apply
 
-For simple CRUD (create-read-update-delete) apps with little business logic, the indirection can outweigh the benefit — a thin layer over the database is fine. Introduce ports where you actually feel pain: hard-to-test logic, or infrastructure that is genuinely likely to change.
+For simple CRUD (create, read, update, delete) apps with little business logic, the indirection can outweigh the benefit — a thin layer over the database is fine. Introduce ports where you actually feel pain: hard-to-test logic, or infrastructure that is genuinely likely to change.
 
 ## Related
 

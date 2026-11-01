@@ -27,11 +27,11 @@ Without idempotency, normal network hiccups cause real damage: customers charged
 ## How to apply it
 
 - **Prefer naturally idempotent operations.** "Set status to SHIPPED" is idempotent; "toggle status" is not. "Set balance to 50" is idempotent; "add 10" is not.
-- **Use idempotency keys** for operations that aren't naturally idempotent. The client generates a unique ID per *intended action* and sends it with every retry. The server remembers each key and its result; if it sees the key again, it returns the stored result instead of redoing the work.
+- **Use idempotency keys for operations that aren't naturally idempotent.** The client generates a unique ID per *intended action* and sends it with every retry. The server remembers each key and its result; if it sees the key again, it returns the stored result instead of redoing the work.
 - **Claim the key before doing the work.** Insert the key with status `IN_PROGRESS` under a unique index *first*. A concurrent duplicate fails that insert and backs off.
-- **Pass idempotency downstream.** Most real effects — charging a card, sending an email — happen in *other* systems, outside your database transaction. You can't make them atomic with your write. Instead, pass your key to the downstream service as *its* idempotency key, so a repeated call has no extra effect there either.
-- **Deduplicate messages** in consumers by tracking processed message IDs.
-- **Use database constraints** (unique indexes) as a last line of defense against duplicates.
+- **Pass idempotency downstream.** Most real effects — charging a card, sending an email — happen in *other* systems, outside your database transaction. You can't make them atomic with your write. Instead, pass your key to the downstream service as *its* idempotency key, so a repeated call has no extra effect there either. If it doesn't accept a key — many email and legacy systems don't — query its status by your own reference before retrying, or accept at-most-once and reconcile. Choose by which hurts more: a duplicate or a miss.
+- **Deduplicate messages in consumers.** Track processed message IDs.
+- **Use database constraints as a last line of defense.** Unique indexes catch duplicates everything else missed.
 - **Know your HTTP semantics.** `GET`, `PUT`, and `DELETE` are meant to be idempotent; `POST` is not, unless you add a key.
 
 ## Example
@@ -49,16 +49,19 @@ Idempotency-Key: 7f3c9a2e-...      # generated once per checkout attempt
 
 server:
     existing = requests.find(key)
+    if existing and existing.requestHash != hash(body): return 422   # same key, different request
     if existing and existing.status == DONE: return existing.response
-    if existing and existing.status == IN_PROGRESS: return 409 Conflict  # retry later
+    if existing: return 409 Conflict                                 # still in progress; retry later
 
-    requests.insert(key, status=IN_PROGRESS)   # unique index: only one caller wins
-    response = paymentProvider.charge(50, "c_123", idempotency_key=key)
+    if not requests.tryInsert(key, status=IN_PROGRESS,
+                              request=body, requestHash=hash(body)):
+        return 409 Conflict                                          # lost the race to a duplicate
+    response = paymentProvider.charge(body.amount, body.customer, idempotencyKey=key)
     requests.update(key, status=DONE, response=response)
     return response
 ```
 
-The hard case is a crash *after* the provider charges the card but *before* the result is saved. The key is stuck in `IN_PROGRESS`. Because the same key was passed to the provider, retrying the charge is safe: the provider recognizes the key and returns the original result instead of charging again. A background sweeper finds keys stuck in progress and finishes them this way.
+The hard case is a crash *after* the provider charges the card but *before* the result is saved. The key is stuck in `IN_PROGRESS`. Because the same key was passed to the provider, retrying the charge is safe: the provider recognizes the key and returns the original result instead of charging again. A background sweeper finds keys stuck in progress and re-runs the *stored* request with the same key.
 
 Stripe's API works this way: it accepts an `Idempotency-Key` header on requests that create or change things.
 

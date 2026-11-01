@@ -33,24 +33,24 @@ Many teams adopt microservices to get *clean boundaries*. But you can get clean 
 
 ## How to apply it
 
-- **Draw modules around domains,** not technical layers ([[domain-driven-design]] shows how to find them).
-- **Make each module's public API explicit:** a single entry file or package; everything else internal.
-- **Enforce boundaries with tooling:** architecture tests, import linters, or language-level visibility. Good intentions decay without enforcement ([[paved-roads]]).
+- **Group modules by domain.** Not by technical layer ([[domain-driven-design]] shows how to find domains).
+- **Make each module's public API explicit.** Expose a single entry file or package; keep everything else internal.
+- **Enforce boundaries with tooling.** Use architecture tests, import linters, or language-level visibility. Good intentions decay without enforcement, so bake the checks into your service template ([[paved-roads]]).
 - **Give each module its own tables.** Others go through its API ([[coupling-and-cohesion]] explains why shared tables recouple everything).
-- **Avoid transactions that span modules** where you can. A single transaction across `orders` and `payments` is convenient today, but it's the hidden coupling that turns a later extraction from weeks into a redesign.
-- **Use in-process events for side effects** ("order placed → send email") to keep modules decoupled.
-- **Extract a service only with a reason:** different scaling needs, a different release cadence, or a team that's blocked by the shared deploy.
+- **Avoid transactions that span modules.** A single transaction across `orders` and `payments` is convenient today, but it's the hidden coupling that turns a later extraction from weeks into a redesign.
+- **Use in-process events for side effects.** "Order placed → send email" keeps modules decoupled.
+- **Extract a service only with a reason.** Good reasons are different scaling needs, a different release cadence, or a team blocked by the shared deploy.
 
 ## Example
 
-An e-commerce app starts as a single application. Instead of one giant `models/` folder, the team creates `catalog/`, `orders/`, `payments/`, and `shipping/` modules. `orders` calls `payments.charge(...)` — it never queries the payments tables directly. A CI check fails any build where one module imports another's internals.
+An e-commerce app starts as a single application. Instead of one giant `models/` folder, the team creates `catalog/`, `orders/`, `payments/`, and `shipping/` modules. `orders` calls `payments.charge(...)` — it never queries the payments tables directly. A continuous integration (CI) check fails any build where one module imports another's internals.
 
-Two years in, `payments` needs PCI (payment card industry) compliance isolation and its own deploy cadence. Its code boundary is already clean, so the code moves quickly. The slow part is the two places where `orders` and `payments` still shared a database transaction: each has to become a small saga with explicit failure handling. Because the team had kept those to a minimum, the extraction takes a couple of months instead of a year.
+Two years in, `payments` needs payment card industry (PCI) compliance isolation and its own deploy cadence. Its code boundary is already clean, so the code moves quickly. The slow part is the two places where `orders` and `payments` still shared a database transaction: each has to become a small [[saga-pattern|saga]] — a sequence of local steps with undo actions. Because the team had kept those to a minimum, the extraction takes a couple of months instead of a year.
 
 ## Common traps
 
 - **Boundaries in name only.** Folders called "modules" with code reaching freely across them is still a ball of mud.
-- **A shared "common" module** that grows into a dumping ground everyone depends on.
+- **Growing a shared "common" module.** It becomes a dumping ground everyone depends on.
 - **Shared database tables** — the fastest way to recouple modules.
 - **Forgetting shared runtime fate.** One module's memory leak, runaway query, or bad deploy takes down every module. Monitor per module, and keep risky work isolated.
 - **Premature extraction.** Moving to services before boundaries are proven usually means redrawing them across a network, which is much harder.
