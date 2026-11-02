@@ -13,7 +13,9 @@ tags: [technology-choice, judgment, tools]
 
 "If the only tool you have is a hammer, everything looks like a nail." The golden hammer is a tool a team knows well, or is excited about, and reaches for by default. Kubernetes for a single small app; a graph database because the team just learned one; microservices for a three-person startup; an event bus for what could be a function call.
 
-There are two flavours. The *comfortable* hammer is the tool you already know, used even where it fits badly. The *shiny* hammer is the new tool you want to learn, sometimes called résumé-driven development. Both skip the same step: describing the problem before picking the solution. The saying is usually credited to psychologist Abraham Maslow (1966); the antipattern name comes from the 1998 book *AntiPatterns* by William Brown and colleagues.
+There are two flavours. The *comfortable* hammer is the tool you already know, used even where it fits badly. The *shiny* hammer is the new tool you want to learn, sometimes called résumé-driven development. Both skip the same step: describing the problem before picking the solution.
+
+The saying is usually credited to psychologist Abraham Maslow (1966); the antipattern name comes from the 1998 book *AntiPatterns* by William Brown and colleagues.
 
 ## Why it matters
 

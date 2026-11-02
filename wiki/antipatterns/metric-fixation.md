@@ -18,13 +18,13 @@ The principle is *Goodhart's law*: "When a measure becomes a target, it ceases t
 ## Why it matters
 
 - **The number improves while the outcome doesn't.** Coverage reaches 90% with tests that assert nothing ([[test-driven-development]]).
-- **People game it, often without meaning to.** Engineers split one change into five PRs (pull requests) to raise a PR count, or close tickets and open new ones.
+- **People game it, often without meaning to.** Engineers split one change into five pull requests (PRs) to raise a PR count, or close tickets and open new ones.
 - **The metric loses its value as a signal.** A gamed number no longer tells you anything, even to the people who want to use it honestly.
 - **What isn't measured gets ignored.** Effort flows to whatever is counted. Mentoring, documentation, and design rarely are.
 
 ## How to apply it
 
-- **Measure outcomes, not activity.** Lead time, change failure rate, and recovery time say more than lines of code or commits ([[adopting-coding-agents]] covers DORA's delivery metrics).
+- **Measure outcomes, not activity.** Lead time, change failure rate, and recovery time say more than lines of code or commits ([[adopting-coding-agents]] covers the DevOps Research and Assessment (DORA) delivery metrics).
 - **Pair metrics that pull against each other.** Deployment frequency alongside change failure rate; speed alongside quality. Gaming one shows up in the other.
 - **Use metrics to ask questions, not to grade people.** A drop in a team's numbers is a reason for a conversation, not a performance rating.
 - **Never rank individuals by an output metric.** Software is a team activity; individual counts reward the wrong behaviour and punish helping others.
@@ -52,7 +52,7 @@ Some metrics work well as targets because the number and the outcome are close t
 
 ## Related
 
-- [[adopting-coding-agents]] — measuring AI's impact without rewarding volume.
+- [[adopting-coding-agents]] — measuring the impact of coding agents without rewarding volume.
 - [[observability]] — metrics as signals for understanding systems.
 - [[technical-debt]] — the unmeasured cost that metric targets often grow.
 - [[cargo-cult-engineering]] — copying another company's metrics without their context.

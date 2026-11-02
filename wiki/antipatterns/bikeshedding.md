@@ -11,7 +11,9 @@ tags: [decisions, meetings, review]
 
 ## The idea
 
-A committee approves a nuclear power plant in minutes, because few members understand reactors well enough to question them. It then argues for an hour about the staff bike shed — what material, what colour — because everyone has an opinion on a bike shed. That's C. Northcote Parkinson's *law of triviality*, from 1957. Poul-Henning Kamp popularized "bikeshed" in software with a 1999 email to the FreeBSD developers' list.
+A committee approves a nuclear power plant in minutes, because few members understand reactors well enough to question them. It then argues for an hour about the staff bike shed — what material, what colour — because everyone has an opinion on a bike shed.
+
+That's C. Northcote Parkinson's *law of triviality*, from 1957. Poul-Henning Kamp popularized "bikeshed" in software with a 1999 email to the FreeBSD developers' list.
 
 In engineering, the bike shed is the variable name, the brace style, the endpoint's URL wording, or the colour of a dashboard. The reactor is the data model, the consistency choice, or the failure handling. Bikeshedding happens because small decisions are easy to have opinions about and big ones take effort to understand.
 

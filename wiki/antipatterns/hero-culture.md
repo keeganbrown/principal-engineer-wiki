@@ -13,7 +13,9 @@ tags: [teams, knowledge-sharing, reliability]
 
 Every team has someone who knows where everything is. They fix the outage at 2 a.m., know why the deploy script has that flag, and answer questions nobody else can. Hero culture is when the team comes to depend on that person instead of fixing the systems that keep needing them.
 
-It's comfortable for everyone. The hero is valued and needed; the team ships; managers reward visible rescues. But each rescue hides a missing runbook, a confusing system, or an alert that should never have fired. The *bus factor* measures the risk: the number of people who would need to be unavailable before a project stalls. A bus factor of one means one vacation can halt the team. Gene Kim and colleagues' 2013 novel *The Phoenix Project* made the pattern famous through Brent, the engineer every crisis waits on.
+It's comfortable for everyone. The hero is valued and needed; the team ships; managers reward visible rescues. But each rescue hides a missing runbook, a confusing system, or an alert that should never have fired.
+
+The *bus factor* measures the risk: the number of people who would need to be unavailable before a project stalls. A bus factor of one means one vacation can halt the team. Gene Kim and colleagues' 2013 novel *The Phoenix Project* made the pattern famous through Brent, the engineer every crisis waits on.
 
 ## Why it matters
 

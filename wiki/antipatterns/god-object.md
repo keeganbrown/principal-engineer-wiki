@@ -13,7 +13,9 @@ tags: [structure, cohesion, design]
 
 A god object is a single class, module, or service at the center of everything. It holds most of the data, makes most of the decisions, and every other part calls it. Typical names give it away: `OrderManager`, `UserService`, `Core`, `AppController`, `Helpers`.
 
-It starts innocently. The class that handles orders is the obvious place to put "send the order email," then "apply the loyalty discount," then "sync to the warehouse." Each addition is a few lines. Two years later it is 6,000 lines with 80 methods, and nobody fully understands it. Arthur Riel described the "god class" in 1996, in *Object-Oriented Design Heuristics*.
+It starts innocently. The class that handles orders is the obvious place to put "send the order email," then "apply the loyalty discount," then "sync to the warehouse." Each addition is a few lines. Two years later it is 6,000 lines with 80 methods, and nobody fully understands it.
+
+Arthur Riel described the "god class" in 1996, in *Object-Oriented Design Heuristics*.
 
 ## Why it matters
 
