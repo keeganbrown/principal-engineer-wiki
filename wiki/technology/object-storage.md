@@ -38,7 +38,7 @@ An app stores user-uploaded photos as binary columns in PostgreSQL. The database
 
 The team moves photos to a private bucket. Uploads go straight from the mobile app via pre-signed URLs; the app then calls the API to record the key and checksum. Downloads go through a CDN that reads from the bucket. The database shrinks to 40 GB.
 
-The hard part is the gap between upload and record: if the app uploads but crashes before calling the API, an orphaned object remains. A nightly cleanup job deletes objects older than 24 hours with no matching row. It's idempotent, because deleting an already-deleted object is harmless, and it skips anything newer than 24 hours, so it can't race an upload in progress. The storage team owns it.
+The hard part is the gap between upload and record: if the app uploads but crashes before calling the API, an orphaned object remains. A nightly cleanup job deletes objects older than 24 hours with no matching row. It's idempotent, because deleting an already-deleted object is harmless, and it skips anything newer than 24 hours, so it won't race a normal upload in progress. A client that comes back online and records a key days later could still point at a deleted object, so the record API checks that the object exists before saving the row. The storage team owns it.
 
 ## Common traps
 

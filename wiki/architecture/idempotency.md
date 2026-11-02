@@ -26,7 +26,7 @@ Without idempotency, normal network hiccups cause real damage: customers charged
 
 ## How to apply it
 
-- **Prefer naturally idempotent operations.** "Set status to SHIPPED" is idempotent; "toggle status" is not. "Set balance to 50" is idempotent; "add 10" is not.
+- **Prefer naturally idempotent operations.** "Set status to SHIPPED" is idempotent; "toggle status" is not. "Set balance to 50" is idempotent; "add 10" is not. Idempotent isn't order-safe, though: a delayed retry of "set address to A" that lands after "set address to B" overwrites B, so pair concurrent writes with a version check.
 - **Use idempotency keys for operations that aren't naturally idempotent.** The client generates a unique ID per *intended action* and sends it with every retry. The server remembers each key and its result; if it sees the key again, it returns the stored result instead of redoing the work.
 - **Claim the key before doing the work.** Insert the key with status `IN_PROGRESS` under a unique index *first*. A concurrent duplicate fails that insert and backs off.
 - **Pass idempotency downstream.** Most real effects — charging a card, sending an email — happen in *other* systems, outside your database transaction. You can't make them succeed or fail together with your write. Instead, pass your key to the downstream service as *its* idempotency key, so a repeated call has no extra effect there either. If it doesn't accept a key — many email and legacy systems don't — query its status by your own reference before retrying, or don't retry at all — *at-most-once*: the effect may be lost, never doubled — and run a periodic check that finds and repairs misses. Choose by which hurts more: a duplicate or a miss.

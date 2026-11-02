@@ -49,7 +49,7 @@ The team spends a sprint on navigability: delete `legacy/promo/`, move pricing i
 - **A big-bang reorganization.** Moving every file at once breaks history, open branches, and everyone's memory. Improve the areas where people and agents work most, a module at a time.
 - **Docs that drift.** A module README that describes last year's design misleads agents with full confidence. Keep docs short enough that updating them is part of the change.
 - **Over-splitting.** Fifty tiny files with one function each are as hard to navigate as one huge file. Group by what changes together.
-- **Clever indirection.** Wiring that happens by naming convention or at runtime — a framework that finds `*Handler` classes automatically, code that generates methods on the fly — saves typing but hide the call graph from search. Use them where they pay, and document where they're used.
+- **Clever indirection.** Wiring that happens by naming convention or at runtime — a framework that finds `*Handler` classes automatically, code that generates methods on the fly — saves typing but hides the call graph from search. Use them where they pay, and document where they're used.
 - **Layout by tooling, not meaning.** A structure that suits the build tool but not the domain makes every change a scavenger hunt.
 
 ## When it doesn't apply

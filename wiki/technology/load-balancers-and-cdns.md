@@ -31,7 +31,7 @@ The cost: another layer to configure and debug, cache rules that can serve stale
 
 ## How to apply it
 
-- **Make health checks meaningful.** A check that returns "OK" while the database is unreachable keeps sending traffic to a broken server. Check what the server needs to do its job — but not every downstream dependency, or one slow dependency marks every server unhealthy at once.
+- **Make health checks meaningful.** A check that returns "OK" while the database is unreachable keeps sending traffic to a broken server. Check what the server needs to do its job — but not every downstream dependency, or one slow dependency marks every server unhealthy at once. When every server shares one database, a check that fails on the slightest database delay pulls them all out together; keep the check tolerant of brief blips, and alert on the shared dependency separately.
 - **Drain connections on deploy.** Stop sending new requests to a server, let current ones finish, then shut it down. This is what makes zero-downtime deploys possible, whether rolling (servers replaced a few at a time) or blue-green (a full new set of servers, with traffic switched over at once).
 - **Avoid sticky sessions where you can.** Pinning a user to one server makes scaling and failover harder. Keep session state in a shared store instead.
 - **Put static assets on a CDN with long cache lifetimes.** Change the file name when the content changes (`app.3f9a2c.js`) so you never need to purge.

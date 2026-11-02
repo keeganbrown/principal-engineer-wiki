@@ -41,6 +41,7 @@ A company has a public REST API for partners, a mobile app, and 20 internal serv
 Options considered:
 
 - **Convert everything to GraphQL.** Rejected — partners are happy with REST, and a rewrite breaks them.
+- **Add one mobile-only REST endpoint that bundles the seven calls.** Rejected — it fixes this screen, but each new screen would need its own custom endpoint.
 - **Add GraphQL as a gateway for the apps only.** Accepted — one query fetches what a screen needs, and the gateway calls internal services.
 - **Use gRPC between internal services.** Accepted for new services; existing ones migrate when touched. That means two internal styles for years, since rarely touched services never migrate, so the team keeps its REST conventions documented for the stragglers.
 

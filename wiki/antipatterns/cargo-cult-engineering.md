@@ -42,7 +42,7 @@ Climbing out:
 
 A 30-person company reads that a large tech firm requires a design doc for every change and adopts the same rule, with the same eight-page template. Within a month, engineers write docs after the code is done, reviewers skim them, and small changes wait a week for approval.
 
-Asked what problem they were solving, the team says "we kept building the wrong thing on big projects." That is a real problem, but it applies to perhaps one project a month. They change the rule: a two-page doc for work longer than two weeks or that crosses teams, and none for anything else ([[design-docs]]).
+Asked what problem they were solving, the team says "we kept building the wrong thing on big projects." That is a real problem, but it applies to perhaps one project a month. They change the rule: a two-page doc for work that is longer than two weeks, crosses teams, or is hard to undo, and none for anything else ([[design-docs]]).
 
 The hard part is that the original rule felt safer, and loosening it got pushback: "what if something slips through?" They answer with data instead of opinion, tracking for a quarter whether any undocumented change caused a cross-team problem. None did. That's a small sample, but enough to shift the burden of proof, and the lighter rule stuck.
 

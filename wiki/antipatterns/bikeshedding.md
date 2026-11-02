@@ -42,7 +42,7 @@ Climbing out:
 
 ## Example
 
-A design review for a new orders API runs for an hour. Forty minutes go to whether the endpoint should be `/orders` or `/purchase-orders` and whether field names use camelCase. Nobody asks what happens when the payment call times out after the order is saved.
+A design review for a new internal orders API runs for an hour. Forty minutes go to whether the endpoint should be `/orders` or `/purchase-orders` and whether field names use camelCase. Nobody asks what happens when the payment call times out after the order is saved.
 
 The next review is set up differently. The author opens with "decisions I need: idempotency on retries (a retried request must not create a second order, see [[idempotency]]), and whether stock is reserved before or after payment." Naming is delegated to the API style guide, with the author deciding anything it doesn't cover.
 

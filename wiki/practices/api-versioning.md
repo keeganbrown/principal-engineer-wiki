@@ -41,7 +41,7 @@ Breaking changes are among the most expensive mistakes in software because their
 
 ## Example
 
-An orders API returns money as a float: `"total": 19.99`. Rounding errors are causing billing disputes, and the team needs integer cents with an explicit currency: `"total": {"amountCents": 1999, "currency": "USD"}`. The *type* of `total` changes, so this can't be done additively under the same name.
+An orders API returns money as a float: `"total": 19.99`. Rounding errors are causing billing disputes, and the team needs integer cents with an explicit currency: `"total": {"amountCents": 1999, "currency": "USD"}`. The *type* of `total` changes, so this can't be done additively under the same name. A new field beside it would work for one response, but money appears on every resource in the API, so the team chooses one new version over a dozen parallel fields.
 
 The team ships `/v2/orders` with the new shape and leaves `/v1` unchanged. `/v1` responses start carrying `Deprecation` and `Sunset: Sun, 31 Oct 2027 00:00:00 GMT` headers. Per-client usage dashboards show which partners still call `/v1`; the team emails each one twice and offers migration help.
 

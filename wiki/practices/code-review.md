@@ -62,7 +62,7 @@ The helpful version names the problem, explains the impact, suggests a fix, and 
 
 ## When it doesn't apply
 
-Mandatory pre-merge review on every change is a policy choice, not a law. Some high-trust teams use **ship / show / ask** (Rouan Wilsenach, martinfowler.com, 2021): *ship* trivial changes directly, *show* low-risk ones by merging and reviewing afterwards, and *ask* for blocking review only on risky or unfamiliar code. Measure how long PRs wait for review; if it's measured in days, the gate costs more than it catches.
+Mandatory pre-merge review on every change is a policy choice, not a law. Some high-trust teams use **ship / show / ask** (Rouan Wilsenach, martinfowler.com, 2021): *ship* trivial changes directly, *show* low-risk ones by merging and reviewing afterwards, and *ask* for blocking review only on risky or unfamiliar code. Measure how long PRs wait for review; if it's measured in days, the gate costs more than it catches. Where regulation requires a second approval on every production change, ship/show/ask applies only to what the rules exempt.
 
 Pair or ensemble (mob) programming provides continuous review, so a separate review may add little. Emergency fixes may merge first and get reviewed immediately after — but that should be rare and explicit.
 
