@@ -181,3 +181,21 @@ mandate study's throughput range. Consider items applied: METR redesign note,
 deployment-frequency explanation, the guardrails back-link, the stop-condition
 example. Not applied: the "Review fatigue" pointer (word limit), the
 code-review back-link, and deriving `short_name` from the site title.
+
+## technical-accuracy (completed after the limit reset, against 0d70370)
+
+Every number matches its source. No must-fix. Should-fix, all applied:
+
+- Harvard's agent effects are measured *on top of* AI-assistant adoption, not
+  against no AI. Added to both articles and the sources row.
+- Restored Harvard's counter-finding: the authors read the longer reviews and
+  extra comments as lower-quality submitted code. Neither study's
+  bug-report or revert null is precise enough to rule out a rise.
+- Removed causal lead-ins and quiz stems: "AI amplifies…" (DORA is a
+  self-report survey about AI tools, not agents), "It may slow the decay",
+  "agents raised", "the rise … that agents cause".
+- Sources row: opted-in Jellyfish sample, imprecise bug-report estimate.
+
+Consider items applied: CMU "observational", "fix the checks first" in
+Related, DORA "AI tools", the 14-month window, the glossary handoff, and the
+CMU revert wording ("stayed flat, suggestive").

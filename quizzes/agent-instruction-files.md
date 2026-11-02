@@ -27,7 +27,7 @@
 
 **Why:** Use the file to explain, and tools (tests, linters, type checks, permission settings) to enforce. See [[agent-instruction-files]] and [[shared-agent-configuration]].
 
-## A lead says committing an agent instruction file halves the rise in code complexity that agents cause. How should you treat the claim?
+## A lead says committing an agent instruction file halves the rise in code complexity seen after agent adoption. How should you treat the claim?
 
 - [x] As plausible but unproven, since the evidence is observational.
 - [ ] As proven, since a large study measured it across many repositories.

@@ -20,12 +20,12 @@
 
 ## A team's delivery pipeline is badly broken. Should they roll out agents now?
 
-- [x] No; fix the pipeline where agents will work, since agents amplify it.
+- [x] No; fix the pipeline where agents will work, since AI tends to amplify it.
 - [ ] Yes; agents will fix the pipeline themselves as part of their work.
 - [ ] No; wait until the whole codebase is clean before trying any agents.
 - [ ] Yes, but only for the engineers who complain most about the pipeline.
 
-**Why:** Agents amplify a team's existing strengths and weaknesses, so a broken pipeline gets broken faster. That doesn't mean a perfect codebase first; fix the loop where agents will work most. See [[adopting-coding-agents]] and [[feedback-loops-for-agents]].
+**Why:** DORA's 2025 survey suggests AI amplifies a team's existing strengths and weaknesses, so a broken pipeline may just break faster. That doesn't mean a perfect codebase first; fix the loop where agents will work most. See [[adopting-coding-agents]] and [[feedback-loops-for-agents]].
 
 ## A firm's agent rollout raised pull requests opened by a third, but resolved issues rose far less. Where should it look first?
 

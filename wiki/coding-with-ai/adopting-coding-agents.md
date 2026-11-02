@@ -19,11 +19,11 @@ Aligning a team means deciding a few things together and writing them down: what
 
 ## Why it matters
 
-- **The evidence is early and mixed.** Studies so far are small, short, observational, or from one company, and they disagree. Read each finding as a signal of what to watch, not a forecast for your team.
+- **The evidence is early and mixed.** Studies so far are small, short, observational, or from one company, and they disagree. Read each finding as a signal to watch, not a forecast.
 - **Feelings are a poor measure.** In a 2025 randomized trial by the research group METR (16 developers in repositories they knew well), experienced open-source developers took 19% *longer* with AI tools, while believing they'd been about 20% faster. METR's 2026 follow-up was inconclusive, and METR is redesigning the study.
-- **AI amplifies what's already there.** DORA's 2025 survey of about 5,000 professionals found AI magnifies a team's existing strengths and weaknesses. Teams with fast feedback gain; tangled systems get more of the same.
+- **Watch for AI amplifying what's already there.** DORA's 2025 survey of about 5,000 professionals reports that AI tends to magnify a team's existing strengths and weaknesses, a correlation from self-reports rather than a controlled result.
 - **Practice spreads through people.** A 2026 Microsoft study of its rollout of command-line agents (one company, four months, observational) found adoption spread mainly through peers. Adopters merged roughly 24% more pull requests (PRs); quality and review time weren't measured.
-- **Watch delivered work, not code volume.** In a 2026 Harvard working paper by Chen and Stratton (655 firms using one analytics vendor, observational, not yet peer reviewed), PRs opened rose about 36% after firms adopted agents, but resolved issues only about 14%, a rise that may be noise. The authors point to review as the bottleneck ([[reviewing-ai-generated-code]]).
+- **Watch delivered work, not code volume.** In a 2026 Harvard working paper by Chen and Stratton (655 firms using one analytics vendor, observational, not yet peer reviewed), PRs opened rose about 36% after firms added agents to their AI assistants, but resolved issues only about 14%, a rise that may be noise. The authors point to review as the bottleneck ([[reviewing-ai-generated-code]]).
 - **Watch understanding, not just speed.** In a 2026 Anthropic trial (52 mostly junior engineers, one library, quiz taken straight after), developers learning a new library with AI help scored 50% versus 67% without. Those who asked conceptual questions did much better than those who delegated the code.
 
 ## How to apply it
@@ -59,12 +59,12 @@ The report says so: real gains where feedback loops are good, a review bottlenec
 
 ## When it doesn't apply
 
-In some regulated environments, no external model may see the code; the question is whether an approved self-hosted option exists. A team of two doesn't need a formal pilot — a five-line agreement and an honest check-in after a month will do. And if your delivery pipeline is badly broken, fix that first: DORA's survey suggests agents amplify the breakage.
+In some regulated environments, no external model may see the code; the question is whether an approved self-hosted option exists. A team of two doesn't need a formal pilot — a five-line agreement and an honest check-in after a month will do. And if your delivery pipeline is badly broken, fix that first: DORA's survey suggests AI tools amplify the breakage.
 
 ## Related
 
 - [[influencing-without-authority]] — adoption spreads through trust and examples, not memos.
 - [[paved-roads]] — shared agent configuration is a paved road; maintain it like one.
 - [[reviewing-ai-generated-code]] — the review norms the agreement should set.
-- [[feedback-loops-for-agents]] — where the biggest gains come from.
+- [[feedback-loops-for-agents]] — fix the checks first.
 - [[observability]] — measure outcomes in production, not activity in the editor.

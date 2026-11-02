@@ -192,7 +192,7 @@ alphabetical under each letter; the linter checks the format.
 ## U
 
 - **Ubiquitous language** — In domain-driven design, the shared vocabulary that the business and the code both use, within one bounded context. See [[domain-driven-design]].
-- **Unattended agent run** — A coding agent rerun on a schedule or repository event, with nobody watching, until a task is done. It needs a stop condition a machine can check, a spending cap, and a sandbox. See [[feedback-loops-for-agents]].
+- **Unattended agent run** — A coding agent rerun on a schedule or repository event, with nobody watching, until a task is done. It needs a stop condition a machine can check, a spending cap, a human handoff, and a sandbox. See [[feedback-loops-for-agents]].
 
 ## Y
 
