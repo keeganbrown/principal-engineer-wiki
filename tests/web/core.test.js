@@ -124,3 +124,70 @@ test("parseRoute: terms view with optional query", () => {
   assert.deepEqual(core.parseRoute("#/terms"), { view: "terms", query: "" });
   assert.deepEqual(core.parseRoute("#/terms/slo"), { view: "terms", query: "slo" });
 });
+
+// ---------- Quiz ----------
+
+// A deterministic stand-in for Math.random: walks through the given values.
+function sequence(...values) {
+  let i = 0;
+  return () => values[i++ % values.length];
+}
+
+const q = (question, answer = 0) => ({ question, options: ["A", "B", "C", "D"], answer, why: "because" });
+const quizArticles = {
+  kiss: { slug: "kiss", category: "principles", quiz: [q("k1"), q("k2"), q("k3")] },
+  dry: { slug: "dry", category: "principles", quiz: [q("d1"), q("d2")] },
+  tdd: { slug: "tdd", category: "practices", quiz: [q("t1")] },
+  none: { slug: "none", category: "practices", quiz: [] },
+};
+
+test("parseRoute: quiz, optionally scoped to a category", () => {
+  assert.deepEqual(core.parseRoute("#/quiz"), { view: "quiz", category: null });
+  assert.deepEqual(core.parseRoute("#/quiz/practices"), { view: "quiz", category: "practices" });
+});
+
+test("shuffle returns a new array with the same items and leaves the input alone", () => {
+  const input = [1, 2, 3, 4, 5];
+  const out = core.shuffle(input, sequence(0.9, 0.1, 0.5, 0.3));
+  assert.deepEqual(input, [1, 2, 3, 4, 5]);
+  assert.deepEqual([...out].sort(), [1, 2, 3, 4, 5]);
+  assert.notDeepEqual(out, input);
+});
+
+test("shuffle with Math.random-like 0.999 keeps every index in range", () => {
+  assert.deepEqual(core.shuffle([1, 2, 3], () => 0.999).length, 3);
+});
+
+test("prepareQuestion shuffles options and tracks which one is correct", () => {
+  const prepared = core.prepareQuestion(q("k1", 2), sequence(0.1, 0.6, 0.3));
+  assert.equal(prepared.question, "k1");
+  assert.equal(prepared.why, "because");
+  assert.deepEqual([...prepared.options.map((o) => o.html)].sort(), ["A", "B", "C", "D"]);
+  const correct = prepared.options.filter((o) => o.correct);
+  assert.equal(correct.length, 1);
+  assert.equal(correct[0].html, "C");
+});
+
+test("quizDeck draws across articles before repeating one", () => {
+  const deck = core.quizDeck(quizArticles, { count: 3, rng: sequence(0.4, 0.8, 0.2, 0.6) });
+  assert.equal(deck.length, 3);
+  assert.deepEqual([...deck.map((c) => c.slug)].sort(), ["dry", "kiss", "tdd"]);
+});
+
+test("quizDeck can be scoped to one category", () => {
+  const deck = core.quizDeck(quizArticles, { category: "principles", count: 10, rng: Math.random });
+  assert.equal(deck.length, 5);
+  assert.ok(deck.every((c) => c.slug === "kiss" || c.slug === "dry"));
+  assert.equal(new Set(deck.map((c) => c.question)).size, 5);
+});
+
+test("quizDeck cards are prepared questions tagged with their article", () => {
+  const [card] = core.quizDeck(quizArticles, { category: "practices", count: 1, rng: Math.random });
+  assert.equal(card.slug, "tdd");
+  assert.equal(card.question, "t1");
+  assert.equal(card.options.filter((o) => o.correct).length, 1);
+});
+
+test("quizCounts counts available questions per category", () => {
+  assert.deepEqual(core.quizCounts(quizArticles), { all: 6, principles: 5, practices: 1 });
+});

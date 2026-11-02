@@ -12,6 +12,7 @@
     if (head === "graph") return { view: "graph", focus: arg };
     if (head === "search") return { view: "search", query: arg || "" };
     if (head === "terms") return { view: "terms", query: arg || "" };
+    if (head === "quiz") return { view: "quiz", category: arg };
     return { view: "home" };
   }
 
@@ -180,7 +181,52 @@
     return { seen, total: Object.keys(articles).length };
   }
 
-  const api = { parseRoute, search, neighbors, pathPosition, radialLayout, createSimulation, progress, shortTitle, searchTerms };
+  // ---------- Quiz ----------
+
+  // Fisher–Yates on a copy. rng is injectable so tests are deterministic.
+  function shuffle(items, rng) {
+    const random = rng || Math.random;
+    const out = [...items];
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = Math.min(i, Math.floor(random() * (i + 1)));
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+  }
+
+  function prepareQuestion(question, rng) {
+    const options = question.options.map((html, i) => ({ html, correct: i === question.answer }));
+    return { question: question.question, why: question.why, options: shuffle(options, rng) };
+  }
+
+  const inCategory = (category) => (a) => (a.quiz || []).length && (!category || a.category === category);
+
+  // Takes one question from each article (in random order) before taking a
+  // second from any, so a short quiz covers as many articles as it can.
+  function quizDeck(articles, { category, count, rng }) {
+    const queues = shuffle(Object.values(articles).filter(inCategory(category)), rng)
+      .map((a) => ({ slug: a.slug, questions: shuffle(a.quiz, rng) }));
+    const deck = [];
+    while (deck.length < count && queues.some((queue) => queue.questions.length)) {
+      for (const queue of queues) {
+        if (deck.length >= count) break;
+        const next = queue.questions.shift();
+        if (next) deck.push(Object.assign({ slug: queue.slug }, prepareQuestion(next, rng)));
+      }
+    }
+    return deck;
+  }
+
+  function quizCounts(articles) {
+    const counts = { all: 0 };
+    for (const a of Object.values(articles).filter(inCategory(null))) {
+      counts.all += a.quiz.length;
+      counts[a.category] = (counts[a.category] || 0) + a.quiz.length;
+    }
+    return counts;
+  }
+
+  const api = { shuffle, prepareQuestion, quizDeck, quizCounts, parseRoute, search, neighbors, pathPosition, radialLayout, createSimulation, progress, shortTitle, searchTerms };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.WikiCore = api;
 })(typeof window !== "undefined" ? window : globalThis);

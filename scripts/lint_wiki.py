@@ -250,6 +250,9 @@ def main() -> int:
     if os.path.exists(glossary_path):
         with open(glossary_path, encoding="utf-8") as f:
             problems.extend(lint_glossary(f.read(), set(articles)))
+    from quizzes import lint_quizzes, load_quizzes  # quizzes imports this module
+
+    problems.extend(lint_quizzes(load_quizzes(os.path.join(repo_root, "quizzes")), set(articles)))
     for problem in problems:
         print(problem)
     print(f"{len(articles)} articles checked, {len(problems)} problem(s).")

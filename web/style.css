@@ -18,6 +18,8 @@
   --c-technology: #65a30d;
   --c-coding-with-ai: #2563eb;
   --c-antipatterns: #dc2626;
+  --good: #15803d;
+  --bad: #b91c1c;
 
   --radius: 14px;
   --tabbar-h: 64px;
@@ -46,6 +48,10 @@
     --c-technology: #a3e635;
     --c-coding-with-ai: #60a5fa;
     --c-antipatterns: #f87171;
+  --good: #4ade80;
+  --bad: #f87171;
+    --good: #4ade80;
+    --bad: #f87171;
     color-scheme: dark;
   }
 }
@@ -80,6 +86,8 @@ body {
   overflow-x: hidden;
 }
 a { color: inherit; }
+/* Components set their own display; the hidden attribute must still win. */
+[hidden] { display: none !important; }
 button { font: inherit; color: inherit; }
 svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -128,7 +136,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
   height: calc(var(--tabbar-h) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -338,6 +346,45 @@ a.wikilink:hover { background-size: 100% 100%; background-image: linear-gradient
 .button.primary { background: var(--accent); border-color: transparent; color: var(--surface); }
 .button svg { width: 18px; height: 18px; }
 
+/* ---------- Quiz ---------- */
+.quiz-block { margin-top: 40px; padding-top: 8px; border-top: 1px solid var(--border); }
+.quiz-block h2 { font-size: 22px; margin: 18px 0 4px; }
+.quiz-block > p:not(.quiz-score) { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
+.quiz-list { display: grid; gap: 14px; }
+.quiz-q {
+  margin: 0; padding: 14px; border-radius: var(--radius); min-width: 0;
+  background: var(--surface); border: 1px solid var(--border); border-top: 4px solid var(--cat, var(--accent));
+}
+.quiz-q legend { float: left; width: 100%; padding: 0; margin: 0 0 12px; font-weight: 650; font-size: 17px; line-height: 1.4; }
+.quiz-label { margin: 0 0 8px; }
+.quiz-options { clear: both; display: grid; gap: 8px; }
+.quiz-option {
+  display: block; width: 100%; text-align: left; padding: 11px 14px; border-radius: 12px; cursor: pointer;
+  border: 1.5px solid var(--border); background: var(--bg); font-size: 15px; line-height: 1.45;
+  transition: border-color .15s, background .15s;
+}
+.quiz-option:hover:not(:disabled) { border-color: var(--cat, var(--accent)); }
+.quiz-option:disabled { cursor: default; opacity: .75; }
+.quiz-option.right { opacity: 1; border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--surface)); }
+.quiz-option.wrong { opacity: 1; border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, var(--surface)); }
+.quiz-option.right::before { content: "✓ "; color: var(--good); font-weight: 700; }
+.quiz-option.wrong::before { content: "✗ "; color: var(--bad); font-weight: 700; }
+.quiz-option code, .quiz-q legend code, .quiz-why code { font-family: var(--mono); font-size: .9em; }
+.quiz-why { margin-top: 12px; font-size: 15px; line-height: 1.5; }
+.quiz-why a.wikilink { color: var(--link, var(--accent)); }
+.quiz-score { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 16px 0 0; }
+.quiz-page h1 { font-size: clamp(28px, 7vw, 40px); margin: 0 0 6px; }
+.quiz-topics { margin-bottom: 12px; }
+.quiz-topics small { font-weight: 500; opacity: .7; margin-left: 2px; }
+.quiz-best { color: var(--muted); font-size: 15px; min-height: 1.4em; margin: 4px 0 16px; }
+.quiz-progress { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.quiz-progress i { display: block; height: 100%; background: var(--accent); transition: width .25s; }
+.quiz-status { display: flex; justify-content: space-between; color: var(--muted); font-size: 14px; font-weight: 600; margin: 10px 0 12px; }
+.quiz-next { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
+.quiz-source { color: var(--cat); font-weight: 600; font-size: 15px; text-decoration: none; }
+.quiz-result { margin-bottom: 8px; }
+.quiz-result .ring { font-size: 12px; }
+
 /* ---------- Search ---------- */
 .search-box input {
   width: 100%; height: 50px; padding: 0 18px; border-radius: 999px;
@@ -438,6 +485,16 @@ a.wikilink:hover { background-size: 100% 100%; background-image: linear-gradient
 .preview strong { display: block; font-size: 15px; margin: 4px 0 2px; }
 .preview span { color: var(--muted); }
 
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 40;
+  bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 12px);
+  display: flex; align-items: center; gap: 12px; width: max-content; max-width: calc(100vw - 32px);
+  padding: 10px 16px; border-radius: 999px; font-size: 15px;
+  background: var(--text); color: var(--bg); box-shadow: var(--shadow);
+}
+.toast .button { padding: 6px 12px; font-size: 14px; }
+@media (min-width: 760px) { .toast { bottom: 16px; } }
+
 .noscript, .empty { text-align: center; color: var(--muted); padding: 40px 16px; }
 
 /* ---------- Wider screens ---------- */
@@ -453,7 +510,7 @@ a.wikilink:hover { background-size: 100% 100%; background-image: linear-gradient
   .tabbar [data-tab="search"] { display: none; }
   .tabbar a, .tabbar button { flex-direction: row; gap: 6px; padding: 0 12px; font-size: 14px; }
   .tabbar svg { width: 20px; height: 20px; }
-  .topbar-search { margin-right: 400px; }
+  .topbar-search { margin-right: 490px; }
   .graph-view { bottom: 0; }
   .page { padding: 36px 24px 72px; }
   .prose pre { margin: 0 0 18px; border: 1px solid var(--border); border-radius: 12px; }
@@ -468,7 +525,7 @@ a.wikilink:hover { background-size: 100% 100%; background-image: linear-gradient
   .path-stop { flex-basis: 220px; }
 }
 @media (min-width: 760px) and (max-width: 1000px) {
-  .topbar-search { margin-right: 380px; }
+  .topbar-search { margin-right: 470px; }
   .brand-name { display: none; }
 }
 

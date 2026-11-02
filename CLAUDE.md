@@ -36,11 +36,15 @@ wiki/technology/      Kinds of technology (databases, brokers, LLMs, ...).
 wiki/leadership/      Influence, communication, and the non-code skills.
 wiki/coding-with-ai/  Working with coding agents, as an engineer and a team.
 wiki/antipatterns/    Pitfalls: tempting moves that reliably make things worse.
+quizzes/<slug>.md     3+ multiple-choice questions per article (see Quiz rules).
 scripts/lint_wiki.py  Enforces the rules below.
+scripts/quizzes.py    Parses and lints the quiz banks.
 scripts/build_site.py Builds the reader site: wiki → _site/wiki-data.js + web/.
 scripts/markdown_html.py  The Markdown subset the articles use → HTML.
 web/                  Reader site: index.html, style.css, app.js (DOM shell),
-                      core.js (pure logic, tested in tests/web/).
+                      core.js (pure logic, tested in tests/web/), sw.js
+                      (offline cache; the build fills in its file list and
+                      a content-hash version), manifest + icons (installable).
 docs/review-guide.md  Shared rules + output format for reviewer agents.
 docs/sources/         Research notes and citations behind fast-moving topics.
 .claude/agents/       Reviewer agents, one perspective each.
@@ -74,6 +78,17 @@ tests/                Tests for the linter, site build, and site logic.
   one; the glossary defines, articles explain.
 - No duplicate terms. When an article introduces an important term,
   add it here in the same change.
+
+## Quiz rules (enforced by the linter)
+
+- Every article has `quizzes/<slug>.md`; no quiz without an article.
+- At least 3 questions. Each is a `## Question ending in?`, then 3–4
+  options as `- [x]` (exactly one) / `- [ ]`, then `**Why:** …` with a
+  link to the article. No duplicate options, no stray lines.
+- The site shuffles question and option order, so write options in any
+  order. Test judgment with scenarios, not trivia; make wrong options
+  plausible and about as long as the right one; base every answer on what
+  the article actually says. When you change an article, check its quiz.
 
 ## Writing style (enforced by you)
 
@@ -198,7 +213,7 @@ call. Never blame the people who fell into it.
 
 **Add an article:** copy `templates/article.md` → fill it in → add it to
 `index.md` under the right heading → add `[[links]]` from 1–3 related
-existing articles back to it → run lint → add a line to `log.md` → commit.
+existing articles back to it → write `quizzes/<slug>.md` → run lint → add a line to `log.md` → commit.
 
 **Ingest a source** (book, talk, blog post): summarize what's new, then
 update existing articles or create new ones. Note the source in `log.md`.

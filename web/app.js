@@ -173,6 +173,48 @@
     document.title = "Principal Engineer Wiki";
   }
 
+  // ---------- Quiz widget (shared by articles and the Quiz tab) ----------
+
+  const QUIZ_BEST_KEY = "pe-wiki:quiz-best";
+  const QUIZ_LENGTH = 10;
+  let quizSerial = 0;
+
+  function questionHtml(card, label) {
+    const id = `q${++quizSerial}`;
+    const options = card.options.map((o) =>
+      `<button type="button" class="quiz-option" data-correct="${o.correct}">${o.html}</button>`).join("");
+    return `<fieldset class="quiz-q" aria-describedby="${id}-why">
+      ${label ? `<p class="quiz-label">${label}</p>` : ""}
+      <legend>${card.question}</legend>
+      <div class="quiz-options">${options}</div>
+      <div class="quiz-why" id="${id}-why" aria-live="polite" hidden></div>
+    </fieldset>`;
+  }
+
+  // Wires every unanswered question under root. onAnswer(correct, fieldset)
+  // runs once per question, after the answer is revealed.
+  function wireQuestions(root, cards, onAnswer) {
+    root.querySelectorAll(".quiz-q").forEach((fieldset, i) => {
+      fieldset.addEventListener("click", (event) => {
+        const chosen = event.target.closest(".quiz-option");
+        if (!chosen || fieldset.dataset.answered) return;
+        fieldset.dataset.answered = "true";
+        const correct = chosen.dataset.correct === "true";
+        fieldset.querySelectorAll(".quiz-option").forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.correct === "true") b.classList.add("right");
+        });
+        if (!correct) chosen.classList.add("wrong");
+        chosen.setAttribute("aria-pressed", "true");
+        const why = fieldset.querySelector(".quiz-why");
+        why.innerHTML = `<strong>${correct ? "Correct." : "Not quite."}</strong> ${cards[i].why}`;
+        why.hidden = false;
+        decorateLinks(why);
+        if (onAnswer) onAnswer(correct, fieldset);
+      });
+    });
+  }
+
   // ---------- Article ----------
 
   function truncate(text, max) {
@@ -241,6 +283,12 @@
         ${pathBanner(slug)}
       </header>
       <div class="prose">${a.html}</div>
+      ${a.quiz.length ? `<section class="quiz-block" aria-labelledby="quiz-title">
+        <h2 id="quiz-title">Check yourself</h2>
+        <p>${a.quiz.length} quick questions. Questions and options are shuffled each visit.</p>
+        <div class="quiz-list"></div>
+        <p class="quiz-score" aria-live="polite" hidden></p>
+      </section>` : ""}
       <section class="connections" aria-labelledby="connections-title">
         <h2 id="connections-title">Connections</h2>
         <p>${core.neighbors(a).length} ideas connect to this one. Tap one to jump there.</p>
@@ -261,9 +309,30 @@
     </article>`;
 
     decorateLinks(view.querySelector(".prose"));
+    if (a.quiz.length) renderArticleQuiz(a, view.querySelector(".quiz-block"));
     view.querySelector("[data-surprise]").addEventListener("click", () => { location.hash = `#/a/${pickSurprise(slug)}`; });
     markSeen(slug);
     document.title = `${core.shortTitle(a.title)} · Principal Engineer Wiki`;
+  }
+
+  function renderArticleQuiz(a, block) {
+    const cards = core.shuffle(a.quiz).map((q) => core.prepareQuestion(q));
+    const list = block.querySelector(".quiz-list");
+    const score = block.querySelector(".quiz-score");
+    list.innerHTML = cards.map((card) => questionHtml(card)).join("");
+    score.hidden = true;
+    let answered = 0;
+    let right = 0;
+    wireQuestions(list, cards, (correct) => {
+      answered += 1;
+      right += correct ? 1 : 0;
+      if (answered < cards.length) return;
+      score.innerHTML = `You got <b>${right} of ${cards.length}</b>.
+        <button class="button" type="button" data-retry>Shuffle and retry</button>
+        <a class="button" href="#/quiz/${a.category}">More ${escapeHtml(categoryLabel[a.category])} questions</a>`;
+      score.hidden = false;
+      score.querySelector("[data-retry]").addEventListener("click", () => renderArticleQuiz(a, block));
+    });
   }
 
   // ---------- Search ----------
@@ -386,6 +455,107 @@
       if (target) target.scrollIntoView({ behavior: "smooth" });
     });
     document.title = "Terms · Principal Engineer Wiki";
+  }
+
+  // ---------- Quiz tab ----------
+
+  function renderQuiz(category) {
+    const counts = core.quizCounts(articles);
+    const best = storageGet(QUIZ_BEST_KEY, {});
+    let chosen = category && counts[category] ? category : "";
+    const chips = [{ slug: "", label: "Everything" }].concat(categories)
+      .filter((c) => counts[c.slug || "all"])
+      .map((c) => `<button type="button" ${c.slug ? `data-cat="${c.slug}"` : ""} data-pick="${c.slug}" aria-pressed="${c.slug === chosen}">
+        ${escapeHtml(c.label)} <small>${counts[c.slug || "all"]}</small></button>`).join("");
+
+    view.innerHTML = `<div class="page quiz-page">
+      <p class="eyebrow">Quiz</p>
+      <h1>Test what you know</h1>
+      <div class="quiz-stage"></div>
+    </div>`;
+    const stage = view.querySelector(".quiz-stage");
+
+    function bestLine() {
+      const record = best[chosen || "all"];
+      return record ? `Your best here: ${record.right} of ${record.total}.` : "";
+    }
+
+    function showStart() {
+      stage.innerHTML = `<p class="lede">${QUIZ_LENGTH} random questions from ${counts.all} across the wiki. Pick a topic, or take them from everything.</p>
+        <div class="category-tabs quiz-topics" role="group" aria-label="Quiz topic">${chips}</div>
+        <p class="quiz-best">${bestLine()}</p>
+        <button class="button primary" type="button" data-start>Start quiz</button>`;
+      stage.querySelectorAll("[data-pick]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.pick === chosen)));
+      stage.querySelector(".quiz-topics").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-pick]");
+        if (!button) return;
+        chosen = button.dataset.pick;
+        history.replaceState(null, "", chosen ? `#/quiz/${chosen}` : "#/quiz");
+        showStart();
+      });
+      stage.querySelector("[data-start]").addEventListener("click", () => play());
+    }
+
+    function play() {
+      const deck = core.quizDeck(articles, { category: chosen || null, count: QUIZ_LENGTH });
+      const missed = [];
+      let index = 0;
+      let right = 0;
+
+      function showCard() {
+        const card = deck[index];
+        const a = articles[card.slug];
+        const pct = Math.round((index / deck.length) * 100);
+        stage.innerHTML = `<div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${deck.length}" aria-valuenow="${index}"><i style="width:${pct}%"></i></div>
+          <p class="quiz-status"><span>Question ${index + 1} of ${deck.length}</span><span>Score ${right}</span></p>
+          <div data-cat="${a.category}">${questionHtml(card, `<span class="pill">${escapeHtml(categoryLabel[a.category])}</span>`)}</div>
+          <div class="quiz-next" hidden>
+            <a class="quiz-source" data-cat="${a.category}" href="#/a/${a.slug}">From: ${escapeHtml(a.title)}</a>
+            <button class="button primary" type="button">${index + 1 < deck.length ? "Next question" : "See results"}</button>
+          </div>`;
+        wireQuestions(stage, [card], (correct) => {
+          if (correct) right += 1;
+          else missed.push(card);
+          const next = stage.querySelector(".quiz-next");
+          next.hidden = false;
+          next.querySelector("button").focus({ preventScroll: true });
+          next.querySelector("button").addEventListener("click", () => {
+            index += 1;
+            if (index < deck.length) showCard();
+            else showResults();
+            window.scrollTo(0, 0);
+          });
+        });
+      }
+
+      function showResults() {
+        const key = chosen || "all";
+        const previous = best[key];
+        if (!previous || right / deck.length > previous.right / previous.total) {
+          best[key] = { right, total: deck.length };
+          storageSet(QUIZ_BEST_KEY, best);
+        }
+        const pct = Math.round((right / deck.length) * 100);
+        const line = pct === 100 ? "A perfect round." : pct >= 70 ? "Solid. The misses below are worth a reread." : "The articles below will help.";
+        const reread = [...new Set(missed.map((c) => c.slug))];
+        stage.innerHTML = `<div class="progress-card quiz-result">
+            <div class="ring" style="--p:${pct}" data-label="${right}/${deck.length}"></div>
+            <div><strong>You got ${right} of ${deck.length}</strong><span>${line}</span></div>
+          </div>
+          ${reread.length ? `<h2 class="results-label">Worth a reread</h2><div class="link-cards">${reread.map((s) => card(s)).join("")}</div>` : ""}
+          <div class="article-actions">
+            <button class="button primary" type="button" data-again>Play again</button>
+            <button class="button" type="button" data-topics>Change topic</button>
+          </div>`;
+        stage.querySelector("[data-again]").addEventListener("click", play);
+        stage.querySelector("[data-topics]").addEventListener("click", showStart);
+      }
+
+      showCard();
+    }
+
+    showStart();
+    document.title = "Quiz · Principal Engineer Wiki";
   }
 
   // ---------- Graph ----------
@@ -830,6 +1000,7 @@
     else if (route.view === "graph") cleanup = renderGraph(route.focus);
     else if (route.view === "search") renderSearch(route.query);
     else if (route.view === "terms") renderTerms(route.query);
+    else if (route.view === "quiz") renderQuiz(route.category);
     else renderHome();
 
     const topInput = document.getElementById("top-search-input");
@@ -878,6 +1049,32 @@
       document.activeElement.blur();
     }
   });
+
+  // ---------- Offline ----------
+
+  const toast = document.getElementById("toast");
+  function showToast(html, sticky) {
+    toast.innerHTML = html;
+    toast.hidden = false;
+    clearTimeout(showToast.timer);
+    if (!sticky) showToast.timer = setTimeout(() => { toast.hidden = true; }, 4000);
+  }
+  window.addEventListener("offline", () => showToast("You're offline. Everything you've loaded is still here."));
+  window.addEventListener("online", () => showToast("Back online."));
+
+  // file:// previews can't register a service worker; the site still works.
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    navigator.serviceWorker.register("sw.js").then(() => {
+      if (!hadController) showToast("Saved for offline reading.");
+    }).catch(() => { /* offline support is a bonus, not a requirement */ });
+    // A new deploy took over: offer the fresh copy instead of reloading mid-read.
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadController) return;
+      showToast('A new version is ready. <button type="button" class="button" data-reload>Reload</button>', true);
+      toast.querySelector("[data-reload]").addEventListener("click", () => location.reload());
+    });
+  }
 
   render();
 })();

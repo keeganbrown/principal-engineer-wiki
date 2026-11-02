@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
 from build_site import build_site, site_data  # noqa: E402
 from lint_wiki import load_wiki, parse_article  # noqa: E402
+from quizzes import load_quizzes  # noqa: E402
 
 INDEX = """# Wiki — Index
 
@@ -100,6 +101,27 @@ class GlossaryDataTest(unittest.TestCase):
         self.assertEqual(site_data(sample_articles(), INDEX)["glossary"], [])
 
 
+class QuizDataTest(unittest.TestCase):
+    QUIZ = (
+        "# Quiz: KISS\n\n## Which design does `KISS` prefer?\n\n"
+        "- [ ] The *clever* one.\n- [x] The simplest one.\n- [ ] The layered one.\n\n"
+        "**Why:** See [[yagni]].\n"
+    )
+
+    def test_each_article_carries_its_rendered_questions(self):
+        data = site_data(sample_articles(), INDEX, quizzes={"kiss": self.QUIZ})
+        (q,) = data["articles"]["kiss"]["quiz"]
+        self.assertEqual(q["question"], "Which design does <code>KISS</code> prefer?")
+        self.assertEqual(q["options"], ["The <em>clever</em> one.", "The simplest one.", "The layered one."])
+        self.assertEqual(q["answer"], 1)
+        self.assertIn('href="#/a/yagni"', q["why"])
+
+    def test_articles_without_a_quiz_get_an_empty_list(self):
+        data = site_data(sample_articles(), INDEX, quizzes={"kiss": self.QUIZ})
+        self.assertEqual(data["articles"]["yagni"]["quiz"], [])
+        self.assertEqual(site_data(sample_articles(), INDEX)["articles"]["kiss"]["quiz"], [])
+
+
 class RealWikiRenderTest(unittest.TestCase):
     """Every real article renders without Markdown syntax leaking through."""
 
@@ -109,8 +131,13 @@ class RealWikiRenderTest(unittest.TestCase):
             index_text = f.read()
         with open(os.path.join(repo, "glossary.md"), encoding="utf-8") as f:
             glossary_text = f.read()
-        data = site_data(load_wiki(os.path.join(repo, "wiki")), index_text, glossary_text)
+        quizzes = load_quizzes(os.path.join(repo, "quizzes"))
+        data = site_data(load_wiki(os.path.join(repo, "wiki")), index_text, glossary_text, quizzes)
         pages = {slug: a["html"] for slug, a in data["articles"].items()}
+        for slug, a in data["articles"].items():
+            self.assertGreaterEqual(len(a["quiz"]), 3, f"{slug}: quiz missing from site data")
+            for i, q in enumerate(a["quiz"]):
+                pages[f"quiz {slug} #{i}"] = "\n".join([q["question"], q["why"], *q["options"]])
         pages["index.md"] = data["home"]
         for entry in data["glossary"]:
             pages[f"glossary: {entry['term']}"] = entry["html"]
@@ -139,6 +166,44 @@ class BuildSiteTest(unittest.TestCase):
         self.assertTrue(script.startswith(prefix))
         data = json.loads(script[len(prefix):].rstrip().rstrip(";"))
         self.assertIn("kiss", data["articles"])
+
+    def build(self, tmp, articles=None, sw="const VERSION = __CACHE_VERSION__;\nconst FILES = __PRECACHE_FILES__;\n"):
+        web = os.path.join(tmp, "web")
+        out = os.path.join(tmp, "out")
+        os.makedirs(os.path.join(web, "icons"), exist_ok=True)
+        for name, text in {"index.html": "<html></html>", "app.js": "", "icons/icon.png": "png", "sw.js": sw}.items():
+            with open(os.path.join(web, name), "w") as f:
+                f.write(text)
+        build_site(articles or sample_articles(), INDEX, web, out)
+        with open(os.path.join(out, "sw.js")) as f:
+            return f.read()
+
+    def test_service_worker_precaches_every_site_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            sw = self.build(tmp)
+        files = json.loads(re.search(r"FILES = (.*);", sw).group(1))
+        self.assertEqual(sorted(files), ["./", "app.js", "icons/icon.png", "index.html", "wiki-data.js"])
+
+    def test_service_worker_version_changes_with_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            first = self.build(tmp)
+        with tempfile.TemporaryDirectory() as tmp:
+            same = self.build(tmp)
+        changed = sample_articles()
+        changed["yagni"] = article("yagni", "YAGNI", "Edited. See [[kiss]].")
+        with tempfile.TemporaryDirectory() as tmp:
+            edited = self.build(tmp, changed)
+        version = lambda sw: json.loads(re.search(r"VERSION = (.*);", sw).group(1))  # noqa: E731
+        self.assertEqual(version(first), version(same))
+        self.assertNotEqual(version(first), version(edited))
+        self.assertRegex(version(first), r"^[0-9a-f]{12}$")
+
+    def test_build_without_service_worker_template_still_works(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            web = os.path.join(tmp, "web")
+            os.makedirs(web)
+            build_site(sample_articles(), INDEX, web, os.path.join(tmp, "out"))
+            self.assertFalse(os.path.exists(os.path.join(tmp, "out", "sw.js")))
 
     def test_replaces_stale_output(self):
         with tempfile.TemporaryDirectory() as tmp:
