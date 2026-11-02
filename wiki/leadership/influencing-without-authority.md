@@ -69,6 +69,7 @@ Some situations call for direct authority: security incidents, legal compliance,
 ## Related
 
 - [[paved-roads]] — influence that scales without meetings.
+- [[technical-strategy]] — writing down the direction so teams can decide without you.
 - [[design-docs]] — the primary tool for influence at scale.
 - [[reversible-decisions]] — where to spend your credibility.
 - [[conways-law]] — changing architecture often means changing how teams work together.

@@ -59,6 +59,7 @@ Blamelessness covers honest mistakes, not deliberate misconduct or malicious act
 
 ## Related
 
+- [[incident-response]] — the response itself, and the timeline the postmortem starts from.
 - [[observability]] — good telemetry makes the timeline accurate.
 - [[technical-debt]] — postmortems often reveal debt that finally needs repaying.
 - [[feature-flags]] — kill switches often appear as postmortem action items.

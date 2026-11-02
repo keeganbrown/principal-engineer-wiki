@@ -245,6 +245,11 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | Why not to rewrite from scratch | `big-bang-rewrite` (how to replace instead: `strangler-fig`) |
   | Bus factor, knowledge silos | `hero-culture` |
   | Goodhart's law, metrics as targets | `metric-fixation` |
+  | SLIs, SLOs, error budgets, burn-rate alerts | `service-level-objectives` (telemetry and alert design: `observability`) |
+  | Incident roles, severity, mitigate-first | `incident-response` (learning afterwards: `blameless-postmortems`) |
+  | CI, trunk-based development, canary and progressive rollout | `continuous-delivery` (flag mechanics: `feature-flags`) |
+  | Threat modeling, STRIDE, least privilege, authn vs authz | `threat-modeling` (for agents: `agent-guardrails`) |
+  | Technical strategy: diagnosis, guiding policy, actions | `technical-strategy` |
 
 ## Workflows
 

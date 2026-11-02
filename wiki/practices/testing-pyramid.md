@@ -77,3 +77,4 @@ The principle holds in every shape: prefer the fastest test that gives you real 
 - [[hexagonal-architecture]] — makes it easy to unit-test logic and integration-test adapters separately.
 - [[functional-core-imperative-shell]] — pushes most logic into the cheap-to-test layer.
 - [[feature-flags]] — let you test both code paths, and test in production safely.
+- [[continuous-delivery]] — the pipeline a fast suite keeps moving.

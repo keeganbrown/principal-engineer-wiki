@@ -30,7 +30,7 @@ Good observability can shorten incidents from hours to minutes, and lets you dep
 - **Use structured logs with consistent fields.** At minimum: `traceId`, `userId`, `service`, `durationMs`.
 - **Propagate a trace ID through every call.** A trace ID (also called a correlation ID) lets you follow one request everywhere. OpenTelemetry is the common standard.
 - **Measure the four golden signals for each service.** They are latency, traffic, errors, and **saturation** — how full the service is: CPU, memory, connection pools, queue depth ([[backpressure]]). The list comes from Google's *Site Reliability Engineering* book (2016).
-- **Define SLOs (service level objectives).** For example: "99.9% of checkouts succeed in under 1s." The 0.1% allowed to fail is your **error budget**. Alert when you're burning through it faster than planned, not on every blip.
+- **Define SLOs (service level objectives).** For example: "99.9% of checkouts succeed in under 1s." The 0.1% allowed to fail is your **error budget**; alert when it's burning faster than planned, not on every blip ([[service-level-objectives]]).
 - **Alert on symptoms users feel, not on causes.** "Checkout is failing" pages someone; "CPU at 80%" or "a circuit breaker opened" goes to a dashboard ([[circuit-breaker]]). The exception is a near-certain failure that will hurt users before any symptom shows, like a disk about to fill or a certificate about to expire; page on those.
 - **Add context at the edges.** Log what came in and what went out at system boundaries.
 - **Budget for telemetry.** It can become a large share of infrastructure spend. Sample traces deliberately — keep all errors and slow requests, sample the rest.

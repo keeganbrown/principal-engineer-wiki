@@ -30,7 +30,7 @@ The flag types below follow Pete Hodgson's widely used taxonomy, published on ma
 ## Why it matters
 
 - **Merges get smaller and safer.** Unfinished work can merge to the main branch, hidden behind a flag. No long-lived branches.
-- **Rollouts can be gradual.** Turn a feature on for 1% of users — a **canary release** — watch the metrics, then 10%, 50%, 100%.
+- **Rollouts can be gradual.** Turn a feature on for 1% of users — a **canary release** — watch the metrics, then 10%, 50%, 100% ([[continuous-delivery]]).
 - **Behavior rolls back fast.** Flipping a flag takes seconds; redeploying takes minutes or more. But it rolls back *code paths*, not *side effects*: anything the new path wrote, sent, or charged stays done. Make sure the old path can read data the new path produced.
 - **Experiments become cheap.** Show variants to different groups and measure which works better (A/B testing).
 - **Releases stay reversible.** A flag turns many release decisions into [[reversible-decisions|two-way doors]] — choices you can cheaply undo.

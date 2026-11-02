@@ -49,6 +49,7 @@ Habits that make teams faster and systems safer.
 
 **Shipping change**
 - [[code-review]] — Small changes, read by a peer, focused on what matters.
+- [[continuous-delivery]] — Small batches through one pipeline, rolled out to a few users first.
 - [[feature-flags]] — Deploy and release are separate events.
 - [[api-versioning]] — An API is a promise; evolve it without breaking callers.
 - See also: [[api-styles]], the REST, gRPC, and GraphQL styles being versioned.
@@ -60,8 +61,13 @@ Habits that make teams faster and systems safer.
 
 **Operating**
 - [[observability]] — Systems that explain themselves in production.
+- [[service-level-objectives]] — A reliability target users notice, and an error budget to spend.
+- [[incident-response]] — One commander, mitigate first, update on a clock.
 - [[blameless-postmortems]] — Fix the system that made the mistake easy.
 - [[technical-debt]] — Borrow deliberately, pay down on purpose.
+
+**Security**
+- [[threat-modeling]] — Find what can go wrong at each trust boundary, while the design is cheap to change.
 
 ## Architecture patterns
 
@@ -124,6 +130,7 @@ The kinds of technology every principal engineer should understand: what each is
 The non-code half of the principal role.
 
 - [[influencing-without-authority]] — Lead through trust, framing, and clear writing.
+- [[technical-strategy]] — Diagnose the real problem, choose an approach that rules things out, act.
 - [[paved-roads]] — Make the right way the easy way, and maintain it.
 - See also: [[reversible-decisions]], [[design-docs]], [[blameless-postmortems]], [[adopting-coding-agents]], [[hero-culture]], [[bikeshedding]], [[metric-fixation]].
 
