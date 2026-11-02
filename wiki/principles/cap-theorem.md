@@ -71,7 +71,7 @@ For seat booking, the airline chooses consistency. For the flight-status page, i
 
 A single database on one machine doesn't face CAP — there's nothing to partition.
 
-Adding read replicas is often the right, simple next step, but it brings back a small version of the choice: replica reads can be seconds stale. Send reads that must be fresh — like "show me the profile I just saved" — to the primary.
+Adding [[relational-databases|read replicas]] is often the right, simple next step, but it brings back a small version of the choice: replica reads can be seconds stale. Send reads that must be fresh — like "show me the profile I just saved" — to the primary.
 
 ## Related
 
@@ -79,3 +79,5 @@ Adding read replicas is often the right, simple next step, but it brings back a 
 - [[cqrs]] — read models are usually eventually consistent with the write side.
 - [[saga-pattern]] — multi-service workflows end up eventually consistent; the isolation they lose is a separate problem that article covers.
 - [[idempotency]] — retries during partitions must be safe.
+- [[caching]] — every cache is a stale copy with a staleness budget.
+- [[nosql-databases]] — many distributed stores are eventually consistent by default.

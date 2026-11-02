@@ -21,7 +21,7 @@ Google's DORA (DevOps Research and Assessment) program found the same pattern at
 
 - **Verification is the bottleneck, not typing.** Agents generate code faster than anyone can read it. Automated checks are the only reviewer that keeps up.
 - **Fast checks let the agent fix its own mistakes.** Each failed test the agent sees and fixes is one fewer bug a human has to find in review.
-- **The same investment helps humans.** Fast tests, clear errors, and one-command builds were already good engineering. Agents just make its absence expensive faster.
+- **The same investment helps humans.** Fast tests, clear errors, and one-command builds were already good engineering. Agents just make skipping them expensive sooner.
 
 The limit: checks only catch what they check. An agent can make every test pass while doing the wrong thing, if the tests don't describe the right thing. Fast feedback narrows the gap; human review of *intent* still closes it ([[reviewing-ai-generated-code]]).
 
@@ -31,21 +31,22 @@ The limit: checks only catch what they check. An agent can make every test pass 
 - **Make tests fast and deterministic.** Aim for a unit suite that runs in seconds. A **flaky test** — one that fails at random — is worse with agents than without, because the agent "fixes" code that wasn't broken.
 - **Turn conventions into checks.** Types, linters, formatters, and architecture tests ("nothing in `core/` imports the database") enforce rules every time. Prose rules in an instruction file are only followed most of the time ([[agent-instruction-files]]).
 - **Write error messages for a reader with no context.** "Expected Cents, got float in `refund()`" lets an agent fix the bug. "AssertionError" makes it guess.
-- **Keep modules small, with clear boundaries.** An agent changing a 300-line module with a clear interface does better than one wading through a 5,000-line file. This is [[separation-of-concerns]] paying off again.
-- **Leave good examples to copy.** Agents imitate what's nearby. One well-written endpoint, test, and migration teaches more than a page of rules.
+- **Keep modules small, with clear boundaries.** An agent does better in a 300-line module with a clear interface than in a 5,000-line file ([[navigable-codebases]]).
 - **Protect the tests themselves.** An agent stuck on a failing test may weaken or delete it to make it pass. Review test changes closely, and treat a deleted assertion as a red flag.
 
 ## Example
 
-A team tries agents on a service whose test suite takes 35 minutes and fails randomly about one run in ten. Agents either skip running tests or chase random failures, and reviewers find basic bugs in most agent PRs (pull requests). The team concludes "agents don't work on our code."
+A team tries agents on a service whose test suite takes 35 minutes and fails randomly about one run in ten. Agents either skip running tests or chase random failures, and reviewers find basic bugs in most agent pull requests (PRs). The team concludes "agents don't work on our code."
 
 Instead of giving up, they spend two weeks on the loop:
 
 - Split out a unit suite of pure business-logic tests that runs in 15 seconds, using [[functional-core-imperative-shell]] where the logic was tangled with I/O.
-- Quarantine the flaky tests and fix the top five causes (shared state, real clocks, network calls).
+- Move the flaky tests out of the blocking suite (quarantine them) and fix the top five causes (shared state, real clocks, network calls).
 - Add strict type checking to the core module and one architecture test.
 
 Agents now run the fast suite after every edit and fix most of their own failures before anyone looks. Review shifts from "does it even run?" to "is this the right design?" The cost was real — two engineers for two weeks, plus ongoing work to keep the fast suite fast — and it paid off for the humans too.
+
+To check the investment keeps paying, the team tracks how often agent PRs pass CI on the first push and how much review time goes to mechanical issues; both should fall.
 
 ## Common traps
 

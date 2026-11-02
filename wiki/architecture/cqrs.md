@@ -34,7 +34,7 @@ Greg Young described CQRS around 2010, building on Bertrand Meyer's *command–q
 
 - **Each side gets simpler.** The write model enforces rules; the read model serves fast lookups.
 - **Performance.** Read views can be pre-joined and cached — no expensive queries at request time.
-- **Independent scaling.** Many systems read far more than they write; scale each side separately. Try read replicas (read-only copies of the database) and caching first — a separate read model is for when the *shape* of reads differs, not just the volume.
+- **Independent scaling.** Many systems read far more than they write; scale each side separately. Try [[relational-databases|read replicas]] (read-only copies of the database) and [[caching]] first — a separate read model is for when the *shape* of reads differs, not just the volume.
 - **Multiple views.** Build several read models (search index, dashboard, mobile feed) from the same writes.
 
 ## How to apply it

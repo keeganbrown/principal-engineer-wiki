@@ -15,10 +15,10 @@ A **message broker** sits between services. A **producer** sends a message to th
 
 Brokers come in two main shapes:
 
-- **Queues** — each message is a task handed to *one* worker, then removed once that worker acknowledges it. Good for spreading work: "resize this image," "send this email." Examples: RabbitMQ, Amazon SQS.
-- **Logs** — messages are appended to an ordered, durable log and kept for a set time. Many consumers read independently, each tracking its own position, and can replay from the past. Good for event streams: "order placed," "payment captured." Examples: Apache Kafka, Amazon Kinesis, Redpanda.
+- **Queues** — each message is a task handed to *one* worker, then removed once that worker *acknowledges* it (tells the broker the work is done). Good for spreading work: "resize this image," "send this email." Examples: RabbitMQ, Amazon SQS.
+- **Logs** — messages are appended to a named, ordered, durable log (a *topic*) and kept for a set time. Many consumers read independently, each tracking its own position, and can replay from the past. Good for event streams: "order placed," "payment captured." Examples: Apache Kafka, Amazon Kinesis, Redpanda.
 
-Kafka, built at LinkedIn around 2011, popularized the log model; queues are decades older.
+Kafka, open-sourced by LinkedIn in 2011, popularized the log model; queues are decades older. The line is blurring: Kafka 4.2 (2026) added queue-style consumption on top of its log.
 
 ## Why it matters
 
@@ -31,10 +31,10 @@ The cost: a broker is another critical system to run, and asynchronous flows are
 ## How to apply it
 
 - **Choose by the job.** Work to be done once by someone → queue. Facts many parties care about, possibly replayed → log.
-- **Assume at-least-once delivery.** Most brokers redeliver a message if a consumer crashes before acknowledging it. Consumers must handle duplicates safely ([[idempotency]]).
+- **Assume at-least-once delivery.** Most brokers redeliver a message if a consumer crashes before acknowledging it. Consumers must handle duplicates safely ([[idempotency]]). The alternative, *at-most-once*, never duplicates but can lose messages.
 - **Know your ordering guarantee.** Logs keep order only within a **partition** — one ordered slice of a topic, chosen by a key such as order ID. Messages for different keys can arrive in any order.
 - **Use a dead-letter queue.** A **dead-letter queue (DLQ)** holds messages that keep failing, so one bad message doesn't block the rest. Someone must own reviewing it, or it becomes a silent graveyard.
-- **Publish from a transaction safely.** Writing to your database and the broker separately can lose or invent messages; use the [[transactional-outbox]].
+- **Publish reliably from a transaction.** Writing to your database and the broker separately can lose or invent messages; use the [[transactional-outbox]].
 - **Monitor consumer lag.** **Lag** is how far behind consumers are. Rising lag is the earliest warning that consumers can't keep up ([[observability]]).
 - **Version message formats.** Messages outlive deploys; a consumer may read last month's format during a replay.
 
@@ -44,7 +44,7 @@ A video platform transcodes uploads synchronously in the upload request. Uploads
 
 They split it: the upload request stores the file and puts a "transcode video 812" message on a queue, then returns at once. A pool of workers consumes the queue; a spike now means a longer queue, not an outage. Separately, a "video published" event goes to a Kafka topic, where search indexing, notifications, and analytics each consume at their own pace.
 
-The cost shows up in support: "my video is still processing" is now a visible state that needs UI, monitoring of queue age, and an alert when the oldest message is over 15 minutes old. A transcode that crashes after finishing but before acknowledging runs twice, so the worker checks whether output already exists before starting.
+The cost shows up in support: "my video is still processing" is now a visible state that needs UI, monitoring of queue age, and an alert when the oldest message is over 15 minutes old. A transcode that crashes after finishing but before acknowledging runs twice, so the worker checks whether output already exists before starting. That check alone races: a transcode that outlasts the queue's redelivery timeout is handed to a second worker while the first is still running. So the team sets the timeout above the longest transcode and writes output under a key derived from the video ID, which makes a duplicate run overwrite rather than double up.
 
 ## Common traps
 
@@ -52,7 +52,7 @@ The cost shows up in support: "my video is still processing" is now a visible st
 - **Unbounded queues.** A queue that grows forever hides an outage until the backlog is days old. Alert on age and depth.
 - **Assuming exactly-once.** Some brokers offer exactly-once features within their own system, but side effects outside it — emails, payments — still need idempotency.
 - **Hot partitions.** Keying by a value most messages share (one big customer) puts all the load on one consumer.
-- **Async everywhere.** If a user needs the answer now, a direct call with a timeout is simpler than a request–reply dance over a broker.
+- **Async everywhere.** If a user needs the answer now, a direct call with a timeout is simpler than sending a request message and waiting for a reply message.
 
 ## When it doesn't apply
 

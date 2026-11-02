@@ -86,3 +86,4 @@ Pure reads are already idempotent. Operations that are meant to repeat — like 
 - [[transactional-outbox]] — the outbox relay can publish duplicates; consumers must cope.
 - [[saga-pattern]] — every saga step and compensation must be idempotent.
 - [[observability]] — log the idempotency key alongside the trace ID.
+- [[message-brokers]] — why most brokers deliver at least once.

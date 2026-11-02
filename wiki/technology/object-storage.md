@@ -11,14 +11,14 @@ tags: [storage, files, cloud, durability]
 
 ## The idea
 
-**Object storage** keeps files — called **objects** — in flat containers called **buckets**, each object addressed by a key like `invoices/2026/10/inv-4821.pdf`. You put, get, list, and delete whole objects over HTTP. There are no folders in the filesystem sense, and you don't edit part of a file in place.
+**Object storage** keeps files — called **objects** — in flat containers called **buckets**, each object addressed by a key like `invoices/2026/10/inv-4821.pdf`. You put, get, list, and delete whole objects over HTTP. There are no folders in the filesystem sense, and most object stores can't edit part of a file in place or append to it; a few specialized storage classes allow appends.
 
 In exchange for that simple interface, you get storage that is very cheap per gigabyte, effectively unlimited, and highly durable: providers replicate each object across several machines and data centers. Amazon S3 (launched in 2006) defined the category, and its API became a de facto standard that many other products copy.
 
 ## Why it matters
 
 - **Databases are poor file stores.** Large blobs bloat backups, slow replication, and cost far more per gigabyte in a database than in object storage.
-- **Durability is built in.** Major providers design for extremely high durability, far beyond what a team gets from disks on its own servers.
+- **Durability is built in.** Providers replicate every object across machines and sites, far beyond what a team gets from disks on its own servers.
 - **It scales without planning.** You don't provision capacity; you pay for what you store and transfer.
 
 The limits: each request has latency measured in milliseconds, there's no in-place editing, and listing millions of keys is slow. It's storage for whole files, not a database or a disk.
@@ -42,7 +42,7 @@ The hard part is the gap between upload and record: if the app uploads but crash
 
 ## Common traps
 
-- **Public buckets.** One misconfigured permission exposes everything. Block public access at the account level and make exceptions deliberately.
+- **Public buckets.** One misconfigured permission exposes everything. Many providers now block public access by default, so leaks come from exceptions made casually. Block public access at the account level and make exceptions deliberately.
 - **Treating it like a filesystem.** Renaming a "folder" means copying every object under that prefix. Appending to a file means rewriting it.
 - **Many tiny objects.** Request costs and latency dominate when objects are a few bytes. Batch small records into larger files.
 - **Forgetting egress costs.** Storage is cheap; transferring data out of the provider often isn't. Check the bill model before serving heavy traffic from a bucket directly.
@@ -50,7 +50,7 @@ The hard part is the gap between upload and record: if the app uploads but crash
 
 ## When it doesn't apply
 
-Small structured data that you query and update field by field belongs in a database. Workloads that need low-latency random reads and writes inside a file — a database's own data files, for example — need block storage or a real filesystem. Object storage is for whole files you write once and read many times.
+Small structured data that you query and update field by field belongs in a database. Workloads that need low-latency random reads and writes inside a file — a database's own data files, for example — need block storage (a raw virtual disk attached to one machine) or a real filesystem. Object storage is for whole files you write once and read many times.
 
 ## Related
 

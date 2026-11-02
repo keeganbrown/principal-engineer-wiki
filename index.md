@@ -46,6 +46,7 @@ Habits that make teams faster and systems safer.
 - [[code-review]] — Small changes, read by a peer, focused on what matters.
 - [[feature-flags]] — Deploy and release are separate events.
 - [[api-versioning]] — An API is a promise; evolve it without breaking callers.
+- See also: [[api-styles]], the REST, gRPC, and GraphQL styles being versioned.
 - [[expand-and-contract]] — Add the new, migrate, then remove the old.
 
 **Decisions** (see also [[reversible-decisions]])
@@ -76,6 +77,7 @@ Proven structures for organizing systems.
 - [[cqrs]] — Separate models for writing and reading.
 - [[saga-pattern]] — Multi-service workflows with planned undo steps.
 - [[idempotency]] — Doing it twice equals doing it once.
+- See also: [[message-brokers]], the infrastructure these patterns run on.
 
 **Resilience**
 - [[retries-and-timeouts]] — Deadlines on every call; retry with backoff and jitter.
@@ -104,9 +106,11 @@ The kinds of technology every principal engineer should understand: what each is
 **Running software**
 - [[containers-and-kubernetes]] — Package once, run anywhere; orchestrate when you have many services.
 - [[infrastructure-as-code]] — Infrastructure defined in reviewed, version-controlled files.
+- See also: [[reproducible-dev-environments]], the same container idea for development.
 
 **AI**
 - [[large-language-models]] — What LLMs are good at, how they fail, and how to build around them.
+- See also: the Coding with AI section below.
 
 ## Leadership
 
@@ -114,11 +118,11 @@ The non-code half of the principal role.
 
 - [[influencing-without-authority]] — Lead through trust, framing, and clear writing.
 - [[paved-roads]] — Make the right way the easy way, and maintain it.
-- See also: [[reversible-decisions]], [[design-docs]], [[blameless-postmortems]].
+- See also: [[reversible-decisions]], [[design-docs]], [[blameless-postmortems]], [[adopting-coding-agents]].
 
 ## Coding with AI
 
-Working well with coding agents, as an engineer and as a team.
+Working well with coding agents, as an engineer and as a team. Start with [[large-language-models]] for how the underlying models behave.
 
 **For the team**
 - [[adopting-coding-agents]] — Shared norms, peer-led rollout, and outcome metrics.

@@ -15,11 +15,11 @@ tags: [databases, nosql, storage, data-modeling]
 
 - **Key-value stores** — look up a value by its key, very fast, at huge scale. Examples: Redis, DynamoDB in its simplest use.
 - **Document stores** — store JSON-like documents; good when each record is read and written as one unit. Examples: MongoDB, Firestore.
-- **Wide-column stores** — very high write volume, spread across many machines, queried by a designed key. Examples: Cassandra, Bigtable.
+- **Wide-column stores** — rows grouped by a partition key, each holding many columns that can vary per row, spread across many machines; you design the key so each query reads one group from one machine. Built for very high write volume. Examples: Cassandra, Bigtable.
 - **Search engines** — full-text search, ranking, and filtering over text. Examples: Elasticsearch, OpenSearch.
-- **Time-series and analytics stores** — metrics and events over time, or aggregates over billions of rows.
+- **Time-series and analytics stores** — metrics and events over time, or aggregates over billions of rows: analytical work (OLAP, online analytical processing) rather than many small transactions (OLTP, online transaction processing). Examples: InfluxDB, ClickHouse.
 
-The common trade: you give up flexible queries and often multi-record transactions, and in return get scale or speed *for the queries you designed for*. Amazon's 2007 Dynamo paper is the best-known origin of the modern wave.
+The common trade: you give up flexible queries and often multi-record transactions (or get them with tighter limits), and in return get scale or speed *for the queries you designed for*. Google's 2006 Bigtable paper and Amazon's 2007 Dynamo paper started the modern wave; the "NoSQL" label caught on in 2009.
 
 ## Why it matters
 
@@ -31,7 +31,7 @@ The common trade: you give up flexible queries and often multi-record transactio
 
 - **Start from access patterns.** List the exact queries — "get cart by user ID," "latest 50 readings for sensor X." Many NoSQL stores require you to design the key around these up front, and queries you didn't plan for become slow or impossible.
 - **Know what consistency you get.** Many distributed stores are eventually consistent by default: a read may return stale data for a while ([[cap-theorem]]).
-- **Keep the system of record simple.** A common, durable pattern: a relational database owns the truth, and a search index or cache is fed from it ([[transactional-outbox]] covers how).
+- **Keep one system of record.** A relational database owns the truth, and search indexes or caches are fed from it ([[transactional-outbox]] covers how).
 - **Plan for denormalization.** Without joins, you copy data into the shape each query needs. That's fast to read and harder to keep correct when the source changes.
 - **Pick managed services where possible.** Running a distributed database cluster yourself is a specialist job.
 
@@ -39,7 +39,7 @@ The common trade: you give up flexible queries and often multi-record transactio
 
 An e-commerce team needs product search: typo tolerance, ranking by relevance and popularity, filters by size and color. They first try SQL `LIKE '%shoe%'` queries; they're slow, and "running shoos" finds nothing.
 
-They add a search engine as a *secondary* store. Products stay in PostgreSQL; a change-data-capture (CDC) pipeline streams product changes into the search index within seconds. Search requests go to the index; checkout reads prices and stock from PostgreSQL.
+They add a search engine as a *secondary* store. Products stay in PostgreSQL; a change-data-capture (CDC) pipeline, which reads every committed change from the database's log, streams product-table changes into the search index within seconds. Pointing CDC at a business table is acceptable here because the index is the team's own private copy, not a contract with other services ([[transactional-outbox]]). Search requests go to the index; checkout reads prices and stock from PostgreSQL.
 
 The trade-off shows up immediately: the index lags the database by a few seconds, so a just-discontinued product can still appear in results. The product page re-checks availability from the database, and the team accepts the brief staleness in search results.
 
@@ -53,7 +53,7 @@ The trade-off shows up immediately: the index lags the database by a few seconds
 
 ## When it doesn't apply
 
-If your data has relationships, needs transactions across records, or faces unknown future questions, a relational database is usually the better default — many of them now handle JSON documents, full-text search, and key-value access well enough. Reach for a specialized store when you have a measured need it fits.
+If your data has relationships, needs transactions across records, or faces unknown future questions, a relational database is usually the better default — many of them now handle JSON documents, full-text search, and key-value access well enough. Reach for a specialized store when you have a measured need it fits. Some needs are known before they can be measured, such as multi-region writes from day one or purely key-based access at large scale; there a purpose-built store can be the right first choice.
 
 ## Related
 

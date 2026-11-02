@@ -19,25 +19,25 @@ The catch is that a copy can be out of date. Every cache is a deliberate decisio
 
 ## Why it matters
 
-- **Speed users can feel.** Memory reads take microseconds; a database query or remote call takes milliseconds or more.
-- **Protection for the slow system.** A cache absorbs repeated reads so the database handles only misses and writes.
-- **Cost.** Serving popular content from a CDN is far cheaper than serving it from your servers.
+- **Users feel the speed.** In-process memory reads take nanoseconds and a networked cache well under a millisecond; a database query or remote call takes milliseconds or more.
+- **The slow system is protected.** A cache absorbs repeated reads so the database handles only misses and writes.
+- **Serving gets cheaper.** Serving popular content from a CDN is far cheaper than serving it from your servers.
 
-Each benefit comes with a new failure mode: stale data, a cold cache after restart, and a thundering herd when many entries expire at once.
+Each benefit comes with a new failure mode: stale data, a cold cache after restart, and a *stampede* (also called a thundering herd), when many requests miss at once and all hit the database.
 
 ## How to apply it
 
 - **Measure first.** Cache what is both slow *and* read often. Caching a fast query adds complexity for nothing.
-- **Use cache-aside as the default.** Read the cache; on a miss, read the source, store the result, return it. On writes, update the source and delete the cache entry.
+- **Use cache-aside as the default.** Read the cache; on a miss, read the source, store the result, return it. On writes, update the source and delete the cache entry; deleting is safer than updating, because two concurrent writes can leave the cache holding the older value. A slow reader can still put an old value back just after the delete, and the TTL bounds how long it survives.
 - **Give every entry a time-to-live (TTL).** A **TTL** is how long an entry may live before it expires. Even with explicit invalidation, a TTL bounds how long a bug can serve wrong data.
 - **Decide how stale is acceptable, per use.** A product description can be minutes old; a bank balance on the payment screen cannot ([[cap-theorem]]).
-- **Prevent stampedes.** When a hot entry expires, hundreds of requests may hit the database at once. Let one request refresh while others wait or get the stale value, and add random jitter to TTLs.
-- **Design for an empty cache.** Caches restart and evict. If the system can't survive a cold cache, the cache has become a dependency you haven't planned for.
+- **Prevent stampedes.** When a hot entry expires, hundreds of requests may hit the database at once. Let one request refresh while others wait or get the stale value, and add a few random seconds (*jitter*) to each TTL so entries written together don't all expire together.
+- **Design for an empty cache.** Caches restart and evict. If the system can't survive a cold cache — at high read volume it often can't — plan for that: warm caches before sending traffic, restart cache nodes gradually, and run the cache as a critical tier with its own capacity planning.
 - **Never cache per-user data under a shared key.** Include everything that changes the answer — user, permissions, language — in the cache key.
 
 ## Example
 
-A product page makes five database queries and takes 400 milliseconds. During a sale, database processor use hits 100% and pages time out.
+A product page makes five database queries and takes 400 milliseconds. During a sale, the database's processors hit 100% and pages time out.
 
 The team caches the assembled product data in Redis with a 5-minute TTL plus up to 30 seconds of random jitter, and deletes the entry whenever the product is edited. Price and stock are *not* cached: the page fetches them live, because a stale price is a legal and customer-trust problem.
 
@@ -46,10 +46,10 @@ Page time drops to 40 milliseconds and database load falls by 80%. The hard part
 ## Common traps
 
 - **Caching to hide a slow query.** If an index would fix it, fix the query first.
-- **Invalidation scattered everywhere.** If ten code paths write the data, all ten must invalidate. Centralize writes, or drive invalidation from database change events.
+- **Invalidation scattered everywhere.** If ten code paths write the data, all ten must invalidate. Centralize writes, or drive invalidation from change-data-capture (CDC) events ([[transactional-outbox]]).
 - **Caching errors for too long.** A cached error or empty result turns a brief outage into a long one.
 - **Leaking data across users.** Forgetting a component of the cache key is a security bug, not a performance bug.
-- **Counting on the cache for capacity.** If the database can't survive the cache being cold, a cache restart is an outage.
+- **Counting on the cache for capacity without saying so.** If the database can't survive the cache being cold and nobody planned for it, a cache restart is an outage.
 
 ## When it doesn't apply
 

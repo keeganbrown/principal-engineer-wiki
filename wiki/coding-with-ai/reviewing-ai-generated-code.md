@@ -20,7 +20,7 @@ Two rules follow:
 
 ## Why it matters
 
-- **Agents increase the volume of code to review.** A 2026 Microsoft study of its rollout of command-line coding agents found adopters merged roughly 24% more PRs. The study didn't measure quality, and more PRs means more review load. If review doesn't keep up, it turns into rubber-stamping.
+- **Agents increase the volume of code to review.** Adopters merge noticeably more PRs ([[adopting-coding-agents]] has the evidence), and if review doesn't keep up, it turns into rubber-stamping.
 - **Plausible errors slip past skimming.** Invented functions, wrong edge-case handling, and tests that check the wrong thing all read fluently.
 - **Ownership keeps knowledge in the team.** If nobody understands the code that was merged, nobody can debug it at 3 a.m.
 
@@ -31,23 +31,23 @@ Two rules follow:
 - **Say how the change was made.** A line in the PR description — "agent-written from the plan in #412; I rewrote the retry logic" — tells the reviewer where to look hardest. Make this a team norm, not a confession.
 - **Review intent first, then details.** Check the change against the plan or ticket before reading the code. Agents often solve a slightly different problem very well.
 - **Know the typical agent mistakes.** Watch for:
-  - *Invented APIs or packages* — calls to functions or libraries that don't exist, or a lookalike package name an attacker could register.
+  - *Invented APIs or packages* — calls to functions or libraries that don't exist, or a package that doesn't exist yet. Attackers publish malicious packages under names agents commonly invent (sometimes called *slopsquatting*), so an install can pull in malware.
   - *Tests that prove nothing* — assertions on mocks, or expected values copied from the code's own output.
   - *Quiet scope creep* — "while I was there" refactors, changed defaults, new dependencies.
-  - *Duplication* — a new helper written beside an existing one the agent didn't find.
+  - *Duplication* — a new helper written beside an existing one the agent didn't find ([[navigable-codebases]]).
   - *Weakened checks* — deleted assertions, skipped tests, broader exception handling, loosened types.
 - **Use AI reviewers as a first pass, not an approval.** An AI review bot can catch real issues cheaply. It doesn't replace a human who understands the system and is accountable for the merge.
-- **Keep checks the agent can't edit.** Branch protection, required reviewers for sensitive paths, and CI (continuous integration) gates should not be changeable by the same change they guard.
+- **Keep checks the agent can't edit.** Branch protection and required reviewers for sensitive paths (repository settings that block merging until checks pass and named people approve), and CI (continuous integration) gates should not be changeable by the same change they guard.
 
 ## Example
 
 An engineer asks an agent to "add pagination to the orders endpoint." The PR arrives: 300 lines, tests green, clean code.
 
-The reviewer starts with intent and checks it against the ticket. The ticket says *cursor* pagination, because orders are inserted constantly and page numbers would skip or repeat rows. The agent built page-number pagination: the tests pass because they insert a fixed set of orders and never write while paging.
+The reviewer starts with intent and checks it against the ticket. The ticket says *cursor* pagination: each page returns a marker, such as the last order's ID, and the next request starts after it. Orders are inserted constantly, and with page numbers each new order shifts every row, so pages skip or repeat orders. The agent built page-number pagination: the tests pass because they insert a fixed set of orders and never write while paging.
 
 Reading further, the reviewer finds two more issues. The agent raised the maximum page size from 100 to 1,000 in a shared config file ("to make the test simpler"). And it added a new date-parsing library although the project already has one.
 
-None of this would fail CI. The fix takes an hour; finding it in production would have taken much longer. The cost is review time, and the team accepts it: they cap agent PRs at about 400 changed lines so reviews like this stay possible.
+None of this would fail CI. The fix takes an hour; finding it in production would have taken much longer. The cost is review time, and the team accepts it: they cap agent PRs at about 400 changed lines so reviews like this stay possible, and for a quarter they track escaped defects and reverts on agent PRs separately to check the cap is doing its job.
 
 ## Common traps
 
@@ -55,7 +55,7 @@ None of this would fail CI. The fix takes an hour; finding it in production woul
 - **Reviewing the summary instead of the diff.** Agents write confident PR descriptions. The description is a claim; the diff is the evidence.
 - **Blame-shifting.** "The AI did it" in a postmortem hides the real gaps: the review, the checks, the spec. Treat it as a system problem ([[blameless-postmortems]]).
 - **Review fatigue.** A flood of small agent PRs can exhaust reviewers as surely as one giant one. Limit work in progress, and count review time as real work.
-- **Banning agents from sensitive code by default.** Rules like "no AI in the payments module" are hard to enforce and push use into hiding. Stricter review for sensitive paths works better than a ban.
+- **Banning agents from sensitive code by default.** Rules like "no AI in the payments module" are hard to enforce and push use into hiding. Stricter review for sensitive paths usually works better than a blanket ban. Where a ban is genuinely required — by regulation, contract, or very high assurance needs — enforce it with tooling and access, not a memo.
 
 ## When it doesn't apply
 

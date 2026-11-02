@@ -62,3 +62,5 @@ In a small organization where everyone already talks daily, a short shared doc m
 - [[code-review]] — let automated checks handle style so reviewers can focus on design.
 - [[modular-monolith]] — boundaries need tooling to enforce them, not just good intentions.
 - [[adopting-coding-agents]] — shared agent setup is a paved road too.
+- [[containers-and-kubernetes]] — a container platform is the classic paved road.
+- [[shared-agent-configuration]] — the team's agent setup as a paved road.

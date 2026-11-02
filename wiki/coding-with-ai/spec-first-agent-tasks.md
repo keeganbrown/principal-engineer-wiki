@@ -17,39 +17,39 @@ Spec-first means splitting the work into phases you can check:
 
 1. **Explore.** The agent reads the relevant code and reports what it found, changing nothing.
 2. **Plan.** It proposes an approach: files to touch, the design, the tests that will prove it works. You correct the plan, which is cheap.
-3. **Implement.** It builds one slice at a time, running checks as it goes.
+3. **Code.** It builds one slice at a time, running checks as it goes.
 4. **Verify and commit.** The checks pass, you review, and the slice lands as a small commit or pull request (PR).
 
-Anthropic's guidance for Claude Code describes the same explore–plan–code–commit loop, and most agent tools now have a read-only "plan mode" for the first two steps.
+Anthropic's guidance for Claude Code describes the same loop (explore, plan, code, commit), and most agent tools now have a read-only "plan mode" for the first two steps.
 
 ## Why it matters
 
 - **Correcting a plan is cheaper than correcting code.** A wrong assumption caught in a ten-line plan costs a sentence. Caught in an 800-line diff, it costs the diff.
-- **Small slices keep review possible.** Agents make it easy to produce huge changes that nobody can review well. DORA (DevOps Research and Assessment) names working in small batches as one of seven capabilities that make AI-assisted teams succeed.
+- **Small slices keep review possible.** Agents make it easy to produce huge changes that nobody can review well. DORA (DevOps Research and Assessment) names working in small batches as one of seven capabilities that amplify the benefits of AI-assisted development.
 - **A clear "done" lets the agent check itself.** "Add rate limiting" is vague. "Requests over 100 per minute per API key get HTTP 429 with a `Retry-After` header; a test proves it" is something the agent can verify.
 
-The limit: planning has a cost too. For a one-line fix, a planning phase is ceremony.
+The limit: planning has a cost too. For a one-line fix, a planning phase is ceremony. And when attempts are cheap and easy to throw away, two quick tries can teach more than a plan; plan first when a wrong attempt is expensive to review or hard to undo.
 
 ## How to apply it
 
 - **Write acceptance criteria before implementation.** State what must be true when it's done, ideally as tests. A failing test is the most precise spec you can give an agent ([[test-driven-development]]).
-- **Ask for the plan in writing, then edit it.** Look for wrong assumptions, missing edge cases, and files it shouldn't touch. Push back on the plan the way you would in a [[design-docs|design review]], at a smaller scale.
+- **Ask for the plan in writing, then edit it.** Look for wrong assumptions, missing edge cases, and files it shouldn't touch. Push back on the plan the way you would in a [[design-docs|design review]], at a smaller scale. Check the facts it rests on, such as instance counts and existing services, before checking the design; the exploration report is model output too, and a plan built on a misread config is still wrong.
 - **Size tasks to one reviewable PR.** If the plan has six independent steps, that's six tasks. A reviewer should be able to understand a slice in one sitting.
 - **Point at examples and constraints.** "Follow the pattern in `orders/refund.py`; don't change the public API" removes whole categories of guesses.
-- **Restart instead of arguing.** If you've corrected the agent twice on the same task and it's still off, stop. Write a better spec and start a fresh session; a long session full of failed attempts tends to make results worse, not better.
+- **Restart instead of arguing.** If you've corrected the agent twice on the same task and it's still off, stop. Write a better spec and start a fresh session; a long session full of failed attempts tends to make results worse, not better, because the failed attempts stay in the agent's context and keep steering it.
 - **Decide the design yourself on one-way doors.** Let the agent explore options for decisions that are hard to undo, but make the call yourself and record it ([[reversible-decisions]]).
 
 ## Example
 
 A request: "Add rate limiting to the public API."
 
-**Without a plan,** the agent adds an in-memory counter in the web framework's middleware. Tests pass. In review, someone notices the service runs on eight instances, so each one counts separately and the real limit is eight times too high. The agent also changed the error format for every endpoint. The PR is 900 lines, and most of it gets thrown away.
+Without a plan, the agent adds an in-memory counter in the web framework's middleware, and tests pass. In review, someone notices the service runs on eight instances, so each one counts separately and the real limit is eight times too high. The agent also changed the error format for every endpoint; most of the 900-line PR gets thrown away.
 
-**Spec-first:**
+Spec-first:
 
-- **Explore first.** "Read the middleware, the deployment config, and the error handling. Don't change anything; tell me what you found." The agent reports eight instances and an existing Redis cluster.
+- **Explore first.** "Read the middleware, the deployment config, and the error handling. Don't change anything; tell me what you found." The agent reports eight instances and an existing Redis cluster (a shared in-memory store all eight can reach, so they can count against one total). The engineer confirms both in the deployment config.
 - **Then plan.** It proposes a shared Redis counter. The engineer adds two corrections: the limit is per API key, not per IP address, and don't touch the existing error format.
-- **Implement in three PRs.** (1) a rate-limit module with unit tests and a fake clock; (2) wiring for one endpoint behind a [[feature-flags|feature flag]]; (3) rollout to the rest.
+- **Implement in three PRs.** (1) a rate-limit module with unit tests and a fake clock (so tests control time instead of waiting a minute); (2) wiring for one endpoint behind a [[feature-flags|feature flag]]; (3) rollout to the rest.
 
 The hard part is the wait: twenty minutes of exploring and planning before any code feels slow. It's still faster than reviewing and discarding 900 lines.
 

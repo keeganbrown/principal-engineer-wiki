@@ -11,7 +11,7 @@ tags: [distributed-systems, messaging, data]
 
 ## The idea
 
-A service often needs to do two things at once: update its database ("order 42 is placed") and tell others via a message broker ("`OrderPlaced` happened"). These are two separate systems, and there's no transaction that covers both. This is called the **dual-write problem**:
+A service often needs to do two things at once: update its database ("order 42 is placed") and tell others via a [[message-brokers|message broker]] ("`OrderPlaced` happened"). These are two separate systems, and there's no transaction that covers both. This is called the **dual-write problem**:
 
 - Save, then publish: if the process crashes in between, the order exists but nobody hears about it.
 - Publish, then save: if the save fails, everyone hears about an order that doesn't exist.

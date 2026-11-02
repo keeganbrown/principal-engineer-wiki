@@ -13,9 +13,11 @@ tags: [api, rest, grpc, graphql, integration]
 
 An **API** is the contract one piece of software offers another. Over a network, three styles dominate:
 
-- **REST** — resources at URLs (`/orders/42`), acted on with HTTP methods (`GET`, `POST`, `PUT`, `DELETE`), usually with JSON bodies. Roy Fielding described the architectural style in his 2000 dissertation; in practice "REST" usually means "resource-oriented JSON over HTTP." Works everywhere, readable with any tool, cacheable by the web's existing infrastructure.
-- **gRPC** — call functions on a remote service as if they were local (`GetOrder(id: 42)`). Contracts are written in Protocol Buffers, a compact binary format, and client code is generated from them. Fast and strongly typed; best between services you control. Google open-sourced it in 2015.
-- **GraphQL** — one endpoint where the client sends a query describing exactly the fields it wants, across related data, in one request. Facebook released it in 2015 for mobile apps that needed flexible data with few round trips.
+- **REST** — representational state transfer: resources at URLs (`/orders/42`), acted on with HTTP methods (`GET`, `POST`, `PUT`, `DELETE`), usually with JSON bodies. In practice "REST" usually means "resource-oriented JSON over HTTP." It works everywhere, is readable with any tool, and is cacheable by the web's existing infrastructure.
+- **gRPC** — call functions on a remote service as if they were local (`GetOrder(id: 42)`). Contracts are written in Protocol Buffers, a compact binary format, and client code is generated from them. Fast and strongly typed; best between services you control.
+- **GraphQL** — one endpoint where the client sends a query describing exactly the fields it wants, across related data, in one request. It was built for mobile apps that needed flexible data with few round trips.
+
+Roy Fielding described REST in his 2000 dissertation; Google open-sourced gRPC and Facebook released GraphQL, both in 2015.
 
 ## Why it matters
 
@@ -25,9 +27,9 @@ An **API** is the contract one piece of software offers another. Over a network,
 
 ## How to apply it
 
-- **Public or partner APIs: default to REST.** Every language and tool speaks it, and it's easiest to document, debug, and cache. Describe it with an OpenAPI specification.
-- **Internal service-to-service calls: consider gRPC.** Generated clients and strict contracts catch mismatches at build time, and it supports streaming. The cost is binary payloads that are harder to inspect and limited browser support.
-- **Many clients with different data needs: consider GraphQL.** It suits a product with web and mobile apps that each want different slices of the same data. The cost is server complexity — query cost limits, caching, and authorization on every field.
+- **Public or partner APIs: default to REST.** Every language and tool speaks it, and it's easiest to document, debug, and cache. Describe it with an OpenAPI specification (a machine-readable file listing every endpoint, parameter, and response shape).
+- **Internal service-to-service calls: consider gRPC.** Generated clients and strict contracts catch mismatches at build time, and it supports streaming. The cost is binary payloads that are harder to inspect, limited browser support, and the need for request-level load balancing: gRPC holds long-lived connections, which defeat connection-level balancers ([[load-balancers-and-cdns]]).
+- **Many clients with different data needs: consider GraphQL.** It suits a product with web and mobile apps that each want different slices of the same data. The cost is server complexity — query cost limits, authorization on every field, and harder caching, because every query goes to one URL, usually as a POST, so ordinary HTTP caches can't tell queries apart.
 - **Write the contract first.** Agree on the OpenAPI, Protocol Buffers, or GraphQL schema before building, and check it in CI (continuous integration) with [[contract-testing]].
 - **Design for evolution.** Add optional fields; never change the meaning of an existing one ([[expand-and-contract]]).
 - **Pick one convention per context and write it down.** Naming, errors, pagination, and authentication should look the same across a company's APIs ([[paved-roads]]).
@@ -40,14 +42,14 @@ Options considered:
 
 - **Convert everything to GraphQL.** Rejected — partners are happy with REST, and a rewrite breaks them.
 - **Add GraphQL as a gateway for the apps only.** Accepted — one query fetches what a screen needs, and the gateway calls internal services.
-- **Use gRPC between internal services.** Accepted for new services; existing ones migrate when touched.
+- **Use gRPC between internal services.** Accepted for new services; existing ones migrate when touched. That means two internal styles for years, since rarely touched services never migrate, so the team keeps its REST conventions documented for the stragglers.
 
 The screen now loads in one round trip. The cost: a GraphQL gateway to run, query cost limits to prevent a client from requesting the whole database, and authorization checks that now happen per field rather than per endpoint.
 
 ## Common traps
 
 - **Choosing by fashion.** GraphQL for a simple service with one client, or gRPC for a public API, adds cost without benefit.
-- **"REST" that's really remote procedure calls** — `POST /doThing` for everything — gets neither REST's caching nor gRPC's typing.
+- **Fake REST.** `POST /doThing` for everything is remote procedure calls in disguise; it gets neither REST's caching nor gRPC's typing.
 - **Chatty APIs.** Designing endpoints around database tables forces clients into many round trips.
 - **Leaking internals.** Exposing database columns or internal IDs as the contract makes every refactor a breaking change.
 - **No pagination or limits.** An endpoint or query that can return everything eventually will.
