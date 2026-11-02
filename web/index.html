@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Principal Engineer Wiki</title>
+  <meta name="description" content="A reader-friendly field guide to the principles, practices, and architecture patterns Principal Software Engineers should know.">
+  <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14151a" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg stroke='%237a6ff0' stroke-width='2.5'%3E%3Cline x1='9' y1='10' x2='22' y2='8'/%3E%3Cline x1='9' y1='10' x2='15' y2='23'/%3E%3Cline x1='22' y1='8' x2='15' y2='23'/%3E%3C/g%3E%3Ccircle cx='9' cy='10' r='5' fill='%237a6ff0'/%3E%3Ccircle cx='22' cy='8' r='4' fill='%2314b8a6'/%3E%3Ccircle cx='15' cy='23' r='5' fill='%23f59e0b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#view">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="Principal Engineer Wiki home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="brand-name">Principal Engineer <b>Wiki</b></span>
+    </a>
+    <form class="topbar-search" role="search" id="top-search">
+      <label class="visually-hidden" for="top-search-input">Search articles</label>
+      <input id="top-search-input" type="search" placeholder="Search…  ( / )" autocomplete="off">
+    </form>
+    <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle dark mode">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </header>
+
+  <main id="view" tabindex="-1"></main>
+
+  <nav class="tabbar" aria-label="Main">
+    <a href="#/" data-tab="home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="#/search" data-tab="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      <span>Search</span>
+    </a>
+    <a href="#/graph" data-tab="graph">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2.6"/><circle cx="18" cy="6" r="2.6"/><circle cx="12" cy="18" r="2.6"/><path d="M8.5 7.5 15.5 6.3M7.3 9.2l3.5 6.5M16.8 8.4 13.3 15.7"/></svg>
+      <span>Graph</span>
+    </a>
+    <button type="button" id="surprise" data-tab="surprise">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><circle cx="8.5" cy="8.5" r="1.3"/><circle cx="15.5" cy="15.5" r="1.3"/><circle cx="12" cy="12" r="1.3"/></svg>
+      <span>Surprise</span>
+    </button>
+  </nav>
+
+  <div class="preview" id="preview" role="tooltip" hidden></div>
+
+  <noscript><p class="noscript">This reader needs JavaScript. The articles are plain Markdown in the repository's <code>wiki/</code> folder.</p></noscript>
+
+  <script src="wiki-data.js"></script>
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
