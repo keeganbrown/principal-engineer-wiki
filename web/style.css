@@ -230,10 +230,10 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -0.015em; }
   font-size: 15px; line-height: 1.45; color: var(--muted);
   border-left: 4px solid var(--cat, var(--border));
 }
-.catalog li > a.wikilink:first-child { background: none; padding: 0; display: block; font-size: 17px; font-weight: 650; color: var(--text); text-decoration: none; margin-bottom: 2px; }
-.catalog li > a.wikilink:first-child::after { content: ""; position: absolute; inset: 0; }
-.catalog li.seen > a.wikilink:first-child::before { content: "✓ "; color: var(--cat); }
-.catalog li:not(:has(> a.wikilink:first-child)) { background: transparent; border: 0; padding: 0 2px; }
+.catalog li > a.entry-title { background: none; padding: 0; display: block; font-size: 17px; font-weight: 650; color: var(--text); text-decoration: none; margin-bottom: 2px; }
+.catalog li > a.entry-title::after { content: ""; position: absolute; inset: 0; }
+.catalog li.seen > a.entry-title::before { content: "✓ "; color: var(--cat); }
+.catalog li:not(.entry) { background: transparent; border: 0; padding: 0 2px; }
 .catalog [hidden] { display: none; }
 
 /* ---------- Article ---------- */

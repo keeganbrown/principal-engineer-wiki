@@ -109,27 +109,27 @@
       }
       if (current) current.appendChild(node);
     }
-    // A section takes the category of the first article listed in it.
-    for (const section of sections) {
-      const first = section.querySelector("li > a.wikilink:first-child");
-      const target = first && articles[first.dataset.slug];
-      if (target) section.dataset.cat = target.category;
-    }
     for (const section of sections) {
       section.querySelectorAll("li").forEach((li) => {
         const first = li.firstElementChild;
         if (first && first.matches("a.wikilink") && li.firstChild === first) {
           const target = articles[first.dataset.slug];
           if (target) {
+            // Only items that *start* with a link are entries ("[[kiss]] — …").
+            // CSS can't tell, since :first-child ignores a leading "See also:".
             li.dataset.cat = target.category;
+            li.classList.add("entry");
             li.classList.toggle("seen", seen.has(target.slug));
-            // "[[kiss]] — Choose..." → title on top, blurb below.
             const rest = li.innerHTML.slice(first.outerHTML.length).replace(/^\s*—\s*/, "");
             first.textContent = target.title;
+            first.classList.add("entry-title");
             li.innerHTML = first.outerHTML + rest;
           }
         }
       });
+      // A section takes the category of the first article listed in it.
+      const firstEntry = section.querySelector("li.entry");
+      if (firstEntry) section.dataset.cat = firstEntry.dataset.cat;
     }
     return sections.map((s) => s.outerHTML).join("");
   }
