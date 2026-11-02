@@ -35,6 +35,7 @@ wiki/architecture/    Structural patterns (hexagonal, CQRS, ...).
 wiki/technology/      Kinds of technology (databases, brokers, LLMs, ...).
 wiki/leadership/      Influence, communication, and the non-code skills.
 wiki/coding-with-ai/  Working with coding agents, as an engineer and a team.
+wiki/antipatterns/    Pitfalls: tempting moves that reliably make things worse.
 scripts/lint_wiki.py  Enforces the rules below.
 scripts/build_site.py Builds the reader site: wiki → _site/wiki-data.js + web/.
 scripts/markdown_html.py  The Markdown subset the articles use → HTML.
@@ -178,12 +179,22 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | Queue vs log, delivery guarantees, DLQs, consumer lag | `message-brokers` |
   | Health checks, connection draining, CDN caching | `load-balancers-and-cdns` |
   | LLM properties, RAG, embeddings, evaluation sets | `large-language-models` |
+  | Distributed monolith | `distributed-monolith` |
+  | Why not to rewrite from scratch | `big-bang-rewrite` (how to replace instead: `strangler-fig`) |
+  | Bus factor, knowledge silos | `hero-culture` |
+  | Goodhart's law, metrics as targets | `metric-fixation` |
 
 ## Workflows
 
 **Technology articles** describe a *kind* of technology, not a product.
 Name products only as examples, and put "how to choose" ahead of "how to
 configure." "When it doesn't apply" says what to pick instead.
+
+**Antipattern articles** use the same sections with these meanings:
+"The idea" says what it is *and why it's tempting*; "How to apply it" splits
+into spotting it and climbing out; "Example" shows the escape, including
+its cost; "When it doesn't apply" says when the antipattern is the right
+call. Never blame the people who fell into it.
 
 **Add an article:** copy `templates/article.md` → fill it in → add it to
 `index.md` under the right heading → add `[[links]]` from 1–3 related

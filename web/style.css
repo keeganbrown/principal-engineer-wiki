@@ -17,6 +17,7 @@
   --c-leadership: #db2777;
   --c-technology: #65a30d;
   --c-coding-with-ai: #2563eb;
+  --c-antipatterns: #dc2626;
 
   --radius: 14px;
   --tabbar-h: 64px;
@@ -44,6 +45,7 @@
     --c-leadership: #f472b6;
     --c-technology: #a3e635;
     --c-coding-with-ai: #60a5fa;
+    --c-antipatterns: #f87171;
     color-scheme: dark;
   }
 }
@@ -63,6 +65,7 @@
   --c-leadership: #f472b6;
   --c-technology: #a3e635;
   --c-coding-with-ai: #60a5fa;
+  --c-antipatterns: #f87171;
   color-scheme: dark;
 }
 
@@ -158,6 +161,7 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -0.015em; }
 [data-cat="leadership"] { --cat: var(--c-leadership); }
 [data-cat="technology"] { --cat: var(--c-technology); }
 [data-cat="coding-with-ai"] { --cat: var(--c-coding-with-ai); }
+[data-cat="antipatterns"] { --cat: var(--c-antipatterns); }
 
 .pill {
   display: inline-flex; align-items: center; gap: 6px;
@@ -279,6 +283,7 @@ a.wikilink[data-cat="architecture"] { --link: var(--c-architecture); }
 a.wikilink[data-cat="leadership"] { --link: var(--c-leadership); }
 a.wikilink[data-cat="technology"] { --link: var(--c-technology); }
 a.wikilink[data-cat="coding-with-ai"] { --link: var(--c-coding-with-ai); }
+a.wikilink[data-cat="antipatterns"] { --link: var(--c-antipatterns); }
 a.wikilink.unseen { background-image: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px); }
 a.wikilink:hover { background-size: 100% 100%; background-image: linear-gradient(color-mix(in srgb, currentColor 14%, transparent), color-mix(in srgb, currentColor 14%, transparent)); border-radius: 3px; }
 .wikilink.broken { color: var(--muted); text-decoration: line-through; }

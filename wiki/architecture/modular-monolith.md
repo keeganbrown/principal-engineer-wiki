@@ -15,7 +15,7 @@ There's a spectrum of how to structure a system:
 
 | Style | Deploy units | Internal boundaries |
 | --- | --- | --- |
-| Big ball of mud | One | None — everything calls everything |
+| [[big-ball-of-mud]] | One | None — everything calls everything |
 | **Modular monolith** | One | Strong — modules talk through public interfaces |
 | Microservices | Many | Separated by the network (but can still be tangled) |
 

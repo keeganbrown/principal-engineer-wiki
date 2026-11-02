@@ -31,7 +31,7 @@ Martin Fowler named the pattern in 2004.
 
 ## Why it matters
 
-Big-bang rewrites are famously risky. They take longer than planned, the old system keeps changing during the rewrite, and the cutover day reveals hundreds of forgotten behaviors. Many are abandoned.
+[[big-bang-rewrite|Big-bang rewrites]] are famously risky: they run late, chase a system that keeps changing, and put every forgotten behavior on one cutover day.
 
 The strangler fig approach:
 

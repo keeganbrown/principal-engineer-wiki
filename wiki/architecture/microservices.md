@@ -26,7 +26,7 @@ James Lewis and Martin Fowler's 2014 article popularized the term.
 
 ## Why it matters
 
-Few architecture decisions are as expensive to get wrong. Teams that split too early often end up with a **distributed monolith** — services that must all be deployed together and fail together, with network calls where function calls used to be. They get every cost and none of the benefits.
+Few architecture decisions are as expensive to get wrong. Teams that split too early often end up with a [[distributed-monolith]]: services that must deploy and fail together, with every cost of distribution and none of the independence.
 
 Teams that never split, at large scale, can end up with one codebase where hundreds of engineers block each other on every release.
 
@@ -69,3 +69,4 @@ For a small team, an early product, or a domain you don't understand well yet, a
 - [[strangler-fig]] — how to extract services from an existing system safely.
 - [[saga-pattern]] — how to handle business processes that span services.
 - [[containers-and-kubernetes]] — running many services is the main reason to orchestrate.
+- [[cargo-cult-engineering]] — splitting into services because a much larger company did.

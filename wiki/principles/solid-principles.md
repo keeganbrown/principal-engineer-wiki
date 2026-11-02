@@ -71,3 +71,4 @@ In functional or data-oriented code, some principles translate differently — "
 - [[hexagonal-architecture]] — dependency inversion applied to a whole system.
 - [[dry]] — single responsibility helps you tell real duplication from coincidence.
 - [[yagni]] — the counterweight to building extension points too early.
+- [[god-object]] — what ignoring single responsibility grows into.

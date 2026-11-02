@@ -74,3 +74,4 @@ Pair or ensemble (mob) programming provides continuous review, so a separate rev
 - [[technical-debt]] — reviews are a key point for spotting and naming debt.
 - [[feature-flags]] — let you merge small, reviewable slices of unfinished features.
 - [[reviewing-ai-generated-code]] — the same practice when an agent wrote the first draft.
+- [[bikeshedding]] — when review effort goes to style instead of risk.

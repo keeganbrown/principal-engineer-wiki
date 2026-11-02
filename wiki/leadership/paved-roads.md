@@ -64,3 +64,4 @@ In a small organization where everyone already talks daily, a short shared doc m
 - [[adopting-coding-agents]] — shared agent setup is a paved road too.
 - [[containers-and-kubernetes]] — a container platform is the classic paved road.
 - [[shared-agent-configuration]] — the team's agent setup as a paved road.
+- [[golden-hammer]] — a default with no documented exits becomes a mandatory hammer.

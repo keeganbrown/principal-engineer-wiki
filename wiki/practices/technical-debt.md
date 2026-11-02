@@ -57,7 +57,7 @@ When international expansion reached the roadmap, though, the team knew exactly 
 ## Common traps
 
 - **"Debt" as a label for code you don't like.** Debt should have measurable interest or risk: bugs, slowness, exposure.
-- **The big rewrite.** Halting features to rewrite everything usually fails. Pay down incrementally instead ([[strangler-fig]]).
+- **The big rewrite.** Halting features to rewrite everything usually fails ([[big-bang-rewrite]]). Pay down incrementally instead ([[strangler-fig]]).
 - **Invisible debt.** If only engineers know about it, it will never be prioritized.
 - **Never taking any.** Refusing all shortcuts can be its own waste. Speed sometimes really matters.
 - **Forgotten scaffolding.** Stale [[feature-flags]], dead code paths, and abandoned migrations are debt too.

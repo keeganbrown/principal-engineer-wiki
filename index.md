@@ -138,3 +138,23 @@ Working well with coding agents, as an engineer and as a team. Start with [[larg
 **For each change**
 - [[spec-first-agent-tasks]] — Explore, plan, then build in small slices.
 - [[reviewing-ai-generated-code]] — You open the PR, you own the code.
+
+## Pitfalls and antipatterns
+
+Tempting moves that reliably make things worse: how to spot each one, how to climb out, and when it's actually the right call.
+
+**Code and system structure**
+- [[big-ball-of-mud]] — No enforced boundaries; everything calls everything.
+- [[god-object]] — One class or service that every change has to touch.
+- [[distributed-monolith]] — Services that still deploy and fail together.
+
+**Change and technology choices**
+- [[big-bang-rewrite]] — Rebuilding from scratch and switching over in one day.
+- [[golden-hammer]] — One favourite tool for every problem.
+- [[cargo-cult-engineering]] — Copying the rituals of successful teams without their conditions.
+- [[not-invented-here]] — Building your own when you could adopt, then owning it forever.
+
+**Teams and decisions**
+- [[hero-culture]] — Depending on rescuers instead of fixing what needs rescuing.
+- [[bikeshedding]] — Most debate on the smallest decisions.
+- [[metric-fixation]] — A measure becomes a target and stops measuring.

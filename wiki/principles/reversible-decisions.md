@@ -65,3 +65,4 @@ In a crisis, even one-way decisions sometimes have to be made fast, with whateve
 - [[api-versioning]] — published APIs are a classic one-way door.
 - [[paved-roads]] — how to standardize the small doors that add up.
 - [[influencing-without-authority]] — spend your credibility on one-way doors, not two-way ones.
+- [[bikeshedding]] — debate out of proportion to how hard a decision is to undo.

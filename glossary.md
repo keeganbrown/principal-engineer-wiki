@@ -9,6 +9,7 @@ alphabetical under each letter; the linter checks the format.
 - **ACID** — The four guarantees of a database transaction: atomicity (all or nothing), consistency (rules still hold), isolation (concurrent transactions don't see each other's partial work), and durability (committed data survives a crash). See [[relational-databases]].
 - **Agent instruction file** — A Markdown file in the repository, such as `AGENTS.md`, that a coding agent loads at the start of every session: how to build and test, where things live, and what never to do. See [[agent-instruction-files]].
 - **Aggregate** — In domain-driven design, a cluster of objects that is changed as one unit through a single root object, which enforces the rules. See [[domain-driven-design]].
+- **Antipattern** — A common response to a problem that looks reasonable but reliably makes things worse, with a known better alternative.
 - **API gateway** — One entry point in front of many services that handles routing, authentication, and rate limits for them. See [[strangler-fig]].
 - **Architecture decision record (ADR)** — A short document that records one decision, its context, and its consequences. See [[architecture-decision-records]].
 - **At-least-once delivery** — Every message is delivered, but some may arrive more than once, so consumers must handle duplicates. See [[message-brokers]].
@@ -19,9 +20,13 @@ alphabetical under each letter; the linter checks the format.
 ## B
 
 - **Backpressure** — Signaling a producer to slow down when a consumer can't keep up, instead of letting work pile up without limit. See [[backpressure]].
+- **Big ball of mud** — A system with no enforced structure, where any part may depend on any other. See [[big-ball-of-mud]].
+- **Big-bang rewrite** — Rebuilding a system from scratch and switching over all at once, instead of replacing it piece by piece. See [[big-bang-rewrite]].
+- **Bikeshedding** — Spending the most discussion on small, easy decisions while big, hard ones get little scrutiny. See [[bikeshedding]].
 - **Blast radius** — How much breaks when one component fails or one change goes wrong. Good design and gradual rollouts keep it small. See [[infrastructure-as-code]].
 - **Blue-green deployment** — Running the old (blue) and new (green) versions side by side and switching traffic at once, so rolling back is just switching back. See [[load-balancers-and-cdns]].
 - **Bounded context** — A boundary inside which one domain model, and its words, have a single consistent meaning. See [[domain-driven-design]].
+- **Bus factor** — How many people would need to be unavailable before a project stalls. A bus factor of one is a risk. See [[hero-culture]].
 
 ## C
 
@@ -30,7 +35,9 @@ alphabetical under each letter; the linter checks the format.
 - **Cache-aside** — The default caching pattern: read the cache, and on a miss read the source and store the result. See [[caching]].
 - **Canary release** — Releasing a change to a small slice of traffic first and watching it before rolling it out further. See [[feature-flags]].
 - **CAP theorem** — During a network partition, a distributed system must choose between staying consistent and staying available. See [[cap-theorem]].
+- **Cargo cult engineering** — Copying another team's practices without the problems and conditions that made them work. See [[cargo-cult-engineering]].
 - **Change-data-capture (CDC)** — Streaming a database's committed changes to other systems as they happen. See [[transactional-outbox]].
+- **Characterization test** — A test that records what existing code actually does, odd parts included, so changes don't silently lose behavior. See [[big-bang-rewrite]].
 - **CI/CD** — Continuous integration (merging and testing changes often, automatically) and continuous delivery or deployment (keeping every change releasable, or releasing it automatically). See [[testing-pyramid]].
 - **Circuit breaker** — A wrapper that stops calling a failing dependency for a while, so callers fail fast instead of waiting. See [[circuit-breaker]].
 - **Coding agent** — An AI tool that reads code, runs commands, and edits files in a loop toward a goal. See [[agent-instruction-files]].
@@ -52,6 +59,7 @@ alphabetical under each letter; the linter checks the format.
 - **Denormalization** — Storing copies of data in the shape each read needs, trading harder writes for faster reads. See [[nosql-databases]].
 - **Dependency inversion** — High-level code defines the interfaces it needs, and low-level code implements them. See [[hexagonal-architecture]].
 - **Dev container** — A development environment defined by a `devcontainer.json` file in the repository, so every engineer, CI job, and agent gets the same tools. See [[reproducible-dev-environments]].
+- **Distributed monolith** — Services split across the network that still have to change, deploy, and fail together. See [[distributed-monolith]].
 - **DORA metrics** — Five delivery measures from Google's DevOps Research and Assessment program: lead time for changes, deployment frequency, change failure rate, failed deployment recovery time, and deployment rework rate. See [[adopting-coding-agents]].
 - **Drift** — The gap between what your infrastructure code describes and what actually exists, usually from changes made by hand. See [[infrastructure-as-code]].
 - **DRY** — Don't repeat yourself: give each piece of knowledge one authoritative home, but don't abstract too early. See [[dry]].
@@ -73,6 +81,9 @@ alphabetical under each letter; the linter checks the format.
 
 ## G
 
+- **God object** — One class or service that knows and does too much, so most changes have to edit it. See [[god-object]].
+- **Golden hammer** — Using a familiar or fashionable tool for every problem, whether or not it fits. See [[golden-hammer]].
+- **Goodhart's law** — When a measure becomes a target, it stops being a good measure, because people optimize the number instead of the outcome. See [[metric-fixation]].
 - **GraphQL** — An API style with one endpoint, where the client sends a query naming exactly the fields it wants. See [[api-styles]].
 - **gRPC** — An API style for calling functions on a remote service, with contracts in Protocol Buffers and generated client code. See [[api-styles]].
 
@@ -116,6 +127,7 @@ alphabetical under each letter; the linter checks the format.
 
 - **N+1 query** — Loading a list with one query, then running one more query for each item in it. See [[relational-databases]].
 - **NoSQL** — A loose name for databases that don't use the relational table model, such as key-value, document, wide-column, and search stores. See [[nosql-databases]].
+- **Not invented here (NIH)** — The reflex to build your own version of something you could adopt. See [[not-invented-here]].
 
 ## O
 
@@ -153,6 +165,7 @@ alphabetical under each letter; the linter checks the format.
 
 - **Saga** — A multi-step workflow across services in which each step has a compensating action. See [[saga-pattern]].
 - **Sandbox** — An isolated environment that limits which files, networks, and credentials the code inside it can reach. See [[agent-guardrails]].
+- **Second-system effect** — Fred Brooks's observation that a replacement system tends to be over-designed, carrying every idea the first one left out. See [[big-bang-rewrite]].
 - **Separation of concerns** — Splitting a system into parts that each handle one kind of job. See [[separation-of-concerns]].
 - **Sharding** — Splitting data across several databases by key, so that each holds a part. See [[relational-databases]].
 - **Single point of failure (SPOF)** — A component whose failure takes the whole system down. See [[load-balancers-and-cdns]].

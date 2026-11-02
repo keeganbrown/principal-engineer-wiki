@@ -56,7 +56,7 @@ The coupling doesn't disappear — it **moves** to the `OrderPlaced` contract, w
 
 - **Zero coupling as a goal.** Modules must talk to be useful. The aim is *deliberate* coupling through narrow interfaces.
 - **Hidden coupling.** Shared databases, shared config, timing assumptions ("B runs after A"), and implicit data formats are coupling too — just invisible.
-- **Distributed monolith.** Splitting code into services without reducing coupling gives you all the pain of distribution and none of the independence (see [[microservices]]).
+- **Distributed monolith.** Splitting code into services without reducing coupling gives you all the pain of distribution and none of the independence ([[distributed-monolith]]).
 
 ## When it doesn't apply
 

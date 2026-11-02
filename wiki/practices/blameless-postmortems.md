@@ -63,3 +63,4 @@ Blamelessness covers honest mistakes, not deliberate misconduct or malicious act
 - [[technical-debt]] — postmortems often reveal debt that finally needs repaying.
 - [[feature-flags]] — kill switches often appear as postmortem action items.
 - [[influencing-without-authority]] — leading a blameless culture is a principal-engineer responsibility.
+- [[hero-culture]] — every rescue hides a system that needs fixing.
