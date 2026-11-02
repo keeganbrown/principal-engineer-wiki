@@ -128,7 +128,7 @@ The non-code half of the principal role.
 
 ## Coding with AI
 
-Working well with coding agents, as an engineer and as a team. Start with [[large-language-models]] for how the underlying models behave.
+Working well with coding agents, as an engineer and as a team. The research here is early and mixed, so these articles treat findings as signals to check against your own team, not forecasts. Start with [[large-language-models]] for how the underlying models behave.
 
 **For the team**
 - [[adopting-coding-agents]] — Shared norms, peer-led rollout, and outcome metrics.
@@ -136,7 +136,7 @@ Working well with coding agents, as an engineer and as a team. Start with [[larg
 
 **Setting up the codebase**
 - [[agent-instruction-files]] — A short, reviewed briefing the agent rereads every session.
-- [[feedback-loops-for-agents]] — Fast, trustworthy checks are the agent's real teacher.
+- [[feedback-loops-for-agents]] — Fast, trustworthy checks are the agent's real teacher, and every unattended run needs one to stop.
 - [[reproducible-dev-environments]] — One command, same tools for every human, CI job, and agent.
 - [[shared-agent-configuration]] — Permissions, hooks, and commands checked in and reviewed.
 - [[navigable-codebases]] — Structure an agent can find its way around with search alone.

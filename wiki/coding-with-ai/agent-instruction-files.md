@@ -22,7 +22,7 @@ The common names are `AGENTS.md`, an open convention many tools read (now stewar
 - **Agents repeat the same mistakes without it.** Each session rediscovers that tests need a flag, or that one folder is generated code. A two-line note fixes that for everyone.
 - **It makes team conventions explicit.** Most teams carry their rules in people's heads. Writing them for an agent forces the team to agree on them, and new humans benefit too.
 - **Everyone's agent behaves the same way.** One shared, reviewed file beats ten personal prompt habits, each with different rules.
-- **It's linked to cleaner agent code.** A 2026 Stanford and Carnegie Mellon study of 509 repositories found that agents raised commit volume by about a third either way. But in agent-heavy repositories, code complexity rose about 27% where a rules file was committed versus 53% where none was. It's observational: teams that write rules files may simply be more disciplined, and the authors treat it as a hypothesis to test.
+- **It may slow the decay.** A 2026 Stanford and Carnegie Mellon study of 509 repositories found agents raised commit volume by about a third whether or not the repository had committed agent configuration, such as an instruction file. In agent-heavy repositories, code complexity, as scored by a static-analysis tool, rose about 27% with that configuration versus 53% without. It's observational: disciplined teams may simply write these files more often, and the authors treat it as a hypothesis to test.
 
 The limit: an instruction file is *advice*, not enforcement. The agent usually follows it, but nothing guarantees that. Rules that must hold belong in tools — tests, linters, type checks, permission settings — where breaking them fails loudly.
 
@@ -64,7 +64,7 @@ The style guide moves into the linter config, so it's enforced rather than reque
 
 - **Writing an essay.** Long files dilute every rule. Link to deeper docs instead of pasting them.
 - **Treating it as enforcement.** "Always run the tests" in a file is a hope. A CI (continuous integration) check that fails without tests is a guarantee.
-- **Letting it rot.** A file that names a command you renamed last month teaches the agent wrong things with confidence. The same 2026 study found about three-quarters of these files were never edited after their first commit. Give it an owner and touch it when the build changes.
+- **Letting it rot.** A file that names a command you renamed last month teaches the agent wrong things with confidence. The Stanford and Carnegie Mellon study found about three-quarters of committed agent configuration files were never edited after their first commit. Give it an owner and touch it when the build changes.
 - **Personal files for team rules.** Rules that only live in one person's local config split the team into different behaviors. Shared rules go in the shared file.
 - **Putting secrets or private data in it.** It's checked into the repository and sent to the model every session.
 

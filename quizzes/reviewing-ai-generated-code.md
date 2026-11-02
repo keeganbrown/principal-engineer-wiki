@@ -38,9 +38,9 @@
 
 ## Agent use has doubled each reviewer's load, and a review bot now checks most pull requests. What should the team do?
 
-- [x] Budget reviewer hours and write down which changes the bot may approve.
+- [x] Budget reviewer hours and spot-check merged changes for missed issues.
 - [ ] Let the bot approve everything, since agent changes are rarely reverted.
 - [ ] Speed up approvals by reading each change's summary instead of its diff.
 - [ ] Add a second review bot so humans can stop reading routine changes.
 
-**Why:** Plan review capacity alongside authoring. Bots are a first pass, not the approval, and the description is a claim while the diff is the evidence; check what humans have stopped reading. See [[reviewing-ai-generated-code]].
+**Why:** Plan review capacity alongside authoring. Bots are a first pass, not the approval, and a summary is a claim while the diff is the evidence. Low short-term revert rates can't show what reviewers stopped catching. See [[reviewing-ai-generated-code]].

@@ -195,10 +195,19 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   - *coding agent* — define it at first use in every `coding-with-ai`
     article: an AI tool that reads code, runs commands, and edits files
     in a loop toward a goal.
-- **Fast-moving topics cite dated evidence.** In `coding-with-ai`, every
-  research claim names who, when, and the caveat (sample, what wasn't
-  measured), and has an entry in `docs/sources/`. Re-check it at each
-  review; prefer principles that survive tool churn over tool features.
+- **Coding-agent evidence is early and mixed — say so.** That is the
+  wiki's position in `coding-with-ai`. Studies are small, short,
+  observational, or from one firm, and they disagree. Treat a finding as a
+  signal of what to watch, never a forecast; never rest advice on one
+  study; and steer readers to measure their own team.
+  - Every research claim names who, when, and the caveat (sample, design,
+    what wasn't measured), next to the number, and has an entry in
+    `docs/sources/`.
+  - Use non-causal wording ("after adoption, X rose"; "the authors point
+    to…") unless the study was randomized. Keep counter-findings.
+  - Bold lead-ins state what to watch, not a proven effect.
+  - Re-check claims at each review; prefer principles that survive tool
+    churn over tool features.
 - **Concept owners.** One article explains a cross-cutting idea; the rest
   give one sentence and link:
 
@@ -223,6 +232,7 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | Agent permissions, sandboxing, prompt injection | `agent-guardrails` |
   | Dev containers, environment as code | `reproducible-dev-environments` |
   | Hooks, reusable commands, tool connections (MCP) | `shared-agent-configuration` |
+  | Unattended agent runs: stop condition, budget, handoff | `feedback-loops-for-agents` (sandboxing them: `agent-guardrails`) |
   | Codebase layout and discoverability for agents | `navigable-codebases` |
   | Team rollout, AI working agreement, measuring AI impact | `adopting-coding-agents` |
   | ACID, constraints, indexes, replicas, sharding | `relational-databases` |

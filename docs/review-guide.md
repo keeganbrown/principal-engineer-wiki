@@ -23,6 +23,12 @@ has one lens; stay inside yours so reviews don't overlap.
   also stand alone, since the site shuffles questions and mixes quizzes.
   Report quiz findings under the article's heading, with the section set
   to `quiz`.
+- **Coding-agent research is early and mixed.** In `coding-with-ai`, flag
+  any finding presented as a settled effect: causal verbs on observational
+  data, a missing caveat, advice resting on one study, or a dropped
+  counter-finding. A claim that rests on evidence too thin to build on
+  (an unfinished preprint, an estimate that swings with the method) should
+  be cut, not caveated.
 
 ## Severity
 

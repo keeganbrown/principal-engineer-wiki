@@ -20,7 +20,8 @@ Two rules follow:
 
 ## Why it matters
 
-- **Review becomes the bottleneck.** In a 2026 Harvard study of 655 firms, code waited about 60% longer for a reviewer after agent adoption and drew about 39% more comments per change. At one company told to double its output (a 2026 Carnegie Mellon and Stanford study), each reviewer's load doubled, and while automated review grew from 19% to 84% of PRs, careful human review fell from 39% to 21%. Neither study, both observational, found more bugs or reverts; the cost showed up as review time, and unchecked it turns into rubber-stamping ([[adopting-coding-agents]] has the wider evidence).
+- **Watch review for a bottleneck.** In a 2026 Harvard working paper (655 firms, observational, not yet peer reviewed), code waited about 60% longer for a reviewer after firms adopted agents and drew about 39% more comments per change.
+- **Watch what humans stop reading.** At one company told to double its output (a 2026 Carnegie Mellon and Stanford study of one firm), each reviewer's load doubled. Automated review grew from 19% to 84% of PRs, while the share that got a substantive human review fell from 39% to 21%. Neither study saw more bug reports or reverts in the short term, but missed defects can surface long after either study looked ([[adopting-coding-agents]]).
 - **Plausible errors slip past skimming.** Invented functions, wrong edge-case handling, and tests that check the wrong thing all read fluently.
 - **Ownership keeps knowledge in the team.** If nobody understands the code that was merged, nobody can debug it at 3 a.m.
 
@@ -37,7 +38,7 @@ Two rules follow:
   - *Duplication* — a new helper written beside an existing one the agent didn't find ([[navigable-codebases]]).
   - *Weakened checks* — deleted assertions, skipped tests, broader exception handling, loosened types.
 - **Use AI reviewers as a first pass, not an approval.** An AI review bot can catch real issues cheaply. It doesn't replace a human who understands the system and is accountable for the merge.
-- **Plan review capacity with authoring.** When agent use grows, budget reviewer hours, not just licenses, and watch how long PRs wait for a first review. Those hours come out of feature work. If bots take on more review, write down which changes a bot may approve, and check what humans have stopped reading.
+- **Plan review capacity alongside authoring.** When agent use grows, budget reviewer hours, not just licenses, and watch how long PRs wait for a first review. Those hours come out of feature work. If a review bot takes on more of the first pass, a human still approves every merge; each month, have someone reread a few recently merged PRs in full to see what reviewers stopped catching.
 - **Keep checks the agent can't edit.** Branch protection and required reviewers for sensitive paths (repository settings that block merging until checks pass and named people approve), and CI (continuous integration) gates should not be changeable by the same change they guard.
 
 ## Example
@@ -48,7 +49,7 @@ The reviewer starts with intent and checks it against the ticket. The ticket say
 
 Reading further, the reviewer finds two more issues. The agent raised the maximum page size from 100 to 1,000 in a shared config file ("to make the test simpler"). And it added a new date-parsing library although the project already has one.
 
-None of this would fail CI. The fix takes an hour; finding it in production would have taken much longer. The cost is review time, and the team accepts it: they cap agent PRs at about 400 changed lines so reviews like this stay possible, and for a quarter they track escaped defects and reverts on agent PRs separately to check the cap is doing its job.
+None of this would fail CI. The fix takes an hour; finding it in production would take much longer. The cost is review time, and the team accepts it: they cap agent PRs at about 400 changed lines so reviews like this stay possible, and for a quarter they track escaped defects and reverts on agent PRs separately to check the cap is doing its job.
 
 ## Common traps
 
@@ -60,7 +61,7 @@ None of this would fail CI. The fix takes an hour; finding it in production woul
 
 ## When it doesn't apply
 
-Throwaway code — a one-off data script you'll delete, a spike to learn an API — needs a sanity check, not a full review. Generated code that a tool regenerates on every build, such as API clients from a schema, is reviewed at the generator and schema, not line by line.
+Throwaway code — a one-off data script you'll delete, a spike to learn an API — needs a sanity check, not a full review. Code a tool regenerates on every build, such as API clients from a schema, is reviewed at the generator and schema.
 
 ## Related
 

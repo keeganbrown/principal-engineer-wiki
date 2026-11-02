@@ -27,11 +27,11 @@
 
 **Why:** Use the file to explain, and tools (tests, linters, type checks, permission settings) to enforce. See [[agent-instruction-files]] and [[shared-agent-configuration]].
 
-## A lead says committing a rules file will halve how fast agent-written code grows more complex. How should you treat the claim?
+## A lead says committing an agent instruction file halves the rise in code complexity that agents cause. How should you treat the claim?
 
 - [x] As plausible but unproven, since the evidence is observational.
 - [ ] As proven, since a large study measured it across many repositories.
-- [ ] As false, since agents ignore rules files in most of their sessions.
-- [ ] As irrelevant, since rules files only change how often agents commit.
+- [ ] As false, since agents ignore instruction files in most sessions.
+- [ ] As irrelevant, since instruction files only change how often agents commit.
 
-**Why:** A 2026 Stanford and Carnegie Mellon study found complexity rose about half as much in agent-heavy repositories with a committed rules file, but disciplined teams may simply write more rules files; the authors treat it as a hypothesis. Either way, rules that must hold belong in tools. See [[agent-instruction-files]].
+**Why:** A 2026 Stanford and Carnegie Mellon study saw complexity rise about half as much in agent-heavy repositories with committed agent configuration, but disciplined teams may simply write these files more often; the authors treat it as a hypothesis. Either way, rules that must hold belong in tools. See [[agent-instruction-files]].
