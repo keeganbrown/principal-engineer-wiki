@@ -73,3 +73,4 @@ Pair or ensemble (mob) programming provides continuous review, so a separate rev
 - [[architecture-decision-records]] — propose architecture decision records (ADRs) as PRs so decisions get the same review as code.
 - [[technical-debt]] — reviews are a key point for spotting and naming debt.
 - [[feature-flags]] — let you merge small, reviewable slices of unfinished features.
+- [[reviewing-ai-generated-code]] — the same practice when an agent wrote the first draft.

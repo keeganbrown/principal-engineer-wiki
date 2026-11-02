@@ -2,6 +2,7 @@
 
 Newest first.
 
+- 2026-11-01 — Added the Coding with AI category (6 articles): adopting-coding-agents, agent-guardrails, agent-instruction-files, agent-ready-codebases, spec-first-agent-tasks, reviewing-ai-generated-code. Sources: METR (2025, 2026 update), DORA 2025, Microsoft CLI-agent rollout study (arXiv 2607.01418), Anthropic skill-formation study (2026), Claude Code docs, Simon Willison on prompt injection — see `docs/sources/coding-with-ai.md`. Back-linked from code-review, TDD, paved-roads, design-docs.
 - 2026-11-01 — Added the reader site (`web/`, `scripts/build_site.py`): mobile-first, starter path, search, per-article connection maps, full interactive graph, reading progress. Published to GitHub Pages by `.github/workflows/pages.yml` on every push to main.
 - 2026-11-01 — Applied pass-3 findings: recovery-job and example-consistency conventions, UPPER_CASE constants allowed, linter catches 'owns' in Related and "the wiki's rule". Fixed expand-and-contract step-4 must-fix, races in hexagonal/idempotency/outbox/backfill, and remaining definitions.
 - 2026-11-01 — Third review (focused, 6 agents). 1 must-fix, 4 minor unfixed; main theme is unstated limits of recovery mechanisms added in pass 2. Report: `reviews/2026-11-01-full-wiki-pass3.md`.

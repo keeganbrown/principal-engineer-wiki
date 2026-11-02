@@ -90,3 +90,19 @@ The non-code half of the principal role.
 - [[influencing-without-authority]] — Lead through trust, framing, and clear writing.
 - [[paved-roads]] — Make the right way the easy way, and maintain it.
 - See also: [[reversible-decisions]], [[design-docs]], [[blameless-postmortems]].
+
+## Coding with AI
+
+Working well with coding agents, as an engineer and as a team.
+
+**For the team**
+- [[adopting-coding-agents]] — Shared norms, peer-led rollout, and outcome metrics.
+- [[agent-guardrails]] — Least access, sandboxes, and assuming input can lie.
+
+**For the codebase**
+- [[agent-instruction-files]] — A short, reviewed briefing the agent rereads every session.
+- [[agent-ready-codebases]] — Fast, trustworthy checks are the agent's real teacher.
+
+**For each change**
+- [[spec-first-agent-tasks]] — Explore, plan, then build in small slices.
+- [[reviewing-ai-generated-code]] — You open the PR, you own the code.

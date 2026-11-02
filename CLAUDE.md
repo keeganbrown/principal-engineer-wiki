@@ -32,12 +32,14 @@ wiki/principles/      Timeless design rules (KISS, coupling, ...).
 wiki/practices/       Things teams do (TDD, code review, ADRs, ...).
 wiki/architecture/    Structural patterns (hexagonal, CQRS, ...).
 wiki/leadership/      Influence, communication, and the non-code skills.
+wiki/coding-with-ai/  Working with coding agents, as an engineer and a team.
 scripts/lint_wiki.py  Enforces the rules below.
 scripts/build_site.py Builds the reader site: wiki → _site/wiki-data.js + web/.
 scripts/markdown_html.py  The Markdown subset the articles use → HTML.
 web/                  Reader site: index.html, style.css, app.js (DOM shell),
                       core.js (pure logic, tested in tests/web/).
 docs/review-guide.md  Shared rules + output format for reviewer agents.
+docs/sources/         Research notes and citations behind fast-moving topics.
 .claude/agents/       Reviewer agents, one perspective each.
 .claude/skills/       /review-wiki — runs the reviewers and merges results.
 reviews/              Saved review reports.
@@ -126,6 +128,13 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   - *group by domain* (not "feature" or "business capability").
   - *paved road* (not "golden path").
   - *eventual consistency*, *change-data-capture (CDC)*, *pull request (PR)*.
+  - *coding agent* — define it at first use in every `coding-with-ai`
+    article: an AI tool that reads code, runs commands, and edits files
+    in a loop toward a goal.
+- **Fast-moving topics cite dated evidence.** In `coding-with-ai`, every
+  research claim names who, when, and the caveat (sample, what wasn't
+  measured), and has an entry in `docs/sources/`. Re-check it at each
+  review; prefer principles that survive tool churn over tool features.
 - **Concept owners.** One article explains a cross-cutting idea; the rest
   give one sentence and link:
 
@@ -143,6 +152,12 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | Contract tests | `contract-testing` |
   | One-way vs two-way doors | `reversible-decisions` |
   | Design docs = deliberation; ADRs = the record | `design-docs` / `architecture-decision-records` |
+  | Agent instruction files (AGENTS.md, CLAUDE.md) | `agent-instruction-files` |
+  | Feedback loops for agents | `agent-ready-codebases` |
+  | Plan-first agent workflow, task sizing | `spec-first-agent-tasks` |
+  | Ownership and review of agent output | `reviewing-ai-generated-code` |
+  | Agent permissions, sandboxing, prompt injection | `agent-guardrails` |
+  | Team rollout, AI working agreement, measuring AI impact | `adopting-coding-agents` |
 
 ## Workflows
 

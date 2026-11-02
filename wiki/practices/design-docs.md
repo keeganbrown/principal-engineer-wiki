@@ -69,3 +69,4 @@ Watch for the process turning into bureaucracy. If doc review routinely takes lo
 - [[influencing-without-authority]] — clear writing is a principal engineer's main lever.
 - [[code-review]] — design review is code review moved earlier.
 - [[yagni]] — non-goals are where YAGNI ("you aren't gonna need it") gets written down.
+- [[spec-first-agent-tasks]] — the same "plan in writing first" habit, applied to coding agents.
