@@ -9,11 +9,18 @@ read them, ask questions, and point at new topics.
 
 | Task | Command |
 | --- | --- |
-| Test the linter | `python3 -m unittest discover -s tests` |
+| Test the Python (linter, site build) | `python3 -m unittest discover -s tests` |
+| Test the site's JS logic | `node --test 'tests/web/*.test.js'` |
 | Lint the wiki | `python3 scripts/lint_wiki.py` |
-| Both (run before every commit) | `python3 -m unittest discover -s tests && python3 scripts/lint_wiki.py` |
+| Build the reader site into `_site/` | `python3 scripts/build_site.py` |
+| Preview the site | build, then open `_site/index.html` (or `python3 -m http.server -d _site`) |
+| All checks (run before every commit) | `python3 -m unittest discover -s tests && node --test 'tests/web/*.test.js' && python3 scripts/lint_wiki.py` |
 
-Python 3.9+, standard library only. No install step.
+Python 3.9+ standard library and Node 18+ (tests only). No install step.
+
+**Publishing:** `.github/workflows/pages.yml` runs all checks on every PR
+and push; pushes to `main` also build and deploy the site to GitHub Pages
+(repo Settings → Pages → Source: GitHub Actions).
 
 ## Layout
 
@@ -26,11 +33,15 @@ wiki/practices/       Things teams do (TDD, code review, ADRs, ...).
 wiki/architecture/    Structural patterns (hexagonal, CQRS, ...).
 wiki/leadership/      Influence, communication, and the non-code skills.
 scripts/lint_wiki.py  Enforces the rules below.
+scripts/build_site.py Builds the reader site: wiki → _site/wiki-data.js + web/.
+scripts/markdown_html.py  The Markdown subset the articles use → HTML.
+web/                  Reader site: index.html, style.css, app.js (DOM shell),
+                      core.js (pure logic, tested in tests/web/).
 docs/review-guide.md  Shared rules + output format for reviewer agents.
 .claude/agents/       Reviewer agents, one perspective each.
 .claude/skills/       /review-wiki — runs the reviewers and merges results.
 reviews/              Saved review reports.
-tests/                Tests for the linter.
+tests/                Tests for the linter, site build, and site logic.
 ```
 
 ## Article rules (enforced by the linter)
@@ -44,6 +55,10 @@ tests/                Tests for the linter.
 - Cross-link with `[[slug]]` or `[[slug|display text]]`. Every link must
   resolve, and every article links to at least one other article.
 - Max 1,200 words. If it's longer, split it into two articles.
+- Use only the Markdown the site renders: headings, paragraphs, lists
+  (one nesting level, two-space indent), `>` quotes, tables, fenced code,
+  `**bold**`, `*italic*`, `` `code` ``, and wikilinks. No images or raw HTML.
+  (Not linted, but a test fails if Markdown syntax leaks into the built HTML.)
 
 ## Writing style (enforced by you)
 
