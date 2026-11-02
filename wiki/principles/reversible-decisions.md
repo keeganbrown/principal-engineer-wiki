@@ -60,6 +60,7 @@ In a crisis, even one-way decisions sometimes have to be made fast, with whateve
 ## Related
 
 - [[yagni]] — build only what you need, *except* where a one-way door makes waiting expensive.
+- [[architecture-trade-offs]] — how to compare the options once a door deserves the analysis.
 - [[design-docs]] — the right tool for one-way doors.
 - [[architecture-decision-records]] — record one-way decisions so the reasoning outlives the people.
 - [[api-versioning]] — published APIs are a classic one-way door.

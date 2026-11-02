@@ -151,6 +151,7 @@ alphabetical under each letter; the linter checks the format.
 
 ## Q
 
+- **Quality attribute** — A property a system must have, such as latency, availability, cost, or how fast teams can ship. Architecture choices trade one against another. See [[architecture-trade-offs]].
 - **Quorum** — The minimum number of machines that must agree for an operation to count, usually a majority.
 
 ## R

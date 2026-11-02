@@ -224,6 +224,7 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | Expand-and-contract migrations | `expand-and-contract` |
   | Contract tests | `contract-testing` |
   | One-way vs two-way doors | `reversible-decisions` |
+  | Weighing trade-offs, quality attributes | `architecture-trade-offs` |
   | Design docs = deliberation; ADRs = the record | `design-docs` / `architecture-decision-records` |
   | Agent instruction files (AGENTS.md, CLAUDE.md) | `agent-instruction-files` |
   | Feedback loops for agents | `feedback-loops-for-agents` |

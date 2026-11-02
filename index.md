@@ -26,6 +26,7 @@ Timeless rules of thumb for judging any design.
 - [[dry]] — One home for each piece of knowledge, but don't abstract too early.
 
 **Judgment**
+- [[architecture-trade-offs]] — No best design, only the best fit: rank what matters, name what each option costs.
 - [[reversible-decisions]] — Move fast on two-way doors; slow down on one-way doors.
 
 **Structure**
