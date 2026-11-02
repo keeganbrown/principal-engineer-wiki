@@ -16,7 +16,8 @@ runs the linter so the wiki stays consistent as it grows.
 
 - **On the web:** <https://keeganbrown.github.io/principal-engineer-wiki/> —
   a mobile-first reader with a starter path, search, hover previews, a
-  "connections" map on every article, and a full interactive graph. It
+  "connections" map on every article, a searchable glossary of terms, and
+  a full interactive graph. It
   remembers what you've read (in your browser only) and shows your progress.
 - On GitHub, or any Markdown viewer.
 - In [Obsidian](https://obsidian.md): open this folder as a vault. The

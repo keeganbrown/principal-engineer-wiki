@@ -26,11 +26,13 @@ and push; pushes to `main` also build and deploy the site to GitHub Pages
 
 ```
 index.md              Entry point. Every article must be linked from here.
+glossary.md           One-line definitions of terms, linked to owning articles.
 log.md                Append-only history of wiki changes (newest at top).
 templates/article.md  Copy this to start a new article.
 wiki/principles/      Timeless design rules (KISS, coupling, ...).
 wiki/practices/       Things teams do (TDD, code review, ADRs, ...).
 wiki/architecture/    Structural patterns (hexagonal, CQRS, ...).
+wiki/technology/      Kinds of technology (databases, brokers, LLMs, ...).
 wiki/leadership/      Influence, communication, and the non-code skills.
 wiki/coding-with-ai/  Working with coding agents, as an engineer and a team.
 scripts/lint_wiki.py  Enforces the rules below.
@@ -61,6 +63,16 @@ tests/                Tests for the linter, site build, and site logic.
   (one nesting level, two-space indent), `>` quotes, tables, fenced code,
   `**bold**`, `*italic*`, `` `code` ``, and wikilinks. No images or raw HTML.
   (Not linted, but a test fails if Markdown syntax leaks into the built HTML.)
+
+## Glossary rules (enforced by the linter)
+
+- Entries live under `## A`, `## B`, … (`## #` for terms starting with a
+  digit or symbol), alphabetical within each letter, case-insensitive.
+- Each entry is one line: `- **Term** — Definition. See [[slug]].`
+- One or two plain sentences. Link to the owning article when there is
+  one; the glossary defines, articles explain.
+- No duplicate terms. When an article introduces an important term,
+  add it here in the same change.
 
 ## Writing style (enforced by you)
 
@@ -161,8 +173,17 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | Hooks, reusable commands, tool connections (MCP) | `shared-agent-configuration` |
   | Codebase layout and discoverability for agents | `navigable-codebases` |
   | Team rollout, AI working agreement, measuring AI impact | `adopting-coding-agents` |
+  | ACID, constraints, indexes, replicas, sharding | `relational-databases` |
+  | Cache patterns, TTLs, invalidation, stampedes | `caching` |
+  | Queue vs log, delivery guarantees, DLQs, consumer lag | `message-brokers` |
+  | Health checks, connection draining, CDN caching | `load-balancers-and-cdns` |
+  | LLM properties, RAG, embeddings, evaluation sets | `large-language-models` |
 
 ## Workflows
+
+**Technology articles** describe a *kind* of technology, not a product.
+Name products only as examples, and put "how to choose" ahead of "how to
+configure." "When it doesn't apply" says what to pick instead.
 
 **Add an article:** copy `templates/article.md` → fill it in → add it to
 `index.md` under the right heading → add `[[links]]` from 1–3 related
