@@ -23,6 +23,7 @@ CATEGORIES = (
     ("practices", "Practices"),
     ("architecture", "Architecture"),
     ("leadership", "Leadership"),
+    ("coding-with-ai", "Coding with AI"),
 )
 WORDS_PER_MINUTE = 230
 H1 = re.compile(r"^# .*\n", re.MULTILINE)

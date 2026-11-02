@@ -78,7 +78,7 @@ class SiteDataTest(unittest.TestCase):
 
     def test_categories_are_listed_in_reading_order(self):
         slugs = [c["slug"] for c in self.data["categories"]]
-        self.assertEqual(slugs, ["principles", "practices", "architecture", "leadership"])
+        self.assertEqual(slugs, ["principles", "practices", "architecture", "leadership", "coding-with-ai"])
 
     def test_link_text_uses_article_titles(self):
         self.assertIn(">KISS</a>", self.data["articles"]["yagni"]["html"])

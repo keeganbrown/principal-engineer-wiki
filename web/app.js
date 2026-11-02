@@ -104,12 +104,16 @@
     let current = null;
     for (const node of [...template.content.children]) {
       if (node.tagName === "H2") {
-        const cat = categories[sections.length] ? categories[sections.length].slug : "";
         current = document.createElement("section");
-        current.dataset.cat = cat;
         sections.push(current);
       }
       if (current) current.appendChild(node);
+    }
+    // A section takes the category of the first article listed in it.
+    for (const section of sections) {
+      const first = section.querySelector("li > a.wikilink:first-child");
+      const target = first && articles[first.dataset.slug];
+      if (target) section.dataset.cat = target.category;
     }
     for (const section of sections) {
       section.querySelectorAll("li").forEach((li) => {

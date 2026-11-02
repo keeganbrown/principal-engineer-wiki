@@ -15,6 +15,7 @@
   --c-practices: #0f9488;
   --c-architecture: #d97706;
   --c-leadership: #db2777;
+  --c-coding-with-ai: #2563eb;
 
   --radius: 14px;
   --tabbar-h: 64px;
@@ -40,6 +41,7 @@
     --c-practices: #2dd4bf;
     --c-architecture: #fbbf24;
     --c-leadership: #f472b6;
+    --c-coding-with-ai: #60a5fa;
     color-scheme: dark;
   }
 }
@@ -57,6 +59,7 @@
   --c-practices: #2dd4bf;
   --c-architecture: #fbbf24;
   --c-leadership: #f472b6;
+  --c-coding-with-ai: #60a5fa;
   color-scheme: dark;
 }
 
@@ -150,6 +153,7 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -0.015em; }
 [data-cat="practices"] { --cat: var(--c-practices); }
 [data-cat="architecture"] { --cat: var(--c-architecture); }
 [data-cat="leadership"] { --cat: var(--c-leadership); }
+[data-cat="coding-with-ai"] { --cat: var(--c-coding-with-ai); }
 
 .pill {
   display: inline-flex; align-items: center; gap: 6px;
@@ -215,14 +219,14 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -0.015em; }
 .catalog h2::before { content: ""; width: 12px; height: 12px; border-radius: 4px; background: var(--cat); }
 .catalog h2 + p { margin: 0 0 8px; color: var(--muted); }
 .catalog p > strong:only-child { display: block; margin: 18px 0 8px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.catalog ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.catalog.prose ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .catalog li {
   position: relative; padding: 12px 14px 12px 16px; border-radius: 12px;
   background: var(--surface); border: 1px solid var(--border);
   font-size: 15px; line-height: 1.45; color: var(--muted);
   border-left: 4px solid var(--cat, var(--border));
 }
-.catalog li > a.wikilink:first-child { display: block; font-size: 17px; font-weight: 650; color: var(--text); text-decoration: none; margin-bottom: 2px; }
+.catalog li > a.wikilink:first-child { background: none; padding: 0; display: block; font-size: 17px; font-weight: 650; color: var(--text); text-decoration: none; margin-bottom: 2px; }
 .catalog li > a.wikilink:first-child::after { content: ""; position: absolute; inset: 0; }
 .catalog li.seen > a.wikilink:first-child::before { content: "✓ "; color: var(--cat); }
 .catalog li:not(:has(> a.wikilink:first-child)) { background: transparent; border: 0; padding: 0 2px; }
@@ -269,6 +273,7 @@ a.wikilink {
 a.wikilink[data-cat="practices"] { --link: var(--c-practices); }
 a.wikilink[data-cat="architecture"] { --link: var(--c-architecture); }
 a.wikilink[data-cat="leadership"] { --link: var(--c-leadership); }
+a.wikilink[data-cat="coding-with-ai"] { --link: var(--c-coding-with-ai); }
 a.wikilink.unseen { background-image: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px); }
 a.wikilink:hover { background-size: 100% 100%; background-image: linear-gradient(color-mix(in srgb, currentColor 14%, transparent), color-mix(in srgb, currentColor 14%, transparent)); border-radius: 3px; }
 .wikilink.broken { color: var(--muted); text-decoration: line-through; }
