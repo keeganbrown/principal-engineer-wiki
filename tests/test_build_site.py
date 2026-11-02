@@ -78,10 +78,26 @@ class SiteDataTest(unittest.TestCase):
 
     def test_categories_are_listed_in_reading_order(self):
         slugs = [c["slug"] for c in self.data["categories"]]
-        self.assertEqual(slugs, ["principles", "practices", "architecture", "leadership"])
+        self.assertEqual(slugs, ["principles", "practices", "architecture", "technology", "leadership", "coding-with-ai"])
 
     def test_link_text_uses_article_titles(self):
         self.assertIn(">KISS</a>", self.data["articles"]["yagni"]["html"])
+
+
+class GlossaryDataTest(unittest.TestCase):
+    GLOSSARY = "# Glossary\n\n## K\n\n- **KISS** — Keep it simple. See [[kiss]].\n"
+
+    def test_glossary_entries_are_rendered_with_ids(self):
+        data = site_data(sample_articles(), INDEX, self.GLOSSARY)
+        self.assertEqual(len(data["glossary"]), 1)
+        entry = data["glossary"][0]
+        self.assertEqual(entry["term"], "KISS")
+        self.assertEqual(entry["id"], "kiss")
+        self.assertEqual(entry["letter"], "K")
+        self.assertIn('href="#/a/kiss"', entry["html"])
+
+    def test_glossary_is_optional(self):
+        self.assertEqual(site_data(sample_articles(), INDEX)["glossary"], [])
 
 
 class RealWikiRenderTest(unittest.TestCase):
@@ -91,9 +107,14 @@ class RealWikiRenderTest(unittest.TestCase):
         repo = os.path.join(os.path.dirname(__file__), "..")
         with open(os.path.join(repo, "index.md"), encoding="utf-8") as f:
             index_text = f.read()
-        data = site_data(load_wiki(os.path.join(repo, "wiki")), index_text)
+        with open(os.path.join(repo, "glossary.md"), encoding="utf-8") as f:
+            glossary_text = f.read()
+        data = site_data(load_wiki(os.path.join(repo, "wiki")), index_text, glossary_text)
         pages = {slug: a["html"] for slug, a in data["articles"].items()}
         pages["index.md"] = data["home"]
+        for entry in data["glossary"]:
+            pages[f"glossary: {entry['term']}"] = entry["html"]
+        self.assertGreater(len(data["glossary"]), 50)
         for name, html in pages.items():
             prose = re.sub(r"<pre>.*?</pre>|<code>.*?</code>", "", html, flags=re.DOTALL)
             for token in ("**", "[[", "]]", "\n#", "\n|", "\n- ", "\n> "):

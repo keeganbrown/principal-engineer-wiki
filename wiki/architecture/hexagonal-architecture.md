@@ -109,3 +109,4 @@ For simple CRUD (create, read, update, delete) apps with little business logic, 
 - [[separation-of-concerns]] — the principle behind the inside/outside split.
 - [[testing-pyramid]] — hexagonal makes the "many unit tests" base easy to build.
 - [[idempotency]] — how to make calls through driven ports safe to retry.
+- [[agent-guardrails]] — ports let tests replace destructive operations with spies.

@@ -64,7 +64,7 @@ ADR 0012, "Move order fulfillment from synchronous calls to events":
 - **Context** — when the fulfillment service was down, checkout failed too.
 - **Options** — (1) add [[retries-and-timeouts|retries]] and a [[circuit-breaker]]; (2) put a queue between checkout and fulfillment; (3) adopt a full event bus, shared infrastructure every service publishes to.
 - **Decision** — option 2: checkout publishes an `OrderPlaced` event to a queue that fulfillment reads ([[event-driven-architecture]]). A full event bus was more than this problem needed.
-- **Consequences** — fulfillment now lags checkout by a few seconds; consumers must handle duplicate messages safely ([[idempotency]]); failed messages go to a dead-letter queue (a holding queue for messages that keep failing) that someone must watch.
+- **Consequences** — fulfillment now lags checkout by a few seconds; consumers must handle duplicate messages safely ([[idempotency]]); failed messages go to a [[message-brokers|dead-letter queue]] (a holding queue for messages that keep failing) that someone must watch.
 
 Two years later, a new engineer asks "why is this async?" — and the answer is one link away.
 

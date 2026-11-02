@@ -39,7 +39,7 @@ Michael Nygard popularized the pattern in *Release It!* (2007).
 
 - **Use breakers where they pay off.** That means calls with a meaningful fallback, or calls whose hangs threaten the caller's thread or connection pools. Elsewhere — for example, a database call with a tight timeout and no fallback — a timeout and a bounded retry are often enough ([[retries-and-timeouts]]); a breaker there just turns slow errors into fast ones.
 - **Always pair breakers with timeouts.** A call without a timeout can hang forever and never count as a failure.
-- **Decide on a fallback for each call.** Options are cached data, a default value, a degraded feature, or a clear error.
+- **Decide on a fallback for each call.** Options are [[caching|cached data]], a default value, a degraded feature, or a clear error.
 - **Tune thresholds from real traffic.** For example: open after 50% failures over at least 20 calls in 10 seconds; try again after 30 seconds.
 - **Use one breaker per dependency or endpoint.** One bad API shouldn't block healthy ones.
 - **Emit metrics on state changes.** Put them on a dashboard.

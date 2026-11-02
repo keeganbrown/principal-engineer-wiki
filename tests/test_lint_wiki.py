@@ -9,6 +9,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 from lint_wiki import (  # noqa: E402
     REQUIRED_SECTIONS,
     lint_article,
+    lint_glossary,
+    parse_glossary,
     lint_wiki,
     load_wiki,
     parse_article,
@@ -173,6 +175,61 @@ class LintWikiTest(unittest.TestCase):
         kiss = parse_article("kiss", "principles", make_article(body_links=""))
         problems = lint_wiki({"kiss": kiss}, index_text="[[kiss]]")
         self.assertIn("kiss: links to no other articles", problems)
+
+
+GLOSSARY = """# Glossary
+
+Intro.
+
+## A
+
+- **ACID** — Atomicity, consistency, isolation, durability. See [[kiss]].
+- **At-least-once delivery** — Every message arrives, maybe more than once.
+
+## B
+
+- **Backpressure** — Pushing back on fast producers.
+"""
+
+
+class GlossaryTest(unittest.TestCase):
+    def test_parses_entries_with_letter_and_links(self):
+        entries = parse_glossary(GLOSSARY)
+        self.assertEqual([e.term for e in entries], ["ACID", "At-least-once delivery", "Backpressure"])
+        self.assertEqual(entries[0].letter, "A")
+        self.assertEqual(entries[0].links, {"kiss"})
+        self.assertEqual(entries[2].definition, "Pushing back on fast producers.")
+
+    def test_well_formed_glossary_has_no_problems(self):
+        self.assertEqual(lint_glossary(GLOSSARY, {"kiss"}), [])
+
+    def test_reports_broken_link(self):
+        problems = lint_glossary(GLOSSARY, set())
+        self.assertIn("glossary.md: 'ACID' has broken link [[kiss]]", problems)
+
+    def test_reports_entries_out_of_order(self):
+        text = GLOSSARY.replace("- **ACID**", "- **Azure**").replace("- **At-least", "- **At-least")
+        problems = lint_glossary(text, {"kiss"})
+        self.assertIn("glossary.md: 'At-least-once delivery' is out of alphabetical order", problems)
+
+    def test_reports_entry_under_wrong_letter(self):
+        text = GLOSSARY.replace("- **Backpressure**", "- **Circuit breaker**")
+        problems = lint_glossary(text, {"kiss"})
+        self.assertIn("glossary.md: 'Circuit breaker' is under '## B'", problems)
+
+    def test_reports_duplicate_terms(self):
+        text = GLOSSARY + "- **backpressure** — Again.\n"
+        problems = lint_glossary(text, {"kiss"})
+        self.assertIn("glossary.md: duplicate term 'backpressure'", problems)
+
+    def test_reports_malformed_entry_line(self):
+        text = GLOSSARY + "- **Bulkhead**: isolating failures.\n"
+        problems = lint_glossary(text, {"kiss"})
+        self.assertIn("glossary.md: malformed entry '- **Bulkhead**: isolating failures.'", problems)
+
+    def test_digits_and_symbols_sort_under_hash(self):
+        text = GLOSSARY.replace("## A\n", "## #\n\n- **2PC** — Two-phase commit.\n\n## A\n")
+        self.assertEqual(lint_glossary(text, {"kiss"}), [])
 
 
 class LoadWikiTest(unittest.TestCase):

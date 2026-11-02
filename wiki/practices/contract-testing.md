@@ -21,7 +21,7 @@ A **contract test** checks the agreement without running both sides at once:
 - That expectation is saved as a contract file and shared.
 - The **provider** (the service) runs the contract against its own code in its **continuous integration (CI)** pipeline — the automated build and tests that run on every change. If it no longer satisfies a consumer, its build fails.
 
-This style is called **consumer-driven contracts**; tools like Pact automate it. A lighter variant is schema-based: both sides test against a shared API description (an OpenAPI spec for HTTP, or a Protobuf schema for gRPC), and CI flags breaking schema changes.
+This style is called **consumer-driven contracts**; tools like Pact automate it. A lighter variant is schema-based: both sides test against a shared API description (an OpenAPI spec for HTTP, or a Protobuf schema for gRPC; see [[api-styles]]), and CI flags breaking schema changes.
 
 Ian Robinson named consumer-driven contracts in a 2006 article on martinfowler.com.
 

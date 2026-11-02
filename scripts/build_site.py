@@ -15,14 +15,16 @@ import shutil
 import sys
 from typing import Dict, List
 
-from lint_wiki import WIKILINK, Article, load_wiki
-from markdown_html import render_markdown
+from lint_wiki import WIKILINK, Article, load_wiki, parse_glossary
+from markdown_html import render_inline, render_markdown, slugify
 
 CATEGORIES = (
     ("principles", "Principles"),
     ("practices", "Practices"),
     ("architecture", "Architecture"),
+    ("technology", "Technology"),
     ("leadership", "Leadership"),
+    ("coding-with-ai", "Coding with AI"),
 )
 WORDS_PER_MINUTE = 230
 H1 = re.compile(r"^# .*\n", re.MULTILINE)
@@ -43,7 +45,7 @@ def _strip_h1(body: str) -> str:
     return H1.sub("", body, count=1)
 
 
-def site_data(articles: Dict[str, Article], index_text: str) -> dict:
+def site_data(articles: Dict[str, Article], index_text: str, glossary_text: str = "") -> dict:
     titles = {slug: str(a.frontmatter.get("title", slug)) for slug, a in articles.items()}
 
     def is_known(slug: str) -> bool:
@@ -77,14 +79,25 @@ def site_data(articles: Dict[str, Article], index_text: str) -> dict:
         "home": render_markdown(_strip_h1(index_text), is_known, titles),
         "path": [s for s in path if s in articles],
         "categories": [{"slug": s, "label": label} for s, label in CATEGORIES],
+        "glossary": [
+            {
+                "term": e.term,
+                "id": slugify(e.term),
+                "letter": e.letter,
+                "html": render_inline(e.definition, is_known, titles),
+            }
+            for e in parse_glossary(glossary_text)
+        ],
     }
 
 
-def build_site(articles: Dict[str, Article], index_text: str, web_dir: str, out_dir: str) -> None:
+def build_site(
+    articles: Dict[str, Article], index_text: str, web_dir: str, out_dir: str, glossary_text: str = ""
+) -> None:
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
     shutil.copytree(web_dir, out_dir)
-    data = json.dumps(site_data(articles, index_text), ensure_ascii=False, separators=(",", ":"))
+    data = json.dumps(site_data(articles, index_text, glossary_text), ensure_ascii=False, separators=(",", ":"))
     with open(os.path.join(out_dir, DATA_FILE), "w", encoding="utf-8") as f:
         f.write(f"window.WIKI = {data};\n")
     # GitHub Pages: serve files as-is, no Jekyll processing.
@@ -96,8 +109,13 @@ def main() -> int:
     articles = load_wiki(os.path.join(repo_root, "wiki"))
     with open(os.path.join(repo_root, "index.md"), encoding="utf-8") as f:
         index_text = f.read()
+    glossary_path = os.path.join(repo_root, "glossary.md")
+    glossary_text = ""
+    if os.path.exists(glossary_path):
+        with open(glossary_path, encoding="utf-8") as f:
+            glossary_text = f.read()
     out_dir = os.path.join(repo_root, "_site")
-    build_site(articles, index_text, os.path.join(repo_root, "web"), out_dir)
+    build_site(articles, index_text, os.path.join(repo_root, "web"), out_dir, glossary_text)
     print(f"Built {len(articles)} articles into {os.path.relpath(out_dir, repo_root)}/")
     return 0
 

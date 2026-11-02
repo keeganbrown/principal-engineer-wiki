@@ -65,3 +65,4 @@ If you control every client and deploy them together (e.g., a backend used only 
 - [[event-driven-architecture]] — event schemas need the same compatibility discipline.
 - [[coupling-and-cohesion]] — an API is the deliberate coupling point between systems.
 - [[architecture-decision-records]] — record versioning policy and major breaking changes.
+- [[api-styles]] — REST, gRPC, GraphQL: the style shapes how versioning works.

@@ -153,6 +153,73 @@ def lint_wiki(articles: Dict[str, Article], index_text: str) -> List[str]:
     return problems
 
 
+GLOSSARY_LETTER = re.compile(r"^## (.+?)\s*$")
+GLOSSARY_ENTRY = re.compile(r"^- \*\*(.+?)\*\* — (.+)$")
+
+
+@dataclass
+class GlossaryEntry:
+    term: str
+    letter: str
+    definition: str
+    links: Set[str] = field(default_factory=set)
+
+
+def _glossary_letter(term: str) -> str:
+    first = term[0].upper()
+    return first if first.isalpha() else "#"
+
+
+def _glossary_lines(text: str):
+    """Yield (letter heading, line) for each bullet line under a ## heading."""
+    letter = None
+    for line in text.splitlines():
+        heading = GLOSSARY_LETTER.match(line)
+        if heading:
+            letter = heading.group(1)
+        elif letter and line.startswith("- "):
+            yield letter, line
+
+
+def parse_glossary(text: str) -> List[GlossaryEntry]:
+    entries = []
+    for letter, line in _glossary_lines(text):
+        match = GLOSSARY_ENTRY.match(line)
+        if match:
+            definition = match.group(2).strip()
+            entries.append(GlossaryEntry(
+                term=match.group(1).strip(),
+                letter=letter,
+                definition=definition,
+                links={m.strip() for m in WIKILINK.findall(definition)},
+            ))
+    return entries
+
+
+def lint_glossary(text: str, slugs: Set[str]) -> List[str]:
+    """Entries are `- **Term** — definition.`, alphabetical, under the right letter."""
+    problems = []
+    for _, line in _glossary_lines(text):
+        if not GLOSSARY_ENTRY.match(line):
+            problems.append(f"glossary.md: malformed entry '{line}'")
+
+    seen: Set[str] = set()
+    previous: Dict[str, str] = {}
+    for entry in parse_glossary(text):
+        key = entry.term.lower()
+        if key in seen:
+            problems.append(f"glossary.md: duplicate term '{entry.term}'")
+        seen.add(key)
+        if _glossary_letter(entry.term) != entry.letter:
+            problems.append(f"glossary.md: '{entry.term}' is under '## {entry.letter}'")
+        if key < previous.get(entry.letter, ""):
+            problems.append(f"glossary.md: '{entry.term}' is out of alphabetical order")
+        previous[entry.letter] = key
+        for target in sorted(entry.links - slugs):
+            problems.append(f"glossary.md: '{entry.term}' has broken link [[{target}]]")
+    return problems
+
+
 def load_wiki(wiki_root: str) -> Dict[str, Article]:
     articles: Dict[str, Article] = {}
     for folder in sorted(os.listdir(wiki_root)):
@@ -179,6 +246,10 @@ def main() -> int:
         index_text = f.read()
 
     problems = lint_wiki(articles, index_text)
+    glossary_path = os.path.join(repo_root, "glossary.md")
+    if os.path.exists(glossary_path):
+        with open(glossary_path, encoding="utf-8") as f:
+            problems.extend(lint_glossary(f.read(), set(articles)))
     for problem in problems:
         print(problem)
     print(f"{len(articles)} articles checked, {len(problems)} problem(s).")

@@ -18,7 +18,7 @@ A microservice architecture builds one product out of many small services. Each 
 - **Deploys independently.** It ships on its own schedule.
 - **Has one owning team.**
 
-Services talk over the network, through APIs or events.
+Services talk over the network, through [[api-styles|APIs]] or [[message-brokers|events]].
 
 The promise is **independence**: teams ship without waiting on each other, each service scales on its own, and a failure in one doesn't have to take down the rest. The price is **distribution**: every call between services can be slow, fail, or arrive twice. You no longer have one database transaction, one log file, or one deploy, and data copied between services is [[cap-theorem|eventually consistent]].
 
@@ -68,3 +68,4 @@ For a small team, an early product, or a domain you don't understand well yet, a
 - [[conways-law]] — service boundaries should match team boundaries.
 - [[strangler-fig]] — how to extract services from an existing system safely.
 - [[saga-pattern]] — how to handle business processes that span services.
+- [[containers-and-kubernetes]] — running many services is the main reason to orchestrate.

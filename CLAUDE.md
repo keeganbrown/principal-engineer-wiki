@@ -26,18 +26,22 @@ and push; pushes to `main` also build and deploy the site to GitHub Pages
 
 ```
 index.md              Entry point. Every article must be linked from here.
+glossary.md           One-line definitions of terms, linked to owning articles.
 log.md                Append-only history of wiki changes (newest at top).
 templates/article.md  Copy this to start a new article.
 wiki/principles/      Timeless design rules (KISS, coupling, ...).
 wiki/practices/       Things teams do (TDD, code review, ADRs, ...).
 wiki/architecture/    Structural patterns (hexagonal, CQRS, ...).
+wiki/technology/      Kinds of technology (databases, brokers, LLMs, ...).
 wiki/leadership/      Influence, communication, and the non-code skills.
+wiki/coding-with-ai/  Working with coding agents, as an engineer and a team.
 scripts/lint_wiki.py  Enforces the rules below.
 scripts/build_site.py Builds the reader site: wiki → _site/wiki-data.js + web/.
 scripts/markdown_html.py  The Markdown subset the articles use → HTML.
 web/                  Reader site: index.html, style.css, app.js (DOM shell),
                       core.js (pure logic, tested in tests/web/).
 docs/review-guide.md  Shared rules + output format for reviewer agents.
+docs/sources/         Research notes and citations behind fast-moving topics.
 .claude/agents/       Reviewer agents, one perspective each.
 .claude/skills/       /review-wiki — runs the reviewers and merges results.
 reviews/              Saved review reports.
@@ -59,6 +63,16 @@ tests/                Tests for the linter, site build, and site logic.
   (one nesting level, two-space indent), `>` quotes, tables, fenced code,
   `**bold**`, `*italic*`, `` `code` ``, and wikilinks. No images or raw HTML.
   (Not linted, but a test fails if Markdown syntax leaks into the built HTML.)
+
+## Glossary rules (enforced by the linter)
+
+- Entries live under `## A`, `## B`, … (`## #` for terms starting with a
+  digit or symbol), alphabetical within each letter, case-insensitive.
+- Each entry is one line: `- **Term** — Definition. See [[slug]].`
+- One or two plain sentences. Link to the owning article when there is
+  one; the glossary defines, articles explain.
+- No duplicate terms. When an article introduces an important term,
+  add it here in the same change.
 
 ## Writing style (enforced by you)
 
@@ -126,6 +140,13 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   - *group by domain* (not "feature" or "business capability").
   - *paved road* (not "golden path").
   - *eventual consistency*, *change-data-capture (CDC)*, *pull request (PR)*.
+  - *coding agent* — define it at first use in every `coding-with-ai`
+    article: an AI tool that reads code, runs commands, and edits files
+    in a loop toward a goal.
+- **Fast-moving topics cite dated evidence.** In `coding-with-ai`, every
+  research claim names who, when, and the caveat (sample, what wasn't
+  measured), and has an entry in `docs/sources/`. Re-check it at each
+  review; prefer principles that survive tool churn over tool features.
 - **Concept owners.** One article explains a cross-cutting idea; the rest
   give one sentence and link:
 
@@ -143,8 +164,26 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | Contract tests | `contract-testing` |
   | One-way vs two-way doors | `reversible-decisions` |
   | Design docs = deliberation; ADRs = the record | `design-docs` / `architecture-decision-records` |
+  | Agent instruction files (AGENTS.md, CLAUDE.md) | `agent-instruction-files` |
+  | Feedback loops for agents | `feedback-loops-for-agents` |
+  | Plan-first agent workflow, task sizing | `spec-first-agent-tasks` |
+  | Ownership and review of agent output | `reviewing-ai-generated-code` |
+  | Agent permissions, sandboxing, prompt injection | `agent-guardrails` |
+  | Dev containers, environment as code | `reproducible-dev-environments` |
+  | Hooks, reusable commands, tool connections (MCP) | `shared-agent-configuration` |
+  | Codebase layout and discoverability for agents | `navigable-codebases` |
+  | Team rollout, AI working agreement, measuring AI impact | `adopting-coding-agents` |
+  | ACID, constraints, indexes, replicas, sharding | `relational-databases` |
+  | Cache patterns, TTLs, invalidation, stampedes | `caching` |
+  | Queue vs log, delivery guarantees, DLQs, consumer lag | `message-brokers` |
+  | Health checks, connection draining, CDN caching | `load-balancers-and-cdns` |
+  | LLM properties, RAG, embeddings, evaluation sets | `large-language-models` |
 
 ## Workflows
+
+**Technology articles** describe a *kind* of technology, not a product.
+Name products only as examples, and put "how to choose" ahead of "how to
+configure." "When it doesn't apply" says what to pick instead.
 
 **Add an article:** copy `templates/article.md` → fill it in → add it to
 `index.md` under the right heading → add `[[links]]` from 1–3 related

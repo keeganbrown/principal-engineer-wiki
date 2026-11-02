@@ -40,7 +40,7 @@ Telling the two apart is a core principal-engineer skill. It's often the most us
 A team is building a new notifications service. In the design review:
 
 - **Which web framework?** Two-way door. The service is small and could be rewritten in a week. Use what the team knows. Five minutes.
-- **Which database?** Mostly two-way at first, but harder to change as data grows. Start with the company's standard Postgres and keep data access behind one module.
+- **Which database?** Mostly two-way at first, but harder to change as data grows. Start with the company's standard Postgres ([[relational-databases]]) and keep data access behind one module.
 - **What event format will other teams subscribe to?** One-way door — once ten teams consume it, changes need coordinating across all of them. Spend a week on it, review it with two consuming teams, and version it from day one.
 
 Two engineers disagree about the database: one calls it a one-way door. The cost-to-undo question settles most of it — at today's data size, a migration is a week of work. The tech lead calls it two-way, and the dissent goes in the ADR so it can be revisited when the data grows.

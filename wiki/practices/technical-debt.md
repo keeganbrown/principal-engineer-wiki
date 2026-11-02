@@ -73,3 +73,4 @@ Code that will be thrown away — a prototype, an experiment, a one-time migrati
 - [[architecture-decision-records]] — a place to record deliberate debt.
 - [[code-review]] — a natural checkpoint for spotting and naming new debt.
 - [[blameless-postmortems]] — incidents are often where hidden debt surfaces.
+- [[feedback-loops-for-agents]] — slow, flaky checks are debt that coding agents make more expensive.

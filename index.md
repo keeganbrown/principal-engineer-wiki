@@ -9,6 +9,9 @@ traps → when it doesn't apply.
 [[coupling-and-cohesion]] → [[functional-core-imperative-shell]] → [[test-driven-development]] →
 [[conways-law]] → [[influencing-without-authority]].
 
+**Looking up a word?** The glossary (`glossary.md`, or the Terms tab on the
+site) defines the terms used across the wiki in a sentence or two each.
+
 ## Principles
 
 Timeless rules of thumb for judging any design.
@@ -43,6 +46,7 @@ Habits that make teams faster and systems safer.
 - [[code-review]] — Small changes, read by a peer, focused on what matters.
 - [[feature-flags]] — Deploy and release are separate events.
 - [[api-versioning]] — An API is a promise; evolve it without breaking callers.
+- See also: [[api-styles]], the REST, gRPC, and GraphQL styles being versioned.
 - [[expand-and-contract]] — Add the new, migrate, then remove the old.
 
 **Decisions** (see also [[reversible-decisions]])
@@ -73,6 +77,7 @@ Proven structures for organizing systems.
 - [[cqrs]] — Separate models for writing and reading.
 - [[saga-pattern]] — Multi-service workflows with planned undo steps.
 - [[idempotency]] — Doing it twice equals doing it once.
+- See also: [[message-brokers]], the infrastructure these patterns run on.
 
 **Resilience**
 - [[retries-and-timeouts]] — Deadlines on every call; retry with backoff and jitter.
@@ -83,10 +88,53 @@ Proven structures for organizing systems.
 - [[strangler-fig]] — Replace legacy one slice at a time.
 - See also: [[expand-and-contract]], the same idea for one field or column.
 
+## Technology
+
+The kinds of technology every principal engineer should understand: what each is for, and when to pick something else.
+
+**Storing data**
+- [[relational-databases]] — Tables, constraints, and transactions; the default for business data.
+- [[nosql-databases]] — Key-value, document, wide-column, and search stores, each for a specific access pattern.
+- [[caching]] — Faster reads in exchange for deciding how stale is acceptable.
+- [[object-storage]] — Cheap, durable storage for files, referenced from the database.
+
+**Moving data**
+- [[message-brokers]] — Queues to hand off work; logs to keep a replayable stream of events.
+- [[api-styles]] — REST, gRPC, and GraphQL, and which callers each suits.
+- [[load-balancers-and-cdns]] — The front door: spreading traffic and serving content close to users.
+
+**Running software**
+- [[containers-and-kubernetes]] — Package once, run anywhere; orchestrate when you have many services.
+- [[infrastructure-as-code]] — Infrastructure defined in reviewed, version-controlled files.
+- See also: [[reproducible-dev-environments]], the same container idea for development.
+
+**AI**
+- [[large-language-models]] — What LLMs are good at, how they fail, and how to build around them.
+- See also: the Coding with AI section below.
+
 ## Leadership
 
 The non-code half of the principal role.
 
 - [[influencing-without-authority]] — Lead through trust, framing, and clear writing.
 - [[paved-roads]] — Make the right way the easy way, and maintain it.
-- See also: [[reversible-decisions]], [[design-docs]], [[blameless-postmortems]].
+- See also: [[reversible-decisions]], [[design-docs]], [[blameless-postmortems]], [[adopting-coding-agents]].
+
+## Coding with AI
+
+Working well with coding agents, as an engineer and as a team. Start with [[large-language-models]] for how the underlying models behave.
+
+**For the team**
+- [[adopting-coding-agents]] — Shared norms, peer-led rollout, and outcome metrics.
+- [[agent-guardrails]] — Least access, sandboxes, and assuming input can lie.
+
+**Setting up the codebase**
+- [[agent-instruction-files]] — A short, reviewed briefing the agent rereads every session.
+- [[feedback-loops-for-agents]] — Fast, trustworthy checks are the agent's real teacher.
+- [[reproducible-dev-environments]] — One command, same tools for every human, CI job, and agent.
+- [[shared-agent-configuration]] — Permissions, hooks, and commands checked in and reviewed.
+- [[navigable-codebases]] — Structure an agent can find its way around with search alone.
+
+**For each change**
+- [[spec-first-agent-tasks]] — Explore, plan, then build in small slices.
+- [[reviewing-ai-generated-code]] — You open the PR, you own the code.

@@ -44,7 +44,7 @@ Guidelines:
 
 ## Example
 
-An engineer plans to add a cache in front of the pricing service. Their design doc's "Alternatives" section compares a local in-memory cache, a shared Redis cache, and precomputing prices nightly.
+An engineer plans to add a cache in front of the pricing service. Their design doc's "Alternatives" section compares a local in-memory [[caching|cache]], a shared Redis cache, and precomputing prices nightly.
 
 In review, the finance team points out that prices must update within one minute of a change for legal reasons — a requirement nobody on the engineering team knew. The nightly option is dropped, and the cache gets event-based invalidation (it clears an entry as soon as a "price changed" event arrives). Cost of the discovery: one comment. Cost if found after launch: a compliance incident.
 
@@ -69,3 +69,4 @@ Watch for the process turning into bureaucracy. If doc review routinely takes lo
 - [[influencing-without-authority]] — clear writing is a principal engineer's main lever.
 - [[code-review]] — design review is code review moved earlier.
 - [[yagni]] — non-goals are where YAGNI ("you aren't gonna need it") gets written down.
+- [[spec-first-agent-tasks]] — the same "plan in writing first" habit, applied to coding agents.

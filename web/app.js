@@ -104,12 +104,16 @@
     let current = null;
     for (const node of [...template.content.children]) {
       if (node.tagName === "H2") {
-        const cat = categories[sections.length] ? categories[sections.length].slug : "";
         current = document.createElement("section");
-        current.dataset.cat = cat;
         sections.push(current);
       }
       if (current) current.appendChild(node);
+    }
+    // A section takes the category of the first article listed in it.
+    for (const section of sections) {
+      const first = section.querySelector("li > a.wikilink:first-child");
+      const target = first && articles[first.dataset.slug];
+      if (target) section.dataset.cat = target.category;
     }
     for (const section of sections) {
       section.querySelectorAll("li").forEach((li) => {
@@ -150,6 +154,8 @@
       </section>
       <div class="section-title"><h2>Start here</h2><a href="#/graph">See the map →</a></div>
       <div class="path-strip">${path}</div>
+      <a class="glossary-card" href="#/terms"><strong>Terms to know</strong>
+        <span>${(data.glossary || []).length} plain-English definitions, from ACID to zero-downtime deploys.</span></a>
       <div class="section-title"><h2>Browse</h2></div>
       <div class="category-tabs" role="group" aria-label="Filter by category">${tabs}</div>
       <div class="catalog prose">${catalogHtml()}</div>
@@ -293,10 +299,15 @@
     function update(q, updateUrl) {
       const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
       const hits = core.search(articles, q);
+      const termHits = terms.length ? core.searchTerms(glossary, q).slice(0, 4) : [];
       empty.hidden = terms.length > 0;
-      results.innerHTML = !terms.length ? "" : hits.length
-        ? hits.map((a) => `<a class="link-card ${seen.has(a.slug) ? "seen" : ""}" data-cat="${a.category}" href="#/a/${a.slug}">
-            <strong>${highlight(a.title, terms)}</strong><span>${highlight(a.summary, terms)}</span></a>`).join("")
+      const termCards = termHits.map((e) => `<a class="link-card term-card" href="#/terms/${encodeURIComponent(e.term)}">
+            <strong>${highlight(e.term, terms)}</strong><span>${escapeHtml(e.html.replace(/<[^>]*>/g, ""))}</span></a>`).join("");
+      const articleCards = hits.map((a) => `<a class="link-card ${seen.has(a.slug) ? "seen" : ""}" data-cat="${a.category}" href="#/a/${a.slug}">
+            <strong>${highlight(a.title, terms)}</strong><span>${highlight(a.summary, terms)}</span></a>`).join("");
+      results.innerHTML = !terms.length ? "" : hits.length || termHits.length
+        ? (termHits.length ? `<h3 class="results-label">Terms</h3>${termCards}` : "") +
+          (hits.length ? `<h3 class="results-label">Articles</h3>${articleCards}` : "")
         : `<p class="search-hint">Nothing matches “${escapeHtml(q)}”. Try a shorter word.</p>`;
       if (updateUrl) history.replaceState(null, "", `#/search/${encodeURIComponent(q)}`);
     }
@@ -321,6 +332,60 @@
       input.focus();
     }
     document.title = "Search · Principal Engineer Wiki";
+  }
+
+  // ---------- Glossary ----------
+
+  const glossary = data.glossary || [];
+
+  function termHtml(entry) {
+    return `<div class="term" id="term-${entry.id}"><dt>${escapeHtml(entry.term)}</dt><dd>${entry.html}</dd></div>`;
+  }
+
+  function renderTerms(query) {
+    const letters = [...new Set(glossary.map((e) => e.letter))];
+    view.innerHTML = `<div class="page terms-page">
+      <p class="eyebrow">Glossary</p>
+      <h1>Terms to know</h1>
+      <p class="lede">${glossary.length} short definitions. Each links to the article that explains it properly.</p>
+      <form class="search-box" role="search"><label class="visually-hidden" for="terms-input">Filter terms</label>
+        <input id="terms-input" type="search" placeholder="Filter, e.g. “SLO” or “consistency”" autocomplete="off" enterkeyhint="search"></form>
+      <nav class="letter-strip" aria-label="Jump to letter">${letters.map((l) => `<a href="#term-letter-${l === "#" ? "num" : l}">${l}</a>`).join("")}</nav>
+      <div class="glossary prose"></div>
+    </div>`;
+
+    const input = view.querySelector("#terms-input");
+    const list = view.querySelector(".glossary");
+    const strip = view.querySelector(".letter-strip");
+
+    function update(q, updateUrl) {
+      const filtering = q.trim().length > 0;
+      strip.hidden = filtering;
+      if (filtering) {
+        const hits = core.searchTerms(glossary, q);
+        list.innerHTML = hits.length
+          ? `<dl>${hits.map(termHtml).join("")}</dl>`
+          : `<p class="search-hint">No term matches “${escapeHtml(q)}”. Try <a href="#/search/${encodeURIComponent(q)}">searching the articles</a>.</p>`;
+      } else {
+        list.innerHTML = letters.map((l) => `<h2 id="term-letter-${l === "#" ? "num" : l}">${l}</h2>
+          <dl>${glossary.filter((e) => e.letter === l).map(termHtml).join("")}</dl>`).join("");
+      }
+      decorateLinks(list);
+      if (updateUrl) history.replaceState(null, "", q ? `#/terms/${encodeURIComponent(q)}` : "#/terms");
+    }
+
+    input.value = query;
+    update(query, false);
+    input.addEventListener("input", () => update(input.value, true));
+    view.querySelector(".search-box").addEventListener("submit", (e) => e.preventDefault());
+    strip.addEventListener("click", (e) => {
+      const link = e.target.closest("a");
+      if (!link) return;
+      e.preventDefault();
+      const target = document.getElementById(link.getAttribute("href").slice(1));
+      if (target) target.scrollIntoView({ behavior: "smooth" });
+    });
+    document.title = "Terms · Principal Engineer Wiki";
   }
 
   // ---------- Graph ----------
@@ -764,6 +829,7 @@
     if (route.view === "article") renderArticle(route.slug);
     else if (route.view === "graph") cleanup = renderGraph(route.focus);
     else if (route.view === "search") renderSearch(route.query);
+    else if (route.view === "terms") renderTerms(route.query);
     else renderHome();
 
     const topInput = document.getElementById("top-search-input");
