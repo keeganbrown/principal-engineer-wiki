@@ -69,3 +69,4 @@ A disposable environment with nothing valuable in it — a fresh container, a sc
 - [[reviewing-ai-generated-code]] — the human check on what the agent produced.
 - [[paved-roads]] — a shared, pre-configured sandbox is the easy, safe default.
 - [[blameless-postmortems]] — when an agent causes damage, fix the system that allowed it.
+- [[reproducible-dev-environments]] — a container-defined environment makes the sandbox easy.

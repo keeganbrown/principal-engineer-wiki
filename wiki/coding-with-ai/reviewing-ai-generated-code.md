@@ -65,6 +65,6 @@ Throwaway code — a one-off data script you'll delete, a spike to learn an API 
 
 - [[code-review]] — the general practice; everything there still applies.
 - [[spec-first-agent-tasks]] — a written plan is what intent review checks against.
-- [[agent-ready-codebases]] — automated checks catch the mechanical issues so humans can focus on intent.
+- [[feedback-loops-for-agents]] — automated checks catch the mechanical issues so humans can focus on intent.
 - [[agent-guardrails]] — what to enforce outside the review.
 - [[adopting-coding-agents]] — review norms are part of the team agreement.

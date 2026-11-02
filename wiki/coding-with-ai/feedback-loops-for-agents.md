@@ -1,11 +1,11 @@
 ---
-title: Agent-Ready Codebases
+title: Feedback Loops for Agents
 category: coding-with-ai
 summary: Coding agents are only as good as the feedback your codebase gives them, so invest in fast, trustworthy checks — tests, types, linters — that tell an agent within seconds whether its change is right.
 tags: [ai, coding-agents, testing, feedback-loops, developer-experience]
 ---
 
-# Agent-Ready Codebases
+# Feedback Loops for Agents
 
 > **In one sentence:** Coding agents are only as good as the feedback your codebase gives them, so invest in fast, trustworthy checks — tests, types, linters — that tell an agent within seconds whether its change is right.
 
@@ -21,7 +21,7 @@ Google's DORA (DevOps Research and Assessment) program found the same pattern at
 
 - **Verification is the bottleneck, not typing.** Agents generate code faster than anyone can read it. Automated checks are the only reviewer that keeps up.
 - **Fast checks let the agent fix its own mistakes.** Each failed test the agent sees and fixes is one fewer bug a human has to find in review.
-- **The same investment helps humans.** Everything that makes a codebase agent-ready — fast tests, clear structure, one-command builds — was already good engineering. Agents just make its absence expensive faster.
+- **The same investment helps humans.** Fast tests, clear errors, and one-command builds were already good engineering. Agents just make its absence expensive faster.
 
 The limit: checks only catch what they check. An agent can make every test pass while doing the wrong thing, if the tests don't describe the right thing. Fast feedback narrows the gap; human review of *intent* still closes it ([[reviewing-ai-generated-code]]).
 

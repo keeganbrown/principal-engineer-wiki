@@ -99,9 +99,12 @@ Working well with coding agents, as an engineer and as a team.
 - [[adopting-coding-agents]] — Shared norms, peer-led rollout, and outcome metrics.
 - [[agent-guardrails]] — Least access, sandboxes, and assuming input can lie.
 
-**For the codebase**
+**Setting up the codebase**
 - [[agent-instruction-files]] — A short, reviewed briefing the agent rereads every session.
-- [[agent-ready-codebases]] — Fast, trustworthy checks are the agent's real teacher.
+- [[feedback-loops-for-agents]] — Fast, trustworthy checks are the agent's real teacher.
+- [[reproducible-dev-environments]] — One command, same tools for every human, CI job, and agent.
+- [[shared-agent-configuration]] — Permissions, hooks, and commands checked in and reviewed.
+- [[navigable-codebases]] — Structure an agent can find its way around with search alone.
 
 **For each change**
 - [[spec-first-agent-tasks]] — Explore, plan, then build in small slices.

@@ -41,7 +41,7 @@ A principal engineer is asked to "get the org using agents." Six teams have alre
 Instead of a mandate, they run a six-week pilot with two volunteer teams:
 
 - **Week 0.** Capture baseline lead time, change failure rate, and review time. Draft a one-page agreement with both teams and with security, who add a rule: no customer data in prompts.
-- **Weeks 1–6.** Engineers share one recorded session a week. The teams fix their slowest test suites ([[agent-ready-codebases]]) and adopt [[spec-first-agent-tasks]].
+- **Weeks 1–6.** Engineers share one recorded session a week. The teams fix their slowest test suites ([[feedback-loops-for-agents]]) and adopt [[spec-first-agent-tasks]].
 - **Week 7.** Review the data. Lead time is down for well-tested services and flat for the team with a 40-minute flaky suite. Change failure rate is flat, and review time is *up*, because reviewers are reading more code.
 
 The report to leadership says exactly that: real gains where feedback loops are good, a review bottleneck to fix, and a test-suite investment that should come before wider rollout. The team that banned agents joins the next cohort after its migration incident is reviewed blamelessly. The cost: two teams spent part of six weeks on process instead of features, and the honest results were less exciting than the vendor's slides.
@@ -64,5 +64,5 @@ In some regulated environments, no external model may see the code; there the qu
 - [[influencing-without-authority]] — adoption spreads through trust and examples, not memos.
 - [[paved-roads]] — shared agent configuration is a paved road; maintain it like one.
 - [[reviewing-ai-generated-code]] — the review norms the agreement should set.
-- [[agent-ready-codebases]] — where the biggest gains come from.
+- [[feedback-loops-for-agents]] — where the biggest gains come from.
 - [[observability]] — measure outcomes in production, not activity in the editor.

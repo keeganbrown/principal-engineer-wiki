@@ -27,7 +27,7 @@ The limit: an instruction file is *advice*, not enforcement. The agent usually f
 
 ## How to apply it
 
-- **Lead with the commands.** Exact build, test, lint, and run commands come first. An agent that can check its own work does far better than one that can't ([[agent-ready-codebases]]).
+- **Lead with the commands.** Exact build, test, lint, and run commands come first. An agent that can check its own work does far better than one that can't ([[feedback-loops-for-agents]]).
 - **Write what the code can't tell you.** Skip what the agent can read from the code itself. Include the non-obvious: "the `legacy/` folder is frozen," "money is always integer cents," "never edit generated files in `api/gen/`."
 - **Keep it short.** Every line costs attention in every session, and a long file buries the rules that matter. If you'd struggle to read it aloud in five minutes, cut it.
 - **Put rules near the code they govern.** Most tools also read instruction files in subfolders. Keep the root file general and put "how the payments module works" in `payments/`.
@@ -73,8 +73,9 @@ For a throwaway script or a solo spike, a file is overhead — tell the agent wh
 
 ## Related
 
-- [[agent-ready-codebases]] — the commands at the top of this file only help if they're fast and trustworthy.
+- [[feedback-loops-for-agents]] — the commands at the top of this file only help if they're fast and trustworthy.
 - [[adopting-coding-agents]] — the shared instruction file is part of how a team aligns.
 - [[architecture-decision-records]] — instruction files say *what* the rule is; ADRs record *why*.
 - [[paved-roads]] — a good instruction file is a paved road for agents.
 - [[agent-guardrails]] — what to enforce with permissions instead of instructions.
+- [[shared-agent-configuration]] — hooks and permissions enforce what this file can only ask for.

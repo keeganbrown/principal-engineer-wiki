@@ -83,4 +83,4 @@ In untested legacy code, TDD often stalls because there are no **seams** — pla
 - [[functional-core-imperative-shell]] — an architecture that makes TDD easy.
 - [[yagni]] — TDD naturally limits code to what tests require.
 - [[code-review]] — tests make reviews faster and more trustworthy.
-- [[agent-ready-codebases]] — fast, human-written tests are also what coding agents learn from.
+- [[feedback-loops-for-agents]] — fast, human-written tests are also what coding agents learn from.

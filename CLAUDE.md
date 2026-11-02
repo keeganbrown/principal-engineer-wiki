@@ -153,10 +153,13 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | One-way vs two-way doors | `reversible-decisions` |
   | Design docs = deliberation; ADRs = the record | `design-docs` / `architecture-decision-records` |
   | Agent instruction files (AGENTS.md, CLAUDE.md) | `agent-instruction-files` |
-  | Feedback loops for agents | `agent-ready-codebases` |
+  | Feedback loops for agents | `feedback-loops-for-agents` |
   | Plan-first agent workflow, task sizing | `spec-first-agent-tasks` |
   | Ownership and review of agent output | `reviewing-ai-generated-code` |
   | Agent permissions, sandboxing, prompt injection | `agent-guardrails` |
+  | Dev containers, environment as code | `reproducible-dev-environments` |
+  | Hooks, reusable commands, tool connections (MCP) | `shared-agent-configuration` |
+  | Codebase layout and discoverability for agents | `navigable-codebases` |
   | Team rollout, AI working agreement, measuring AI impact | `adopting-coding-agents` |
 
 ## Workflows

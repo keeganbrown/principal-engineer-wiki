@@ -67,7 +67,7 @@ Small, well-understood changes — a typo, a one-line fix, a rename the tools ca
 
 ## Related
 
-- [[agent-ready-codebases]] — fast checks are what make "done" verifiable.
+- [[feedback-loops-for-agents]] — fast checks are what make "done" verifiable.
 - [[reviewing-ai-generated-code]] — small, planned slices are what make review possible.
 - [[design-docs]] — the same "think in writing first" idea at team scale.
 - [[test-driven-development]] — tests as the spec.
