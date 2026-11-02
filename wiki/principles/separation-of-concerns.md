@@ -81,3 +81,4 @@ Small scripts and throwaway prototypes rarely need strict separation — a 50-li
 - [[hexagonal-architecture]] — the ports above, applied to a whole application.
 - [[coupling-and-cohesion]] — the vocabulary for judging whether your separation is good.
 - [[solid-principles]] — single responsibility is separation of concerns at the class level.
+- [[god-object]] — one class that took on every concern.

@@ -48,7 +48,7 @@ Counter-example: `validateShippingAddress` and `validateBillingAddress` look ide
 
 - **Abstracting on coincidence.** Similar-looking code isn't necessarily the same idea.
 - **Keeping the wrong abstraction.** Once a shared function grows flags for each caller, it's often cheaper to inline it back into copies and start over. Sandi Metz put it well: "duplication is far cheaper than the wrong abstraction."
-- **Sharing code across service boundaries.** A shared library of domain models couples the services' release cycles. Share knowledge through APIs and events instead ([[microservices]] lists this as a classic trap). [[domain-driven-design]] makes the same point from the other side: don't build one canonical model for everyone.
+- **Sharing code across service boundaries.** A shared library of domain models couples the services' release cycles. Share knowledge through APIs and events instead; a shared model library is a classic way to build a [[distributed-monolith]]. [[domain-driven-design]] makes the same point from the other side: don't build one canonical model for everyone.
 - **Over-DRYing tests.** Tests should read on their own; a little repetition beats a maze of shared helpers.
 
 ## When it doesn't apply

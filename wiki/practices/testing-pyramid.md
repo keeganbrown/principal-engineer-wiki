@@ -58,7 +58,7 @@ The first 22 run in a few seconds; the last takes about 30 seconds.
 
 - **Mocking so much the unit tests lie.** They pass while the real integration is broken.
 - **Duplicating every unit case at the E2E level.** Test each behavior at the lowest level that can catch it.
-- **Treating coverage as the goal.** 90% coverage of trivial getters says little; focus on risky logic and boundaries.
+- **Treating coverage as the goal.** 90% coverage of trivial getters says little; focus on risky logic and boundaries ([[metric-fixation]]).
 - **Sharing stateful test environments.** Tests start depending on each other's leftovers.
 
 ## When it doesn't apply

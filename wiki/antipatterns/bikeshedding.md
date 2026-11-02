@@ -11,11 +11,11 @@ tags: [decisions, meetings, review]
 
 ## The idea
 
-A committee approves a nuclear power plant in minutes, because few members understand reactors well enough to question them. It then argues for an hour about the staff bike shed — what material, what colour — because everyone has an opinion on a bike shed.
+A committee approves a nuclear power plant in a few minutes, because few members understand reactors well enough to question them. It then argues for 45 minutes about the roofing material for the staff bike shed, because everyone has an opinion on a bike shed. Small decisions are easy to have opinions about; big ones take effort to understand.
 
-That's C. Northcote Parkinson's *law of triviality*, from 1957. Poul-Henning Kamp popularized "bikeshed" in software with a 1999 email to the FreeBSD developers' list.
+In engineering, the bike shed is the variable name, the brace style, the endpoint's URL wording, or the color of a dashboard. The reactor is the data model, the consistency choice, or the failure handling.
 
-In engineering, the bike shed is the variable name, the brace style, the endpoint's URL wording, or the colour of a dashboard. The reactor is the data model, the consistency choice, or the failure handling. Bikeshedding happens because small decisions are easy to have opinions about and big ones take effort to understand.
+C. Northcote Parkinson called this the *law of triviality* (1957). Poul-Henning Kamp popularized "bikeshed" in software with a 1999 email to the FreeBSD developers' list.
 
 ## Why it matters
 
@@ -26,20 +26,29 @@ In engineering, the bike shed is the variable name, the brace style, the endpoin
 
 ## How to apply it
 
-- **Automate the matters of taste.** A formatter and linter settle style once, so nobody discusses it in review.
+Spotting it:
+
+- **Compare comment counts to risk.** A rename with 30 comments next to a schema change with none is the signal.
+- **Notice who talks.** When everyone weighs in on naming and two people on the data model, the room is on the bike shed.
+- **Watch for decisions reopened.** The same style debate in three reviews means it was never settled.
+
+Climbing out:
+
+- **Automate the matters of taste.** A formatter and linter settle style once, so nobody discusses it in review. Adopt the tool's defaults to skip a debate over its settings, and reformat in one commit that `git blame` is told to ignore.
 - **Sort decisions by how reversible they are.** Spend discussion on [[reversible-decisions|one-way doors]], decisions that are expensive to undo. Give two-way doors, which are cheap to reverse, a default owner and a short deadline.
 - **Name a decider.** For each decision, one person decides after hearing input. Discussion has an end when someone is responsible for ending it.
 - **Timebox small decisions.** "We'll pick a name in five minutes, then move on" works better than letting it run.
-- **Point reviewers at the risky part.** In design docs and PRs, say where you most want scrutiny: "the retry logic is the part I'm unsure about" ([[design-docs]]).
-- **Label minor comments.** A "nit:" prefix says "take it or leave it," so small comments don't block merging.
+- **Point reviewers at the risky part.** In design docs and PRs, say where you most want scrutiny: "the retry logic is the part I'm unsure about" ([[design-docs]]). Label comment weight so small comments don't block merging ([[code-review]]).
 
 ## Example
 
 A design review for a new orders API runs for an hour. Forty minutes go to whether the endpoint should be `/orders` or `/purchase-orders` and whether field names use camelCase. Nobody asks what happens when the payment call times out after the order is saved.
 
-The next review is set up differently. The author opens with "decisions I need: idempotency on retries, and whether stock is reserved before or after payment." Naming is delegated to the API style guide, with the author deciding anything it doesn't cover.
+The next review is set up differently. The author opens with "decisions I need: idempotency on retries (a retried request must not create a second order, see [[idempotency]]), and whether stock is reserved before or after payment." Naming is delegated to the API style guide, with the author deciding anything it doesn't cover.
 
-The hard part is that the risky questions are harder to discuss, and the room goes quiet when they come up. The reviewer leading the session asks specific questions — "what does a client see if we crash between saving and charging?" — which turns a vague worry into something people can answer ([[idempotency]]). The meeting ends early, with two real decisions recorded ([[architecture-decision-records]]).
+The hard part is that the risky questions are harder to discuss, and the room goes quiet when they come up. The reviewer leading the session asks specific questions — "what does a client see if we crash between saving and charging?" — which turns a vague worry into something people can answer.
+
+The meeting ends early with two decisions recorded ([[architecture-decision-records]]). The cost moved, not vanished: the author spent an hour beforehand writing the decision list.
 
 ## Common traps
 

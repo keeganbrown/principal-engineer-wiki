@@ -70,6 +70,7 @@ Proven structures for organizing systems.
 **Structuring systems**
 - [[modular-monolith]] — Clean boundaries without a network.
 - [[microservices]] — Independent services, when independence is worth the cost.
+- See also: [[distributed-monolith]], what a split without independence looks like.
 
 **Distributed systems** (start with [[cap-theorem]])
 - [[event-driven-architecture]] — Announce facts; let others react.
@@ -86,6 +87,7 @@ Proven structures for organizing systems.
 
 **Evolving systems**
 - [[strangler-fig]] — Replace legacy one slice at a time.
+- See also: [[big-bang-rewrite]], the approach the strangler fig replaces.
 - See also: [[expand-and-contract]], the same idea for one field or column.
 
 ## Technology
@@ -118,7 +120,7 @@ The non-code half of the principal role.
 
 - [[influencing-without-authority]] — Lead through trust, framing, and clear writing.
 - [[paved-roads]] — Make the right way the easy way, and maintain it.
-- See also: [[reversible-decisions]], [[design-docs]], [[blameless-postmortems]], [[adopting-coding-agents]].
+- See also: [[reversible-decisions]], [[design-docs]], [[blameless-postmortems]], [[adopting-coding-agents]], [[hero-culture]], [[bikeshedding]], [[metric-fixation]].
 
 ## Coding with AI
 
@@ -150,11 +152,11 @@ Tempting moves that reliably make things worse: how to spot each one, how to cli
 
 **Change and technology choices**
 - [[big-bang-rewrite]] — Rebuilding from scratch and switching over in one day.
-- [[golden-hammer]] — One favourite tool for every problem.
+- [[golden-hammer]] — One favorite tool for every problem.
 - [[cargo-cult-engineering]] — Copying the rituals of successful teams without their conditions.
 - [[not-invented-here]] — Building your own when you could adopt, then owning it forever.
 
 **Teams and decisions**
 - [[hero-culture]] — Depending on rescuers instead of fixing what needs rescuing.
-- [[bikeshedding]] — Most debate on the smallest decisions.
+- [[bikeshedding]] — Debating the smallest decisions most, while big ones slip through.
 - [[metric-fixation]] — A measure becomes a target and stops measuring.

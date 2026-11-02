@@ -27,7 +27,7 @@ The phrase is usually credited to Lockheed engineer Kelly Johnson in the 1960s; 
 ## How to apply it
 
 - **Start with the most direct solution.** Add structure only when real pressure appears.
-- **Prefer boring, well-known technology.** Choose something new only when it gives a clear, large win.
+- **Prefer boring, well-known technology.** Choose something new only when it gives a clear, large win ([[golden-hammer]]).
 - **Ask what you can remove before what you can add.**
 - **Count the concepts.** How many ideas must a reader learn to understand this change? Fewer is better.
 - **Favor plain data and functions.** Reach for frameworks and deep class hierarchies only when they pay for themselves.

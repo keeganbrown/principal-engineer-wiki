@@ -9,7 +9,7 @@ alphabetical under each letter; the linter checks the format.
 - **ACID** — The four guarantees of a database transaction: atomicity (all or nothing), consistency (rules still hold), isolation (concurrent transactions don't see each other's partial work), and durability (committed data survives a crash). See [[relational-databases]].
 - **Agent instruction file** — A Markdown file in the repository, such as `AGENTS.md`, that a coding agent loads at the start of every session: how to build and test, where things live, and what never to do. See [[agent-instruction-files]].
 - **Aggregate** — In domain-driven design, a cluster of objects that is changed as one unit through a single root object, which enforces the rules. See [[domain-driven-design]].
-- **Antipattern** — A common response to a problem that looks reasonable but reliably makes things worse, with a known better alternative.
+- **Antipattern** — A common response to a problem that looks reasonable but reliably makes things worse, with a known better alternative. See [[big-ball-of-mud]] for the classic example.
 - **API gateway** — One entry point in front of many services that handles routing, authentication, and rate limits for them. See [[strangler-fig]].
 - **Architecture decision record (ADR)** — A short document that records one decision, its context, and its consequences. See [[architecture-decision-records]].
 - **At-least-once delivery** — Every message is delivered, but some may arrive more than once, so consumers must handle duplicates. See [[message-brokers]].
@@ -37,7 +37,7 @@ alphabetical under each letter; the linter checks the format.
 - **CAP theorem** — During a network partition, a distributed system must choose between staying consistent and staying available. See [[cap-theorem]].
 - **Cargo cult engineering** — Copying another team's practices without the problems and conditions that made them work. See [[cargo-cult-engineering]].
 - **Change-data-capture (CDC)** — Streaming a database's committed changes to other systems as they happen. See [[transactional-outbox]].
-- **Characterization test** — A test that records what existing code actually does, odd parts included, so changes don't silently lose behavior. See [[big-bang-rewrite]].
+- **Characterization test** — A test that records what existing code actually does, odd parts included, so changes don't silently lose behavior. See [[test-driven-development]].
 - **CI/CD** — Continuous integration (merging and testing changes often, automatically) and continuous delivery or deployment (keeping every change releasable, or releasing it automatically). See [[testing-pyramid]].
 - **Circuit breaker** — A wrapper that stops calling a failing dependency for a while, so callers fail fast instead of waiting. See [[circuit-breaker]].
 - **Coding agent** — An AI tool that reads code, runs commands, and edits files in a loop toward a goal. See [[agent-instruction-files]].
@@ -91,6 +91,7 @@ alphabetical under each letter; the linter checks the format.
 
 - **Hallucination** — Output from a large language model that is fluent and confident but false. See [[large-language-models]].
 - **Health check** — A regular probe a load balancer or orchestrator sends to each server, so traffic stops going to broken ones. See [[load-balancers-and-cdns]].
+- **Hero culture** — A team that depends on a few people to rescue it instead of fixing what keeps needing rescue. See [[hero-culture]].
 - **Hook (agent)** — A script a coding agent runs automatically at a fixed point, such as after every edit. Unlike an instruction, it always fires. See [[shared-agent-configuration]].
 - **Horizontal scaling** — Handling more load by adding machines. Vertical scaling means moving to a bigger machine. See [[load-balancers-and-cdns]].
 - **Hot path** — The code that runs on most requests, where performance matters most.
@@ -120,6 +121,7 @@ alphabetical under each letter; the linter checks the format.
 
 - **Mean time to restore (MTTR)** — The average time from the start of an incident until service is back. DORA now calls it failed deployment recovery time. See [[blameless-postmortems]].
 - **Message broker** — Software that holds messages between services, so producers don't wait for consumers. Comes as queues or logs. See [[message-brokers]].
+- **Metric fixation** — Turning a measurement into a target, so people optimize the number instead of the outcome. See [[metric-fixation]].
 - **Model Context Protocol (MCP)** — An open standard for connecting AI applications to tools and data sources. See [[shared-agent-configuration]].
 - **Modular monolith** — One deployable application divided internally into well-bounded modules. See [[modular-monolith]].
 
@@ -165,7 +167,7 @@ alphabetical under each letter; the linter checks the format.
 
 - **Saga** — A multi-step workflow across services in which each step has a compensating action. See [[saga-pattern]].
 - **Sandbox** — An isolated environment that limits which files, networks, and credentials the code inside it can reach. See [[agent-guardrails]].
-- **Second-system effect** — Fred Brooks's observation that a replacement system tends to be over-designed, carrying every idea the first one left out. See [[big-bang-rewrite]].
+- **Second-system effect** — Fred Brooks's observation that a designer's second system tends to be over-designed, carrying every idea held back from the first. See [[big-bang-rewrite]].
 - **Separation of concerns** — Splitting a system into parts that each handle one kind of job. See [[separation-of-concerns]].
 - **Sharding** — Splitting data across several databases by key, so that each holds a part. See [[relational-databases]].
 - **Single point of failure (SPOF)** — A component whose failure takes the whole system down. See [[load-balancers-and-cdns]].

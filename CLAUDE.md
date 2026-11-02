@@ -191,8 +191,8 @@ Name products only as examples, and put "how to choose" ahead of "how to
 configure." "When it doesn't apply" says what to pick instead.
 
 **Antipattern articles** use the same sections with these meanings:
-"The idea" says what it is *and why it's tempting*; "How to apply it" splits
-into spotting it and climbing out; "Example" shows the escape, including
+"The idea" says what it is *and why it's tempting*; "How to apply it" has
+two labeled groups, `Spotting it:` and `Climbing out:`; "Example" shows the escape, including
 its cost; "When it doesn't apply" says when the antipattern is the right
 call. Never blame the people who fell into it.
 

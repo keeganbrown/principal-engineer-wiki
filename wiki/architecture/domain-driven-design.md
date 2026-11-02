@@ -34,7 +34,7 @@ For *why* grouping by domain reduces coupling, see [[coupling-and-cohesion]]; th
 
 ## How to apply it
 
-- **Classify your subdomains first.** The **core domain** is what makes your business different — invest deep modeling there. **Supporting** subdomains are needed but not special. **Generic** subdomains (authentication, invoicing engines) are solved problems — buy them or keep them simple. Applying DDD evenly everywhere is the most common way it gets expensive.
+- **Classify your subdomains first.** The **core domain** is what makes your business different — invest deep modeling there. **Supporting** subdomains are needed but not special. **Generic** subdomains (authentication, invoicing engines) are solved problems — buy them or keep them simple ([[not-invented-here]]). Applying DDD evenly everywhere is the most common way it gets expensive.
 - **Talk to domain experts early and often.** Try *Event Storming*, Alberto Brandolini's workshop format: map business events on a wall with sticky notes.
 - **Write a glossary per context.** Use those exact words in code.
 - **Look for language shifts.** When the same word means different things to different groups, you've found a context boundary.

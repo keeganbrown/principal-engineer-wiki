@@ -40,7 +40,7 @@ As a principal engineer, your job is to **translate debt into business terms** �
 - **Make it visible.** Keep a debt register (tickets labeled `tech-debt`, or a short doc) with the *impact* of each item.
 - **Pay down principal where you work.** Follow the "boy scout rule": leave the code a bit better than you found it.
 - **Prioritize by interest rate.** Fix debt in code that changes often first.
-- **Watch for debt that carries risk, not interest.** A rarely touched module can wait — *unless* it runs on an unsupported runtime, has unpatched dependencies, or only one person understands it. That debt comes due on someone else's schedule: a security advisory, a forced upgrade, a resignation.
+- **Watch for debt that carries risk, not interest.** A rarely touched module can wait — *unless* it runs on an unsupported runtime, has unpatched dependencies, or only one person understands it ([[hero-culture]]). That debt comes due on someone else's schedule: a security advisory, a forced upgrade, a resignation.
 - **Find the debt nobody recorded.** Look for **hotspots**: files with high churn and frequent bug fixes. Measure lead time for changes (from commit to production) there before and after paying debt down, to show it worked.
 - **Budget for it.** Many teams reserve roughly 10–20% of capacity for paying down debt continuously.
 - **Record deliberate debt when you take it.** Note the shortcut, the reason, and the trigger for repaying it.
@@ -74,3 +74,5 @@ Code that will be thrown away — a prototype, an experiment, a one-time migrati
 - [[code-review]] — a natural checkpoint for spotting and naming new debt.
 - [[blameless-postmortems]] — incidents are often where hidden debt surfaces.
 - [[feedback-loops-for-agents]] — slow, flaky checks are debt that coding agents make more expensive.
+- [[big-ball-of-mud]] — what debt becomes when nobody manages it.
+- [[not-invented-here]] — homegrown plumbing is debt with an owner of one.

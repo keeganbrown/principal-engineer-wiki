@@ -1,13 +1,13 @@
 ---
 title: Big Ball of Mud
 category: antipatterns
-summary: A system with no real structure, where everything calls everything, grows one reasonable shortcut at a time until every change is risky.
+summary: A system with no enforced structure, where everything calls everything, built one reasonable shortcut at a time until every change is risky.
 tags: [structure, coupling, legacy]
 ---
 
 # Big Ball of Mud
 
-> **In one sentence:** A system with no real structure, where everything calls everything, grows one reasonable shortcut at a time until every change is risky.
+> **In one sentence:** A system with no enforced structure, where everything calls everything, built one reasonable shortcut at a time until every change is risky.
 
 ## The idea
 
@@ -19,7 +19,7 @@ It is the most common architecture in the world, because it is what you get by d
 
 - **Every change has an unknown blast radius.** Blast radius is how much breaks when one change goes wrong. When anything can depend on anything, you can't tell what a change will break, so you test everything or ship and pray.
 - **Knowledge concentrates in a few people.** Only the engineers who were there know which paths are safe ([[hero-culture]]).
-- **It blocks every later move.** You can't extract a service, assign team ownership, or let a coding agent work safely in one area, because there are no areas.
+- **It blocks every later move.** You can't extract a service, assign team ownership, or let a coding agent (an AI tool that reads code, runs commands, and edits files toward a goal) work safely in one area, because there are no areas ([[navigable-codebases]]).
 
 The cost is slow and invisible at first. Teams usually notice it as "everything takes longer than it used to," long after the cheap fix has passed.
 
@@ -33,8 +33,9 @@ Spotting it:
 
 Climbing out:
 
-- **Draw the boundaries you want, then enforce one.** Pick a domain with clear edges, give it a public interface, and add a build check that fails on imports of its internals ([[modular-monolith]]).
+- **Draw the boundaries you want, then enforce one.** Pick a domain with clear edges, give it a public interface, and add a build check that fails on imports of its internals ([[modular-monolith]]). Expect the first features in that area to slow down, and agree that with product up front.
 - **Stop the bleeding before cleaning up.** A rule that blocks *new* violations is worth more than a plan to fix old ones. Record existing violations in an allow list and shrink it over time.
+- **Watch for the next mud pile.** Teams blocked by a boundary check often create a `shared/` or `common/` folder to get around it. Review what goes in there.
 - **Move code toward its data.** Logic that reads a domain's tables belongs inside that domain ([[coupling-and-cohesion]]).
 - **Refactor where you're already working.** Improve the module the next feature touches, not the whole system at once ([[technical-debt]]).
 
@@ -56,6 +57,8 @@ The hard part is the allow list. Without a deadline it becomes permanent, and ne
 ## When it doesn't apply
 
 Mud is a reasonable choice for code you expect to throw away: a prototype, a one-off migration script, or a product still searching for its first customers. Structure is an investment that pays off when the code lives long and many people change it. If neither is true yet, ship, and add boundaries when the code proves it will survive ([[yagni]]).
+
+It's also fine to leave mud alone where nobody changes it. Mud costs you on every change, so a stable, rarely touched corner may never repay a cleanup. Use churn — how often files change — to pick where boundaries are worth the effort.
 
 ## Related
 

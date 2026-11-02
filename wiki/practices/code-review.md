@@ -17,7 +17,7 @@ A good review is a conversation between peers about making the code better. It a
 
 ## Why it matters
 
-- **Shared ownership.** No part of the system is understood by only one person.
+- **Shared ownership.** No part of the system is understood by only one person ([[hero-culture]]).
 - **Earlier feedback.** A design problem caught in review is far cheaper than one caught in production.
 - **Mentorship at scale.** For senior engineers, review comments are one of the most effective ways to raise the team's skill level.
 - **Readability check.** The reviewer is the first "next reader." If they're confused, future readers will be too.

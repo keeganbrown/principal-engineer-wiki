@@ -1,11 +1,11 @@
 ---
-title: Not Invented Here
+title: Not Invented Here (NIH)
 category: antipatterns
 summary: Building your own version of something you could adopt, because outside solutions feel untrustworthy or inferior, and then maintaining it forever.
 tags: [build-vs-buy, technology-choice, judgment]
 ---
 
-# Not Invented Here
+# Not Invented Here (NIH)
 
 > **In one sentence:** Building your own version of something you could adopt, because outside solutions feel untrustworthy or inferior, and then maintaining it forever.
 
@@ -13,7 +13,9 @@ tags: [build-vs-buy, technology-choice, judgment]
 
 "Not invented here" (NIH) is the reflex to build rather than adopt. A team writes its own logging framework, job queue, feature-flag system, or authentication instead of using a well-tested library or service. Each choice feels justified: the existing option is too heavy, doesn't quite fit, or "we'd have to learn it anyway."
 
-The cost shows up later. A homegrown tool needs its own documentation, bug fixes, security patches, and an engineer who understands it. When that engineer leaves, the tool becomes a mystery that nobody wants to own. Ralph Katz and Thomas Allen studied the effect in 1982, finding that research teams that stayed together for years increasingly ignored outside ideas.
+The cost shows up later. A homegrown tool needs its own documentation, bug fixes, security patches, and an engineer who understands it. When that engineer leaves, the tool becomes a mystery that nobody wants to own.
+
+Ralph Katz and Thomas Allen studied the effect in 1982. Research and development (R&D) groups whose members had worked together for about five years or more communicated less with outside sources, and performed worse.
 
 ## Why it matters
 
@@ -24,24 +26,31 @@ The cost shows up later. A homegrown tool needs its own documentation, bug fixes
 
 ## How to apply it
 
-- **Separate your differentiators from your plumbing.** Build what makes your product unique. Adopt everything else unless there's a strong reason.
-- **Price the whole lifetime.** Compare adopting (learning, licence, integration, living with its limits) against building (first version, plus maintenance, on-call, security fixes, and documentation, for years).
-- **Write down what "doesn't fit" means.** "It's too heavy" should become a specific requirement the existing option can't meet. Often it turns out to be a preference.
-- **Wrap the adopted tool.** A thin adapter around a library keeps it replaceable, which answers the fear of being locked in ([[hexagonal-architecture]]).
+Spotting it:
+
+- **Listen for "it's only a week of work."** The estimate covers the first version, never the years after it.
+- **Look for homegrown plumbing with one maintainer.** Internal frameworks, queues, and config systems that only one person can change are the usual result ([[hero-culture]]).
+- **Notice "doesn't fit" with no specifics.** If nobody can name the requirement the existing option fails, it's a preference.
+
+Climbing out:
+
+- **Separate your differentiators from your plumbing.** Build what makes your product unique. Adopt everything else unless there's a strong reason. Domain-driven design calls these core and generic subdomains ([[domain-driven-design]]).
+- **Price the whole lifetime.** Compare adopting (learning, license, integration, living with its limits) against building (first version, plus maintenance, on-call, security fixes, and documentation, for years).
+- **Wrap the adopted tool where replacing it is a real possibility.** A thin adapter keeps it *more* replaceable ([[hexagonal-architecture]]). The adapter is code you maintain, and semantics such as delivery guarantees leak through it, so a swap gets cheaper, not free ([[reversible-decisions]]).
 - **Never build your own security primitives.** Use established libraries for cryptography, password hashing, and authentication protocols.
 
 ## Example
 
 A team needs background jobs with retries. One engineer says existing job libraries are bloated and offers to write a simple one in a week. It works well for six months.
 
-Then the incidents start. Jobs run twice after a deploy, because the homegrown queue has no visibility timeout (a lease that hides a job from other workers while one is processing it). Retries hammer a failing partner, because there's no backoff ([[retries-and-timeouts]]). Each fix takes days, and only the original author understands the code.
+Then the incidents start. Jobs vanish when a deploy kills a worker mid-job, because the queue has no visibility timeout: a lease that hides a job from other workers while one processes it, and returns it to the queue if that worker dies. Retries hammer a failing partner, because there's no backoff ([[retries-and-timeouts]]). Each fix takes days, and only the original author understands the code.
 
-The team migrates to a widely used job library behind a small adapter. The hard part is jobs already in flight: they drain the old queue before switching, which means a week of running both. The migration costs three weeks in total — far more than the "week" the homegrown version was supposed to take, and part of the hidden lifetime cost of building it.
+The team migrates to a widely used job library behind a small adapter, which means running Redis, a datastore they hadn't operated before. Its visibility timeout stops the lost jobs but means a job can occasionally run twice, so they also make the jobs idempotent ([[idempotency]]). For a week, new jobs go to the new library while the old queue finishes the jobs already in it. The migration costs three weeks — far more than the "week" the homegrown version was supposed to take.
 
 ## Common traps
 
-- **Swinging to adopting everything.** Pulling in a large dependency for a tiny function adds supply-chain risk and upgrade work. A 10-line helper is better written than imported.
-- **Adopting without checking health.** An abandoned library with one maintainer can be worse than your own code. Check activity, maintainers, and licence before adopting.
+- **Swinging to adopting everything.** Pulling in a large dependency for a tiny function adds supply-chain risk: a compromised or abandoned dependency becomes your problem. A 10-line helper is better written than imported.
+- **Adopting without checking health.** An abandoned library with one maintainer can be worse than your own code. Check activity, maintainers, and license before adopting.
 - **Forking and forgetting.** A fork you modify is your own code from then on, with the original's complexity attached.
 - **Mistaking "I'd enjoy building it" for a business case.** It's fine to enjoy building things. Choose where.
 
@@ -51,8 +60,8 @@ Building your own is right when the thing *is* your product, when no existing op
 
 ## Related
 
-- [[golden-hammer]] — the opposite failure: one tool for everything.
-- [[cargo-cult-engineering]] — adopting without understanding.
-- [[hexagonal-architecture]] — adapters keep adopted tools replaceable.
+- [[golden-hammer]] — a sibling: the answer is picked before the problem is understood.
+- [[cargo-cult-engineering]] — the opposite reflex: adopting without understanding.
+- [[domain-driven-design]] — core vs generic subdomains: what to build and what to adopt.
 - [[technical-debt]] — homegrown tools are a common source.
 - [[hero-culture]] — the one person who understands the homegrown tool.

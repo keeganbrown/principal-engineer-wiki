@@ -70,3 +70,4 @@ These are always useful lenses, but the right *degree* varies. Inside a small mo
 - [[conways-law]] — team structure shapes coupling in the system.
 - [[domain-driven-design]] — how to find boundaries that keep cohesion high.
 - [[navigable-codebases]] — grouping by domain also makes code findable by search, for people and agents.
+- [[big-ball-of-mud]] — what a system becomes when nobody enforces boundaries.

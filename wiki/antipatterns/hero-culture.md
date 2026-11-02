@@ -15,28 +15,35 @@ Every team has someone who knows where everything is. They fix the outage at 2 a
 
 It's comfortable for everyone. The hero is valued and needed; the team ships; managers reward visible rescues. But each rescue hides a missing runbook, a confusing system, or an alert that should never have fired.
 
-The *bus factor* measures the risk: the number of people who would need to be unavailable before a project stalls. A bus factor of one means one vacation can halt the team. Gene Kim and colleagues' 2013 novel *The Phoenix Project* made the pattern famous through Brent, the engineer every crisis waits on.
+The *bus factor* measures the risk: the number of people who would need to be unavailable before a project stalls. A bus factor of one means one vacation can halt the team. Gene Kim, Kevin Behr, and George Spafford's 2013 novel *The Phoenix Project* made the pattern famous through Brent, the engineer every crisis waits on.
 
 ## Why it matters
 
 - **The hero becomes a bottleneck.** Work queues behind one person, so the team's speed is that person's speed.
-- **Problems stay hidden.** When someone always saves the day, the system that needed saving never gets fixed ([[blameless-postmortems]]).
+- **The data looks better than reality.** The hero fixes things before anyone logs them, so incident counts stay low and the broken system never reaches a postmortem ([[blameless-postmortems]]).
 - **People burn out and leave.** Being on call for everything is exhausting. When the hero quits, their knowledge leaves with them.
 - **Others stop growing.** Engineers who never handle the hard problems never learn to.
 
 ## How to apply it
 
-- **Measure the bus factor.** For each critical system, ask "who else could debug this tonight?" Tools that count distinct recent committers per directory give a rough first answer.
-- **Make the hero a teacher, not a fixer.** During incidents, the expert advises while someone else drives. It's slower the first few times and spreads knowledge every time.
+Spotting it:
+
+- **Measure the bus factor.** For each critical system, ask "who else could debug this tonight?" Tools that count distinct recent committers per directory give a rough first answer, usually an optimistic one, since committing isn't debugging.
+- **Notice whose name comes up in every incident.** If the same person is paged or pinged for most of them, the knowledge lives in one head.
+- **Watch for work waiting on one person.** "Blocked until Sam is back" in a standup is the signal.
+
+Climbing out:
+
+- **Make the hero a teacher, not a fixer.** During incidents, the expert advises while someone else types the commands and makes the calls. It's slower the first few times and spreads knowledge every time.
 - **Turn every rescue into a fix.** After each save, ask what change would mean nobody needs to be a hero next time: a runbook, a better alert, a simpler system.
 - **Reward prevention, not just rescue.** Praise the engineer who removed a class of incidents as loudly as the one who fixed one at 2 a.m.
 - **Rotate ownership.** Pair newer engineers on the hero's systems and rotate on-call so knowledge stays spread.
 
 ## Example
 
-Priya is the only person who understands the payment reconciliation job. It fails roughly monthly, and she fixes it in an hour. The team sees this as fine — until she's on a two-week holiday, it fails, and two engineers spend three days on a fix she would have made in an hour.
+Priya is the only person who understands the payment reconciliation job. It fails roughly monthly, and she fixes it in an hour. The team sees this as fine — until she's on a two-week vacation, it fails, and two engineers spend three days on a fix she would have made in an hour.
 
-When she's back, the team makes a change: next time it fails, someone else drives the fix and Priya only answers questions. The first time takes four hours instead of one. They write a runbook from those notes, and the second engineer adds an alert that names the usual cause.
+When she's back, the team makes a change: next time it fails, someone else drives the fix and Priya only answers questions. The first time takes four hours instead of one. They write a runbook from those notes, and the engineer who drove the fix adds an alert that names the usual cause. They also schedule the real fix for that cause; the runbook covers failures until it lands.
 
 The hard part is Priya's own reluctance. Fixing things fast is how she has earned respect, and being made a teacher feels like losing status. Her manager makes the shift explicit: her goal for the quarter is that two others can handle the job alone, and that's what her review will measure.
 
