@@ -18,8 +18,11 @@ has one lens; stay inside yours so reviews don't overlap.
   agree with the article *as it reads now*: the marked answer is what the
   article says, each wrong option is wrong according to the article, and
   the **Why:** line doesn't claim anything the article doesn't. A quiz that
-  contradicts its article is **must-fix**. Report quiz findings under the
-  article's heading, with the section set to `quiz`.
+  contradicts its article is **must-fix**, and so is a wrong option the
+  article only partly refutes (that's a second answer). Each question must
+  also stand alone, since the site shuffles questions and mixes quizzes.
+  Report quiz findings under the article's heading, with the section set
+  to `quiz`.
 
 ## Severity
 

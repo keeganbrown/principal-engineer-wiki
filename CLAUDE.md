@@ -85,10 +85,29 @@ tests/                Tests for the linter, site build, and site logic.
 - At least 3 questions. Each is a `## Question ending in?`, then 3–4
   options as `- [x]` (exactly one) / `- [ ]`, then `**Why:** …` with a
   link to the article. No duplicate options, no stray lines.
-- The site shuffles question and option order, so write options in any
-  order. Test judgment with scenarios, not trivia; make wrong options
-  plausible and about as long as the right one; base every answer on what
-  the article actually says. When you change an article, check its quiz.
+- The answer may be at most 1.3× the average wrong option's length, and
+  across the whole bank it may be neither the longest nor the shortest
+  option in more than 40% of questions. Readers learn to pick by shape.
+- No "the wiki" (ask about the reader's situation) and no "listed trap"
+  (give the reason) in quizzes.
+
+Also, by you:
+
+- The site shuffles questions and options, and the Quiz tab mixes
+  questions from every article. Write options in any order, and make each
+  question stand alone: name the pattern and the setup in the question
+  itself, never "the same team" or "the table" from another question.
+- Test judgment with scenarios, not trivia or recall of the example ("What
+  did the team do?" becomes "What should they do?"). Give each quiz at
+  least one question whose answer is "not yet" or "it depends", drawn from
+  the article's costs or "When it doesn't apply".
+- Make wrong options plausible near-misses, ideally the article's own
+  traps. Don't let absolutes ("Never;", "always", "Whenever") mark the
+  wrong ones or hedges mark the right one; use an absolute in the answer
+  where the article is absolute.
+- Base every answer and **Why:** line on what the article says, keeping its
+  caveats; a wrong option the article only partly refutes is a second
+  answer. When you change an article, check its quiz.
 
 ## Site copy comes from the wiki (enforced by tests)
 
@@ -99,10 +118,13 @@ comes from the Markdown at build time.
 
 - The site description (page meta, app manifest, home page) is the first
   paragraph of `index.md`. It must name every category; a test checks this.
-- `CATEGORIES` in `scripts/build_site.py` must list exactly the folders in
-  `wiki/`; a test checks this.
-- A test fails if `web/` contains any article title, glossary term, or
-  category name. Paraphrases slip past it, so `wiki-gardener` checks for them.
+- The site title is `index.md`'s H1 without "— Index". Categories are the
+  `index.md` sections, in order: the H2 is the label, and the folder of the
+  section's entries (list items that start with a link) is the slug. A test
+  checks that every `wiki/` folder is exactly one section.
+- A test fails if `web/` contains any article title, glossary term,
+  category name, or the site title. Paraphrases slip past it, so
+  `wiki-gardener` checks for them.
 
 ## Writing style (enforced by you)
 

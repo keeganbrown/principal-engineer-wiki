@@ -30,13 +30,14 @@ Look for:
   category?
 - **Site and quiz consistency** — the reader site must take its content from
   the wiki, never restate it. Read `web/app.js`, `web/index.html`,
-  `web/manifest.webmanifest`, and `CATEGORIES` in `scripts/build_site.py`.
+  `web/manifest.webmanifest`, and `web/sw.js`.
   Flag any fixed text that describes the wiki's content — category lists,
   counts, example topics or terms, summaries — whether stale or not: it
   should be derived from data instead. (A test catches exact article titles,
   terms, and category names; you're looking for paraphrases and claims.)
-  Check that each `CATEGORIES` label matches its `index.md` section. Spot-check
-  quizzes against their articles for answers that went stale after an edit.
+  Spot-check quizzes against their articles for answers that went stale
+  after an edit, questions that lean on another question or the example
+  (the site shuffles them), and the same question asked in two quizzes.
 
 Output:
 
