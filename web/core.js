@@ -11,6 +11,7 @@
     if (head === "a" && arg) return { view: "article", slug: arg };
     if (head === "graph") return { view: "graph", focus: arg };
     if (head === "search") return { view: "search", query: arg || "" };
+    if (head === "terms") return { view: "terms", query: arg || "" };
     return { view: "home" };
   }
 
@@ -41,6 +42,28 @@
     }
     scored.sort((x, y) => y.score - x.score || x.a.title.localeCompare(y.a.title));
     return scored.map((s) => s.a);
+  }
+
+  const stripTags = (html) => html.replace(/<[^>]*>/g, "");
+
+  // Glossary search: every term must match the term name or the definition text.
+  function searchTerms(entries, query) {
+    const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!terms.length) return [];
+    const scored = [];
+    for (const entry of entries) {
+      const name = entry.term.toLowerCase();
+      const text = stripTags(entry.html).toLowerCase();
+      let score = 0;
+      const allMatch = terms.every((t) => {
+        if (name.includes(t)) { score += 10; return true; }
+        if (text.includes(t)) { score += 1; return true; }
+        return false;
+      });
+      if (allMatch) scored.push({ entry, score });
+    }
+    scored.sort((x, y) => y.score - x.score || x.entry.term.localeCompare(y.entry.term));
+    return scored.map((s) => s.entry);
   }
 
   function neighbors(article) {
@@ -157,7 +180,7 @@
     return { seen, total: Object.keys(articles).length };
   }
 
-  const api = { parseRoute, search, neighbors, pathPosition, radialLayout, createSimulation, progress, shortTitle };
+  const api = { parseRoute, search, neighbors, pathPosition, radialLayout, createSimulation, progress, shortTitle, searchTerms };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.WikiCore = api;
 })(typeof window !== "undefined" ? window : globalThis);

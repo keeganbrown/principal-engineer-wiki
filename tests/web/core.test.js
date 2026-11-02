@@ -107,3 +107,20 @@ test("simulation with a tall aspect lays nodes out taller than wide", () => {
   const span = (key) => Math.max(...nodes.map((n) => n[key])) - Math.min(...nodes.map((n) => n[key]));
   assert.ok(span("y") > span("x") * 1.3, `y span ${span("y")} vs x span ${span("x")}`);
 });
+
+const glossary = [
+  { term: "Idempotency key", id: "idempotency-key", letter: "I", html: "A unique ID for one <em>intended</em> action." },
+  { term: "Saga", id: "saga", letter: "S", html: "A multi-step workflow with compensating actions; see idempotency." },
+  { term: "SLO", id: "slo", letter: "S", html: "Service level objective." },
+];
+
+test("searchTerms ranks term matches above definition matches and ignores markup", () => {
+  assert.deepEqual(core.searchTerms(glossary, "idempotency").map((e) => e.id), ["idempotency-key", "saga"]);
+  assert.deepEqual(core.searchTerms(glossary, "<em>"), []);
+  assert.deepEqual(core.searchTerms(glossary, " "), []);
+});
+
+test("parseRoute: terms view with optional query", () => {
+  assert.deepEqual(core.parseRoute("#/terms"), { view: "terms", query: "" });
+  assert.deepEqual(core.parseRoute("#/terms/slo"), { view: "terms", query: "slo" });
+});
