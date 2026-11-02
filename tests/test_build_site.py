@@ -7,13 +7,15 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
-from build_site import build_site, site_data  # noqa: E402
-from lint_wiki import load_wiki, parse_article  # noqa: E402
+from build_site import CATEGORIES, build_site, site_data  # noqa: E402
+from lint_wiki import load_wiki, parse_article, parse_glossary  # noqa: E402
 from quizzes import load_quizzes  # noqa: E402
 
 INDEX = """# Wiki — Index
 
-Intro text.
+A field guide to **principles** and [[kiss|simple]] things.
+
+Second paragraph.
 
 **New here?** A good first path:
 [[kiss]] → [[yagni]].
@@ -85,6 +87,14 @@ class SiteDataTest(unittest.TestCase):
         self.assertIn(">KISS</a>", self.data["articles"]["yagni"]["html"])
 
 
+class SiteCopyTest(unittest.TestCase):
+    """Text about the wiki comes from the wiki, not from the front end."""
+
+    def test_description_is_the_first_paragraph_of_the_index_as_plain_text(self):
+        data = site_data(sample_articles(), INDEX)
+        self.assertEqual(data["description"], "A field guide to principles and simple things.")
+
+
 class GlossaryDataTest(unittest.TestCase):
     GLOSSARY = "# Glossary\n\n## K\n\n- **KISS** — Keep it simple. See [[kiss]].\n"
 
@@ -148,6 +158,36 @@ class RealWikiRenderTest(unittest.TestCase):
                 self.assertNotIn(token, prose, f"{name}: leaked {token!r}")
 
 
+class RealSiteConsistencyTest(unittest.TestCase):
+    """Guards against the front end drifting from the wiki's content."""
+
+    REPO = os.path.join(os.path.dirname(__file__), "..")
+
+    def read(self, *parts):
+        with open(os.path.join(self.REPO, *parts), encoding="utf-8") as f:
+            return f.read()
+
+    def test_every_wiki_folder_is_a_site_category_and_vice_versa(self):
+        folders = {d for d in os.listdir(os.path.join(self.REPO, "wiki")) if os.path.isdir(os.path.join(self.REPO, "wiki", d))}
+        self.assertEqual({slug for slug, _ in CATEGORIES}, folders)
+
+    def test_index_description_names_every_category(self):
+        description = site_data({}, self.read("index.md"))["description"].lower()
+        for _, label in CATEGORIES:
+            self.assertIn(label.lower(), description, f"index.md's first paragraph doesn't mention '{label}'")
+
+    def test_front_end_does_not_hard_code_wiki_content(self):
+        articles = load_wiki(os.path.join(self.REPO, "wiki"))
+        names = [label for _, label in CATEGORIES]
+        names += [str(a.frontmatter["title"]) for a in articles.values()]
+        names += [e.term for e in parse_glossary(self.read("glossary.md"))]
+        shell = {f: self.read("web", f) for f in ("app.js", "index.html", "manifest.webmanifest", "sw.js")}
+        for name in names:
+            pattern = re.compile(rf"(?<![\w-]){re.escape(name)}(?![\w-])")
+            for filename, text in shell.items():
+                self.assertIsNone(pattern.search(text), f"web/{filename} hard-codes '{name}'; derive it from the wiki")
+
+
 class BuildSiteTest(unittest.TestCase):
     def test_writes_data_script_and_copies_static_files(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -197,6 +237,24 @@ class BuildSiteTest(unittest.TestCase):
         self.assertEqual(version(first), version(same))
         self.assertNotEqual(version(first), version(edited))
         self.assertRegex(version(first), r"^[0-9a-f]{12}$")
+
+    def test_site_description_is_filled_into_page_and_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            web = os.path.join(tmp, "web")
+            out = os.path.join(tmp, "out")
+            os.makedirs(web)
+            with open(os.path.join(web, "index.html"), "w") as f:
+                f.write('<meta name="description" content="__SITE_DESCRIPTION__">')
+            with open(os.path.join(web, "manifest.webmanifest"), "w") as f:
+                f.write('{"description": __SITE_DESCRIPTION_JSON__}')
+            build_site(sample_articles(), INDEX.replace("principles", 'the "best" & <worst>'), web, out)
+            with open(os.path.join(out, "index.html")) as f:
+                page = f.read()
+            with open(os.path.join(out, "manifest.webmanifest")) as f:
+                manifest = json.load(f)
+        expected = 'A field guide to the "best" & <worst> and simple things.'
+        self.assertIn('content="A field guide to the &quot;best&quot; &amp; &lt;worst&gt; and simple things."', page)
+        self.assertEqual(manifest["description"], expected)
 
     def test_build_without_service_worker_template_still_works(self):
         with tempfile.TemporaryDirectory() as tmp:

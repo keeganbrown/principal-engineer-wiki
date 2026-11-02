@@ -90,6 +90,20 @@ tests/                Tests for the linter, site build, and site logic.
   plausible and about as long as the right one; base every answer on what
   the article actually says. When you change an article, check its quiz.
 
+## Site copy comes from the wiki (enforced by tests)
+
+The reader site in `web/` is a shell: it renders data, it doesn't restate
+content. Interface labels ("Start quiz", "Check yourself") are fine; anything
+that describes the wiki — categories, counts, topics, terms, the tagline —
+comes from the Markdown at build time.
+
+- The site description (page meta, app manifest, home page) is the first
+  paragraph of `index.md`. It must name every category; a test checks this.
+- `CATEGORIES` in `scripts/build_site.py` must list exactly the folders in
+  `wiki/`; a test checks this.
+- A test fails if `web/` contains any article title, glossary term, or
+  category name. Paraphrases slip past it, so `wiki-gardener` checks for them.
+
 ## Writing style (enforced by you)
 
 The audience is a smart engineer who is new to *this* topic. Write so they
@@ -223,8 +237,9 @@ Don't paste copyrighted text; paraphrase and credit.
 with `[[links]]`. If the answer is reusable, offer to file it as an article.
 
 **Health check:** run lint; also look for contradictions between articles,
-stale claims, and concepts mentioned in several articles that deserve
-their own page.
+stale claims, concepts mentioned in several articles that deserve
+their own page, quizzes that no longer match their articles, and site copy
+that restates content instead of deriving it.
 
 **Content review:** run `/review-wiki [slugs…] [reviewers…]`. It fans out to
 five read-only reviewer agents in `.claude/agents/` — `newcomer-reader`,

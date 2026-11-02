@@ -1,7 +1,7 @@
 {
   "name": "Principal Engineer Wiki",
   "short_name": "PE Wiki",
-  "description": "A field guide to the principles, practices, and architecture patterns Principal Software Engineers should know.",
+  "description": __SITE_DESCRIPTION_JSON__,
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

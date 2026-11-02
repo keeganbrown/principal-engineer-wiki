@@ -8,6 +8,7 @@ The front end in web/ only renders what site_data() produces.
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import math
 import os
@@ -32,6 +33,10 @@ CATEGORIES = (
 WORDS_PER_MINUTE = 230
 H1 = re.compile(r"^# .*\n", re.MULTILINE)
 STARTER_PATH = re.compile(r"\*\*New here\?\*\*(.*?)(?:\n\n|$)", re.DOTALL)
+FIRST_PARAGRAPH = re.compile(r"^# .*?\n\s*\n(.+?)(?:\n\s*\n|$)", re.DOTALL)
+TAGS = re.compile(r"<[^>]+>")
+# Shell files that carry the site description; the build fills them in.
+DESCRIBED_FILES = ("index.html", "manifest.webmanifest")
 DATA_FILE = "wiki-data.js"
 SERVICE_WORKER = "sw.js"
 # Files the browser fetches but the service worker shouldn't cache.
@@ -49,6 +54,15 @@ def _ordered_links(text: str, own_slug: str) -> List[str]:
 
 def _strip_h1(body: str) -> str:
     return H1.sub("", body, count=1)
+
+
+def describe(index_text: str, is_known, titles: Dict[str, str]) -> str:
+    """The index's first paragraph as plain text: the site's one-line description."""
+    match = FIRST_PARAGRAPH.search(index_text)
+    if not match:
+        return ""
+    rendered = render_inline(" ".join(match.group(1).split()), is_known, titles)
+    return html.unescape(TAGS.sub("", rendered))
 
 
 def site_data(
@@ -101,6 +115,7 @@ def site_data(
     return {
         "articles": out,
         "edges": [list(edge) for edge in edges],
+        "description": describe(index_text, is_known, titles),
         "home": render_markdown(_strip_h1(index_text), is_known, titles),
         "path": [s for s in path if s in articles],
         "categories": [{"slug": s, "label": label} for s, label in CATEGORIES],
@@ -127,12 +142,31 @@ def build_site(
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
     shutil.copytree(web_dir, out_dir)
-    data = json.dumps(site_data(articles, index_text, glossary_text, quizzes), ensure_ascii=False, separators=(",", ":"))
+    site = site_data(articles, index_text, glossary_text, quizzes)
+    fill_description(out_dir, site["description"])
+    data = json.dumps(site, ensure_ascii=False, separators=(",", ":"))
     with open(os.path.join(out_dir, DATA_FILE), "w", encoding="utf-8") as f:
         f.write(f"window.WIKI = {data};\n")
     # GitHub Pages: serve files as-is, no Jekyll processing.
     open(os.path.join(out_dir, ".nojekyll"), "w").close()
     write_service_worker(out_dir)
+
+
+def fill_description(out_dir: str, description: str) -> None:
+    replacements = {
+        "__SITE_DESCRIPTION_JSON__": json.dumps(description, ensure_ascii=False),
+        "__SITE_DESCRIPTION__": html.escape(description, quote=True),
+    }
+    for name in DESCRIBED_FILES:
+        path = os.path.join(out_dir, name)
+        if not os.path.exists(path):
+            continue
+        with open(path, encoding="utf-8") as f:
+            text = f.read()
+        for placeholder, value in replacements.items():
+            text = text.replace(placeholder, value)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(text)
 
 
 def _site_files(out_dir: str) -> List[str]:

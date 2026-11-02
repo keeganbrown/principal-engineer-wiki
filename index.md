@@ -1,5 +1,9 @@
 # Principal Engineer Wiki — Index
 
+A field guide to what a Principal Software Engineer should know: principles,
+practices, architecture, technology, leadership, coding with AI, and the
+pitfalls to avoid.
+
 Start here. Each article takes about five minutes to read and follows the same
 shape: the idea → why it matters → how to apply it → an example → common
 traps → when it doesn't apply.

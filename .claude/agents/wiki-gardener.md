@@ -25,7 +25,18 @@ Look for:
 - **Gaps** — concepts mentioned in two or more articles that deserve their
   own page. Suggest a slug, category, and one-line summary for each.
 - **Index and reading paths** — is the grouping in `index.md` still right?
-  Is the "New here?" path the best first tour?
+  Is the "New here?" path the best first tour? Does the first paragraph of
+  `index.md` (it becomes the site's description) still describe every
+  category?
+- **Site and quiz consistency** — the reader site must take its content from
+  the wiki, never restate it. Read `web/app.js`, `web/index.html`,
+  `web/manifest.webmanifest`, and `CATEGORIES` in `scripts/build_site.py`.
+  Flag any fixed text that describes the wiki's content — category lists,
+  counts, example topics or terms, summaries — whether stale or not: it
+  should be derived from data instead. (A test catches exact article titles,
+  terms, and category names; you're looking for paraphrases and claims.)
+  Check that each `CATEGORIES` label matches its `index.md` section. Spot-check
+  quizzes against their articles for answers that went stale after an edit.
 
 Output:
 
@@ -35,6 +46,7 @@ Output:
 ## Overlap
 ## Proposed new articles   (slug · category · summary · mentioned in)
 ## Index suggestions
+## Site and quiz consistency
 ## Summary
 ```
 

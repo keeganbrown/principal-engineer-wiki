@@ -134,6 +134,12 @@
     return sections.map((s) => s.outerHTML).join("");
   }
 
+  function glossaryBlurb() {
+    const terms = data.glossary || [];
+    if (!terms.length) return "Plain-English definitions of the terms used across the wiki.";
+    return `${terms.length} plain-English definitions, from ${escapeHtml(terms[0].term)} to ${escapeHtml(terms[terms.length - 1].term)}.`;
+  }
+
   function renderHome() {
     const total = Object.keys(articles).length;
     const path = data.path.map((slug, i) => {
@@ -147,15 +153,15 @@
 
     view.innerHTML = `<div class="page home">
       <section class="hero">
-        <p class="eyebrow">A field guide</p>
+        <p class="eyebrow">${total} articles</p>
         <h1>Think like a <span>principal engineer</span>.</h1>
-        <p>${total} five-minute reads on principles, practices, and architecture — each one linked to the ideas around it.</p>
+        <p>${escapeHtml(data.description)}</p>
         ${progressCard()}
       </section>
       <div class="section-title"><h2>Start here</h2><a href="#/graph">See the map →</a></div>
       <div class="path-strip">${path}</div>
       <a class="glossary-card" href="#/terms"><strong>Terms to know</strong>
-        <span>${(data.glossary || []).length} plain-English definitions, from ACID to zero-downtime deploys.</span></a>
+        <span>${glossaryBlurb()}</span></a>
       <div class="section-title"><h2>Browse</h2></div>
       <div class="category-tabs" role="group" aria-label="Filter by category">${tabs}</div>
       <div class="catalog prose">${catalogHtml()}</div>

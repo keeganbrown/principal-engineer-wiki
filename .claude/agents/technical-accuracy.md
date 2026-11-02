@@ -26,5 +26,9 @@ Your lens is **correctness**. For each article, check:
 - **Numbers** — thresholds and rules of thumb (e.g. "PRs under 400 lines")
   should be presented as heuristics, not laws, unless they are standards.
 
+- **Quizzes** — is the marked answer actually correct, and is every other
+  option actually wrong? A question with two defensible answers is a
+  must-fix, even if the article only mentions one.
+
 If you're not certain something is wrong, say how confident you are rather
 than asserting it. Leave readability and style to the other reviewers.

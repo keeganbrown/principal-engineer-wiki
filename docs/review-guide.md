@@ -12,7 +12,14 @@ has one lens; stay inside yours so reviews don't overlap.
 - Prefer a few high-value findings over many trivial ones. If an article is
   good, say so in one line and move on.
 - Things the linter already checks (frontmatter, required sections, length,
-  broken links) are out of scope.
+  broken links, quiz format) are out of scope.
+- **An article includes its quiz.** When you review `wiki/<folder>/<slug>.md`,
+  also read `quizzes/<slug>.md` and apply your lens to it. Every quiz must
+  agree with the article *as it reads now*: the marked answer is what the
+  article says, each wrong option is wrong according to the article, and
+  the **Why:** line doesn't claim anything the article doesn't. A quiz that
+  contradicts its article is **must-fix**. Report quiz findings under the
+  article's heading, with the section set to `quiz`.
 
 ## Severity
 

@@ -21,7 +21,8 @@ Reviewers live in `.claude/agents/`:
 
 ## Steps
 
-1. Resolve the article list (check each slug exists under `wiki/`).
+1. Resolve the article list (check each slug exists under `wiki/`). Each
+   article's review includes its quiz, `quizzes/<slug>.md`; pass both paths.
 2. Launch the chosen reviewers **in parallel**, one Agent call each, passing
    the article paths. For more than ~15 articles, split the per-article
    reviewers into batches of about 15 articles each (articles are short, so
@@ -35,7 +36,8 @@ Reviewers live in `.claude/agents/`:
    - Tag each finding with the reviewer that raised it.
    - Merge duplicates raised by several reviewers and note the agreement —
      agreement is a signal of priority.
-   - Put `wiki-gardener` findings in their own section at the end.
+   - Put `wiki-gardener` findings in their own section at the end, including
+     its site and quiz consistency findings.
 4. Save the report to `reviews/YYYY-MM-DD-<scope>.md` and show the user the
    `must-fix` items plus a count of the rest.
 5. **Don't apply fixes** until the user says which to take. When applying,
