@@ -2,27 +2,27 @@
 
 ## An engineer ran a cleanup script against production instead of staging. Which conclusion is blameless?
 
-- [x] Credentials for both environments sat in one file and the script had no guard, so the mistake was easy.
-- [ ] The engineer was careless and has been reminded to double-check next time.
-- [ ] The root cause was human error, so no system change is needed.
-- [ ] The engineer's manager should now approve every script they run.
+- [x] Shared credentials and an unguarded script made the mistake easy.
+- [ ] The script lacked a guard, which the engineer should have added first.
+- [ ] The root cause was human error, so no system change is needed at all.
+- [ ] The engineer was careless and has been reminded to double-check.
 
 **Why:** Blameless analysis asks how the system made the mistake easy and its impact large. "Human error" is a starting point, not a conclusion. See [[blameless-postmortems]].
 
-## Which action item is strongest?
+## A team's postmortem lists 14 action items, from new approval steps to wiki edits. What's the usual problem?
 
-- [x] Separate credentials so the script can't reach production from a laptop.
-- [ ] Remind everyone to be more careful with production.
-- [ ] Add a line to the onboarding wiki about checking environments.
-- [ ] Require a manager to approve every script run.
+- [x] Too many to prioritize, and new approvals slow everyone down.
+- [ ] Nothing; a long list shows the review was thorough.
+- [ ] The list is too short to cover every contributing factor in full.
+- [ ] Action items belong in a separate document, not the postmortem.
 
-**Why:** Removing the hazard beats reminders. Adding approval steps everywhere is process accretion that slows everyone for a rare risk. See [[blameless-postmortems]].
+**Why:** Pick the few items that remove the hazard, like separating credentials so a script can't reach production. Adding approvals everywhere is process accretion. See [[blameless-postmortems]].
 
 ## What does "blameless" not cover?
 
 - [x] Deliberate misconduct or malicious acts.
 - [ ] Mistakes made by senior engineers.
 - [ ] Incidents that caused customer data loss.
-- [ ] Errors made during an on-call shift at night.
+- [ ] Errors made late at night while on call.
 
 **Why:** Blamelessness covers honest mistakes. It isn't the same as being free of accountability, and misconduct is handled differently. See [[blameless-postmortems]].

@@ -1,28 +1,28 @@
 # Quiz: Code Review
 
-## Which review comment is most useful?
+## A loop is written `for attempt in range(1, retryCount)`. Which review comment is most useful?
 
-- [x] "blocking: this loop runs `retryCount - 1` times, so with 1 it never sends. `range(retryCount)`? A test would lock it down."
-- [ ] "This is wrong, please fix before merging."
-- [ ] "I would have written this differently, but it's fine I guess."
-- [ ] "Looks good to me!" on a 2,000-line change after five minutes.
+- [x] "blocking: with retryCount = 1 this never sends. range(retryCount)?"
+- [ ] "This loop looks off to me; can you take another look before merging?"
+- [ ] "nit: I'd write this loop differently, but it's up to you, really."
+- [ ] "LGTM, the logic reads fine to me and all the tests are passing."
 
-**Why:** A helpful comment names the problem, explains the impact, suggests a fix, and points to a test. Labeling its weight ("blocking") helps too. See [[code-review]].
+**Why:** A helpful comment names the problem, its impact, and a fix, and labels its weight ("blocking"). Asking for a test that locks it down helps too. See [[code-review]].
 
-## Pull requests on a team wait three days for review. What does the wiki suggest?
+## Pull requests on your team wait three days for review. What should you do first?
 
-- [x] Measure the wait; if it's days, the gate may cost more than it catches — consider ship/show/ask or pairing.
-- [ ] Add more required reviewers so problems are caught before merge.
-- [ ] Batch changes into larger pull requests so there are fewer to review.
-- [ ] Skip review entirely for every change to restore speed.
+- [x] Measure the wait and fix response time; then consider ship/show/ask.
+- [ ] Add more required reviewers, so problems are caught before merge.
+- [ ] Batch changes into larger pull requests, so there are fewer to review.
+- [ ] Drop review for any change under 50 lines, to restore speed at once.
 
-**Why:** Review is a policy choice with a cost. Ship/show/ask, small changes, and fast responses keep the gate worth having. See [[code-review]].
+**Why:** Respond within a few working hours. If the gate still costs more than it catches, a high-trust team can ship trivial changes, show low-risk ones after merging, and ask only on risky code. See [[code-review]].
 
 ## What is the main value of code review, beyond catching bugs?
 
-- [x] Spreading knowledge of the system and keeping the codebase consistent.
-- [ ] Giving managers a record of who wrote which lines.
-- [ ] Ensuring every change gets a second approval for audits.
-- [ ] Letting senior engineers block changes they dislike.
+- [x] Spreading knowledge of the system and keeping code consistent.
+- [ ] Giving managers a record of who wrote which lines of the code.
+- [ ] Catching style issues that an automatic formatter would miss.
+- [ ] Letting senior engineers block changes they personally dislike.
 
-**Why:** Reviews spread knowledge, keep code consistent, and teach in both directions. Gatekeeping is a listed trap. See [[code-review]].
+**Why:** Reviews spread knowledge, keep code consistent, and teach in both directions. Using review as gatekeeping wastes that. See [[code-review]].

@@ -13,16 +13,16 @@
 
 - [x] As an argument passed in by the shell.
 - [ ] By calling the system clock inside the function.
-- [ ] From a global variable set at startup.
+- [ ] From a global variable set once at startup.
 - [ ] From the database, as part of the invoice query.
 
-**Why:** Pass everything the core needs as arguments. Then tests can use any date, with no clock to mock. See [[functional-core-imperative-shell]].
+**Why:** Pass everything the core needs as arguments, so tests can use any date with no clock to mock. Injecting a `Clock` is the dependency-inversion form of the same idea; passing `today` keeps the core fully pure. See [[functional-core-imperative-shell]] and [[solid-principles]].
 
-## The core picks invoices from a snapshot, and the shell sends reminders. What risk must the shell handle?
+## A pure core picks overdue invoices from a database snapshot, and the shell sends reminders. What risk must the shell handle?
 
-- [x] The snapshot may be stale, so it should update only if the invoice is still unpaid and not yet reminded.
-- [ ] The core might send emails on its own if the shell is slow.
-- [ ] Pure functions can't return lists, so the shell must rebuild them.
-- [ ] The shell must re-run the core for every invoice to stay correct.
+- [x] The snapshot may be stale, so send only if the invoice is still unpaid.
+- [ ] The core might start sending emails on its own if the shell runs slowly.
+- [ ] Pure functions can't return lists, so the shell has to rebuild the result.
+- [ ] The shell must re-run the core for each invoice to keep the result correct.
 
-**Why:** Stale snapshots are a listed trap. A conditional update in the shell keeps two runs from sending the same reminder twice. See [[functional-core-imperative-shell]].
+**Why:** A conditional update ("unpaid and not yet reminded") keeps two runs from sending the same reminder. Its cost: a crash between the mark and the send skips that reminder. That's fine here; use an outbox for effects that must happen. See [[functional-core-imperative-shell]] and [[transactional-outbox]].

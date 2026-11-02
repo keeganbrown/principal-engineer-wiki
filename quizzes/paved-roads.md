@@ -1,28 +1,28 @@
 # Quiz: Paved Roads
 
-## What is a paved road?
+## A 12-person startup, where everyone talks daily, is thinking about building a maintained service template. Should it?
 
-- [x] A supported, ready-made way to do a common job, easier than the alternatives.
-- [ ] A mandatory standard enforced by a review board.
-- [ ] A wiki page listing approved technologies.
-- [ ] A shared library every team must copy into its repository.
+- [x] Probably not yet; a short shared doc is likely enough.
+- [ ] Yes; every company needs a paved road before its second service.
+- [ ] Yes, and it should be mandatory so nobody drifts from it.
+- [ ] No; paved roads only work at companies with platform teams.
 
-**Why:** Paving the path people already walk beats putting up "Keep off" signs. Maintain it like a product. See [[paved-roads]].
+**Why:** A paved road is a product with an owner, upgrades, and support. Below a certain size, that overhead isn't worth it. See [[paved-roads]].
 
-## A service template reached 90% of new services. Why were existing services harder?
+## A service template is used by 90% of new services, but few existing services adopt it. What usually changes that?
 
-- [x] Most didn't migrate until an upgrade offered something they wanted.
-- [ ] The template only worked for brand-new repositories.
-- [ ] Existing services were forbidden from using it.
-- [ ] The platform team stopped maintaining it after launch.
+- [x] An upgrade that gives them something they want.
+- [ ] A mandate with a firm deadline to migrate.
+- [ ] More documentation about how the template works.
+- [ ] Forbidding new features in services off the road.
 
-**Why:** Adoption follows value. Keeping generated repos upgradable is ongoing work for the owning team. See [[paved-roads]].
+**Why:** Adoption follows value. Keeping generated repos upgradable is ongoing work: shared logic moves into versioned libraries the platform team supports. See [[paved-roads]].
 
 ## How should a paved road handle teams with needs it doesn't cover?
 
-- [x] Allow exits, but make the team take on what the road would have handled.
-- [ ] Forbid exits so every service stays consistent.
-- [ ] Let anyone leave the road with no extra responsibilities.
-- [ ] Build a new road for every team that asks.
+- [x] Allow exits, but the team meets the guardrails and owns its own upgrades.
+- [ ] Forbid exits, so that every service stays consistent with every other.
+- [ ] Let anyone leave the road freely, with no extra responsibilities at all.
+- [ ] Build a separate new road for every team that asks for something different.
 
-**Why:** "No exits" and "too many roads" are both listed traps. Exits should be possible but not free. See [[paved-roads]].
+**Why:** Free exits fragment the standard; no exits turns the road into a mandate with extra steps. A team that leaves still meets the mandatory checks, and you learn from why it left. See [[paved-roads]].

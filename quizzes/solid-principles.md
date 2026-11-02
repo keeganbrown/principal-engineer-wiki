@@ -1,28 +1,28 @@
 # Quiz: SOLID Principles
 
-## A `Square` subclass throws "not supported" when its parent's `setWidth` is called. Which principle is broken?
+## A `ReadOnlyFile` subclass throws "not supported" when its parent's `write` method is called. Which principle is broken?
 
-- [x] Liskov substitution: a subtype must work anywhere its parent is expected.
-- [ ] Single responsibility: a class should have one reason to change.
-- [ ] Interface segregation: clients shouldn't depend on methods they don't use.
-- [ ] Open/closed: add behavior by adding code, not editing it.
+- [x] Liskov substitution: a subtype must work wherever its parent does.
+- [ ] Single responsibility: a class should have only one reason to change.
+- [ ] Dependency inversion: high-level logic should depend on abstractions.
+- [ ] Open/closed: add behavior by adding code rather than by editing it.
 
-**Why:** "Not supported" errors in a subtype are the classic warning sign that substitution fails. See [[solid-principles]].
+**Why:** Callers that hold a file expect `write` to work, and the subtype breaks that promise. If a subclass throws for an inherited method, the hierarchy is wrong; prefer composition. See [[solid-principles]].
 
 ## A function checks whether a token has expired. How does dependency inversion make it easy to test?
 
-- [x] The rule declares a `Clock` it needs, and tests pass a fixed clock.
-- [ ] The rule reads the system clock directly, and tests change the machine's time.
-- [ ] The rule caches the current time at startup, so tests run fast.
+- [x] The rule declares a `Clock` it needs, and tests pass a fixed one.
+- [ ] The rule reads the system clock, and tests change the machine's time.
+- [ ] The rule caches the current time at startup, so the tests run fast.
 - [ ] The rule gets the time from a global variable that tests overwrite.
 
-**Why:** Business logic declares what it needs; production passes the real clock and tests pass a fixed one. Tests become deterministic and fast. See [[solid-principles]].
+**Why:** Business logic declares what it needs; production passes the real clock and tests pass a fixed one, so tests are deterministic. Ports in hexagonal architecture are the same idea at system scale. See [[solid-principles]] and [[hexagonal-architecture]].
 
-## How should SOLID be used, according to the wiki?
+## A code base has one `switch` on payment type, in one place. Should you replace it with polymorphism?
 
-- [x] As heuristics to diagnose pain you have, not a checklist to prevent pain you don't.
-- [ ] As a mandatory review checklist applied to every class in every pull request.
-- [ ] Only in functional code, since it was designed for languages without objects.
-- [ ] As a reason to put an interface in front of every class by default.
+- [x] Not yet; a single switch in one place is often simplest.
+- [ ] Yes; the open/closed principle forbids switch statements.
+- [ ] Yes, and add an interface for each payment type now.
+- [ ] No; a switch is clearer than polymorphism in most code.
 
-**Why:** "An interface for everything" and checklist reviews are listed traps. In small programs the indirection can cost more than it saves. See [[solid-principles]].
+**Why:** Replace a switch when the same one repeats in several places, so new cases become additions. Use SOLID to diagnose pain you have, not as a checklist. See [[solid-principles]].

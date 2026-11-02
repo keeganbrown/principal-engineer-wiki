@@ -2,10 +2,10 @@
 
 ## An engineer offers to write a job queue in "about a week." What does the estimate usually miss?
 
-- [x] Years of maintenance, on-call, security fixes, and documentation.
-- [ ] The time to choose a name for the queue.
-- [ ] The cost of the servers it runs on.
-- [ ] The time to write the first version's tests.
+- [x] Years of maintenance, on-call, security fixes, and docs.
+- [ ] The time to wire it into all the services that will need to use it.
+- [ ] The cost of the servers it will run on in production.
+- [ ] The time to write tests for the first version.
 
 **Why:** The first version is the cheap part. Price the whole lifetime of owning it. See [[not-invented-here]].
 
@@ -13,16 +13,16 @@
 
 - [x] Security primitives such as cryptography and password hashing.
 - [ ] The parts of the product that make it different from competitors.
-- [ ] A 10-line helper function.
+- [ ] A 10-line helper that a large dependency would otherwise provide.
 - [ ] Internal tools that pay off across hundreds of teams.
 
 **Why:** Homegrown security is where NIH does the most damage. Build your differentiators; adopt the plumbing. See [[not-invented-here]].
 
-## The team moves to a widely used job library behind an adapter. What new cost appears?
+## A homegrown job queue loses jobs when a deploy kills a worker mid-job. What was it missing?
 
-- [x] Running Redis, and making jobs idempotent because a job can occasionally run twice.
-- [ ] None; adopting a library removes all operational work.
-- [ ] Rewriting every job in a new programming language.
-- [ ] Paying the original author to maintain the library.
+- [x] A visibility timeout that returns an unfinished job to the queue.
+- [ ] Exponential backoff on retries to failing partner services.
+- [ ] A bigger worker pool, so fewer jobs run on each worker.
+- [ ] A dashboard showing how many jobs are waiting in the queue, so someone notices.
 
-**Why:** Adopting has costs too, and an adapter doesn't hide semantics like delivery guarantees. The swap gets cheaper, not free. See [[not-invented-here]] and [[idempotency]].
+**Why:** A visibility timeout is a lease: it hides a job from other workers while one runs it, and returns it if that worker dies. A widely used library has it, but it means a job can occasionally run twice, so jobs must be idempotent. See [[not-invented-here]] and [[idempotency]].

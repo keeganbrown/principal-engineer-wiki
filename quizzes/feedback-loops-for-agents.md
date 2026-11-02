@@ -2,27 +2,27 @@
 
 ## A service's tests take 35 minutes and fail randomly one run in ten. Agents struggle. What helps most?
 
-- [x] A fast unit suite, quarantining flaky tests, and fixing their top causes.
-- [ ] A larger, more capable model.
-- [ ] Longer prompts explaining which failures to ignore.
-- [ ] Letting agents skip tests and relying on human review.
+- [x] A fast unit suite, with flaky tests quarantined and their causes fixed.
+- [ ] A larger model, and a longer timeout so the slow suite can finish.
+- [ ] Longer prompts that explain which test failures the agent can ignore.
+- [ ] Letting agents skip the tests and relying on human review instead.
 
-**Why:** Verification, not typing, is the bottleneck. Fast, trustworthy checks let the agent fix its own mistakes. See [[feedback-loops-for-agents]].
+**Why:** A flaky test makes the agent "fix" code that wasn't broken. Fast, trustworthy checks let it fix its own mistakes. It cost the team two engineers for two weeks, so start where agents work most. See [[feedback-loops-for-agents]].
 
 ## Why is it risky for an agent to write both the code and the only tests for it?
 
-- [x] The tests can share the code's misunderstanding, so green checks prove little.
-- [ ] Agents can't write tests in the same language as the code.
-- [ ] Tests written by agents always run slower.
+- [x] The tests can share the code's misunderstanding.
+- [ ] Agents write tests in a style humans can't review.
+- [ ] Agent-written tests always run much more slowly.
 - [ ] Agent-written tests can't be checked into the repository.
 
-**Why:** "Trusting green checks too much" is a listed trap. Keep some checks the agent didn't write and can't edit. See [[feedback-loops-for-agents]].
+**Why:** Green checks then prove little. Start from tests a human wrote or reviewed, and review test changes closely. See [[feedback-loops-for-agents]] and [[test-driven-development]].
 
 ## What makes an error message useful to an agent?
 
-- [x] It's written for a reader with no context: what failed, where, and what to do.
-- [ ] It's as short as possible, ideally just an error code.
-- [ ] It includes the full stack trace of every thread.
-- [ ] It's written in the team's internal shorthand.
+- [x] It says what failed and where, for a reader with no context.
+- [ ] It's as short as possible, ideally just a numeric error code.
+- [ ] It includes the full stack trace of every running thread.
+- [ ] It uses the team's internal shorthand, so it stays brief.
 
-**Why:** The agent knows only what the output tells it. The same clear messages help humans too. See [[feedback-loops-for-agents]].
+**Why:** "Expected Cents, got float in `refund()`" lets an agent fix the bug; "AssertionError" makes it guess. Clear messages help humans too. See [[feedback-loops-for-agents]].

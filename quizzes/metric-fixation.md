@@ -2,27 +2,27 @@
 
 ## A director sets an 80% coverage target. Teams hit it, but incidents don't drop. Why?
 
-- [x] Many new tests ran code without asserting anything, the cheapest way to move the number.
+- [x] Many new tests ran code without asserting anything.
 - [ ] 80% is too low; the target should have been 100%.
 - [ ] Coverage tools count lines incorrectly.
-- [ ] Teams deleted their old tests to make room.
+- [ ] Teams deleted their old tests to make room for faster new ones.
 
-**Why:** Goodhart's law: when a measure becomes a target, it ceases to be a good measure. See [[metric-fixation]].
+**Why:** Coverage counts lines run, not behavior checked, so tests without assertions raise it cheaply. Goodhart's law: when a measure becomes a target, it ceases to be a good measure. See [[metric-fixation]].
 
 ## What makes metrics harder to game?
 
-- [x] Pairing metrics that pull against each other, like deploy frequency and change failure rate.
-- [ ] Adding 40 metrics so no single one matters.
+- [x] Pairing metrics that pull against each other.
+- [ ] Tracking 40 metrics so no single number dominates.
 - [ ] Ranking individuals by their output each month.
-- [ ] Dropping measurement entirely.
+- [ ] Dropping measurement entirely in favor of judgment.
 
-**Why:** Gaming one shows up in the other. More metrics or no metrics are both listed traps. See [[metric-fixation]].
+**Why:** Gaming one shows up in the other, as with deploy frequency and change failure rate. Too many metrics dilute attention, and none leaves you guessing. See [[metric-fixation]].
 
 ## When can a metric work as a target?
 
-- [x] When it's defined tightly, such as the slowest 1% of requests measured from the user's side, and audited.
-- [ ] When it's simple enough to report in one number upward.
+- [x] When it's close to the outcome, tightly defined, and audited.
+- [ ] When it's simple enough to report upward to leadership as a single number.
 - [ ] When it counts activity, such as commits or tickets closed.
 - [ ] When engineers are rewarded individually for moving it.
 
-**Why:** Latency budgets or cost ceilings are close to the outcome, but even they get gamed at the edges without tight definitions. See [[metric-fixation]].
+**Why:** A latency budget is mostly moved by improving latency. Even so it gets gamed at the edges, so define it tightly (the slowest 1%, measured from the user's side) and audit how it's collected. See [[metric-fixation]].

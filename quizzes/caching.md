@@ -2,27 +2,36 @@
 
 ## A product page is cached in Redis. Which data should still be read live?
 
-- [x] Price and stock, because a stale value is a legal and trust problem.
-- [ ] Product descriptions, because they change most often.
-- [ ] Product images, because they are large.
-- [ ] Nothing; the TTL keeps everything fresh enough.
+- [x] Price and stock.
+- [ ] Product descriptions.
+- [ ] Product images.
+- [ ] Customer reviews.
 
-**Why:** Decide how stale is acceptable per piece of data. Some values must come from the source. See [[caching]].
+**Why:** Decide how stale is acceptable per piece of data. A stale price or stock count is a legal and trust problem, so those come from the source. See [[caching]].
 
-## Why add random jitter to cache TTLs?
+## One very popular cache entry expires, and hundreds of requests hit the database at once. What prevents this?
 
-- [x] So many entries don't expire at once and stampede the database.
-- [ ] So each user sees a slightly different version of the page.
-- [ ] So the cache uses less memory over time.
-- [ ] So entries expire sooner after an edit.
+- [x] Letting one request refresh it while the others wait or get the stale value.
+- [ ] Adding random jitter to the entry's TTL, so it expires at a less busy moment.
+- [ ] Shortening the TTL, so the entry is refreshed more often and stays warm.
+- [ ] Removing the TTL entirely, so popular entries never expire at all.
 
-**Why:** Entries that expire together all miss together. Jitter spreads expiries out to prevent stampedes. See [[caching]].
+**Why:** Jitter stops many entries written together from expiring together, but it doesn't help a single hot key. See [[caching]].
+
+## A cache cluster restarts during peak traffic, and the database falls over. What was missing?
+
+- [x] A plan for running with an empty cache.
+- [ ] A longer TTL on every cached entry.
+- [ ] A second cache in a different region.
+- [ ] More memory on each cache node, so fewer entries are evicted.
+
+**Why:** If the database can't survive a cold cache, the cache is quietly carrying capacity. Warm caches before sending traffic, restart nodes gradually, or apply backpressure. See [[caching]] and [[backpressure]].
 
 ## A bulk import updates 10,000 products directly in the database. What goes wrong?
 
-- [x] It bypasses the code that deletes cache entries, so stale data lingers until the TTL expires.
-- [ ] The cache refreshes itself instantly because Redis watches the database.
-- [ ] The database rejects the import while cache entries exist.
-- [ ] Nothing, because cache-aside always reads from the database.
+- [x] It skips the code that deletes cache entries, so stale data stays until the TTL.
+- [ ] The cache refreshes itself instantly, because Redis watches the database.
+- [ ] The database rejects the import while matching entries still exist in the cache.
+- [ ] Nothing; the import's own transaction refreshes the cache.
 
-**Why:** Invalidation tied to one code path misses writes from other paths. The TTL is the backstop. See [[caching]].
+**Why:** Invalidation tied to one code path misses writes from other paths. Route every write through the same invalidation, and keep the TTL as a backstop. See [[caching]].

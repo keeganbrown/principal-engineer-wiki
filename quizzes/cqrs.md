@@ -1,28 +1,37 @@
-# Quiz: Command Query Responsibility Segregation (CQRS)
+# Quiz: CQRS
 
 ## A product page assembles data from four services and takes 800ms. How does CQRS help?
 
-- [x] A projector keeps one pre-built read document per product, so the page is a single fast lookup.
-- [ ] All four services merge into one database so the query can join everything.
-- [ ] The page caches each service's response for 24 hours.
-- [ ] Writes go through the read model, so the page is always current.
+- [x] A projector keeps a pre-built document per product, so the page is one lookup.
+- [ ] Each request queries the four services in parallel, so the page loads faster.
+- [ ] All four services move into one shared database, so a single query can join them.
+- [ ] The page caches each service's response for a full day at a time.
 
 **Why:** Separate the read model from the write side when their needs diverge. The price is that the read view can lag by a few seconds. See [[cqrs]].
 
-## The read model can lag by a few seconds. What should checkout do?
+## A product page reads from a CQRS read model that can lag by a few seconds. What should checkout do?
 
 - [x] Re-check price and stock with the owning services before charging.
 - [ ] Trust the product page, since it was correct when the user loaded it.
-- [ ] Block the page until the read model is fully up to date.
-- [ ] Charge the displayed price and reconcile differences monthly.
+- [ ] Block the product page until the read model is fully up to date.
+- [ ] Charge the displayed price and reconcile any differences monthly.
 
-**Why:** Set expectations for staleness and don't let decisions that matter rely on a lagging view. See [[cqrs]].
+**Why:** Don't let decisions that matter rely on a lagging view, and tell users what might be stale. See [[cqrs]] and [[cap-theorem]].
 
-## Which statement about CQRS is true?
+## Reads are 50 times writes, but every screen reads the same shape as the table. What should the team try first?
 
-- [x] It doesn't require event sourcing; the two are often confused.
-- [ ] It should be applied to every part of a system for consistency.
-- [ ] It requires separate databases from day one.
-- [ ] It makes read-your-writes automatic for every user.
+- [x] Read replicas or caching.
+- [ ] A separate CQRS read model.
+- [ ] Event sourcing for every table.
+- [ ] Sharding the main database.
 
-**Why:** Start small, even in one transaction, and use CQRS only where read and write needs genuinely diverge. See [[cqrs]].
+**Why:** A separate read model is for when the shape of reads differs, not just the volume. Replicas and caches handle volume more cheaply. See [[cqrs]], [[relational-databases]], and [[caching]].
+
+## A team wants a separate read model but no event store. Can it use CQRS?
+
+- [x] Yes; CQRS separates reads from writes, and event sourcing is a separate idea.
+- [ ] No; CQRS is defined by storing every change as an event in an event store.
+- [ ] Only if the read and write sides use separate databases from the first day.
+- [ ] Only if every part of the system adopts CQRS, so the design stays consistent.
+
+**Why:** Event sourcing stores the history of events as the source of truth; it pairs well with CQRS but isn't required. Start small, even in one transaction. See [[cqrs]].

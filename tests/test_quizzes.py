@@ -9,8 +9,8 @@ from quizzes import load_quizzes, lint_quizzes, parse_quiz  # noqa: E402
 
 QUESTION = """## Which design does KISS prefer?
 
-- [ ] The most flexible one.
-- [x] The simplest one that solves today's problem.
+- [ ] The most flexible one available.
+- [x] The simplest one that works.
 - [ ] The one with the most layers.
 
 **Why:** Flexibility you don't need is cost you pay now. See [[yagni]].
@@ -34,8 +34,8 @@ class ParseQuizTest(unittest.TestCase):
         q = parse_quiz(quiz(QUESTION))[0]
         self.assertEqual(q.question, "Which design does KISS prefer?")
         self.assertEqual(q.options, [
-            "The most flexible one.",
-            "The simplest one that solves today's problem.",
+            "The most flexible one available.",
+            "The simplest one that works.",
             "The one with the most layers.",
         ])
         self.assertEqual(q.answers, [1])
@@ -110,6 +110,37 @@ class LintQuizzesTest(unittest.TestCase):
         stray = question() + "\nSome loose paragraph.\n"
         problems = self.lint({"kiss": quiz(stray, QUESTION, QUESTION), "yagni": VALID})
         self.assertIn("quizzes/kiss.md: unexpected line 'Some loose paragraph.'", problems)
+
+
+    def test_reports_answer_much_longer_than_the_wrong_options(self):
+        long_answer = question(options=["- [x] The one that is far longer than every other option here.", "- [ ] Short.", "- [ ] Brief."])
+        problems = self.lint({"kiss": quiz(long_answer, QUESTION, QUESTION), "yagni": VALID})
+        self.assertTrue(any("is 9.3x the average wrong option (max 1.3x)" in p for p in problems), problems)
+
+    def test_reports_boilerplate_phrases(self):
+        meta = question("What does the wiki suggest?", why="**Why:** Clever code is a listed trap. See [[yagni]].")
+        problems = self.lint({"kiss": quiz(meta, QUESTION, QUESTION), "yagni": VALID})
+        self.assertIn("quizzes/kiss.md: 'What does the wiki suggest?' says 'the wiki'; ask about the reader's situation", problems)
+        self.assertIn("quizzes/kiss.md: 'What does the wiki suggest?' says 'listed trap'; give the reason instead", problems)
+
+    def test_reports_bank_where_the_answer_is_usually_the_longest_option(self):
+        tell = question(options=["- [x] Longest one.", "- [ ] Shorter.", "- [ ] Short."])
+        fair = question(options=["- [x] Short.", "- [ ] Shorter.", "- [ ] Longest one."])
+        bank = {f"s{i}": quiz(tell, tell, fair) for i in range(10)}
+        problems = lint_quizzes(bank, set(bank))
+        self.assertIn("quizzes: the answer is the longest option in 20 of 30 questions (67%); keep it under 40%", problems)
+
+    def test_reports_bank_where_the_answer_is_usually_the_shortest_option(self):
+        tell = question(options=["- [x] Short.", "- [ ] Shorter one.", "- [ ] Longest one."])
+        fair = question(options=["- [x] Longest one.", "- [ ] Shorter.", "- [ ] Short."])
+        bank = {f"s{i}": quiz(tell, tell, fair) for i in range(10)}
+        problems = lint_quizzes(bank, set(bank))
+        self.assertIn("quizzes: the answer is the shortest option in 20 of 30 questions (67%); keep it under 40%", problems)
+
+    def test_small_banks_skip_the_longest_option_check(self):
+        tell = question(options=["- [x] Longest one.", "- [ ] Shorter.", "- [ ] Short."])
+        problems = lint_quizzes({"kiss": quiz(tell, tell, tell)}, {"kiss"})
+        self.assertFalse(any("longest option" in p for p in problems))
 
 
 class LoadQuizzesTest(unittest.TestCase):

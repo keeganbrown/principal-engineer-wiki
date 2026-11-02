@@ -1,4 +1,4 @@
-# Quiz: API Versioning and Evolution
+# Quiz: API Versioning
 
 ## Which of these changes to a JSON API response is backward-compatible?
 
@@ -9,20 +9,20 @@
 
 **Why:** Additive changes are safe when clients are tolerant readers. Renames, type changes, and reused fields break callers. See [[api-versioning]].
 
-## A team must change `total` from a float to integer cents with a currency. What is the safest path?
+## Money appears on every resource in an API as a float, and it must become integer cents with a currency. What is the safest path?
 
-- [x] Ship `/v2` with the new shape, keep `/v1` running with deprecation headers, and track who still calls it.
-- [ ] Change `/v1` in place on a Sunday night when traffic is low.
-- [ ] Add a query parameter that silently switches the type for everyone.
-- [ ] Email partners and remove `/v1` the same day `/v2` ships.
+- [x] Ship `/v2`, keep `/v1` with deprecation headers, and track its callers.
+- [ ] Change `/v1` in place on a Sunday night, when traffic is at its lowest.
+- [ ] Add a query parameter that silently switches the type for every client.
+- [ ] Stop sending the float in `/v1` next month and email partners today.
 
-**Why:** A type change can't be made additively, so it needs an explicit version, a published sunset, and per-client usage tracking. See [[api-versioning]].
+**Why:** Changing `total`'s type in place breaks callers. For one field, a new field beside the old one can work; when the whole money shape changes everywhere, a new version with a published sunset is cleaner. See [[api-versioning]] and [[expand-and-contract]].
 
 ## A mobile client crashes when the server adds a new enum value. Which practice would have prevented it?
 
-- [x] Making clients tolerant readers that handle unknown values gracefully.
-- [ ] Making the server accept any field the client sends without checks.
-- [ ] Versioning the API every time a field is added.
-- [ ] Removing enums from the API and using free-text strings.
+- [x] Making clients tolerant readers that handle unknown values.
+- [ ] Making the server accept any field a client sends, unchecked.
+- [ ] Sending the enum as an integer instead of as a string.
+- [ ] Replacing enums in the API with free-text strings.
 
-**Why:** Clients should ignore what they don't understand, while servers stay strict about what they accept. Crashing on new enum values is a listed trap. See [[api-versioning]].
+**Why:** Clients that handle every value explicitly break when one is added. Document that enums may grow, give unknown values a default, and keep the server strict about what it accepts. See [[api-versioning]].

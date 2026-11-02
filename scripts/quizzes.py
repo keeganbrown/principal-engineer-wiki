@@ -24,6 +24,15 @@ from lint_wiki import WIKILINK
 
 MIN_QUESTIONS = 3
 OPTION_COUNTS = (3, 4)
+# Readers learn to pick the longest (or shortest) option when it's usually right.
+MAX_ANSWER_LENGTH_RATIO = 1.3
+MAX_LENGTH_SHARE = 0.4
+MIN_BANK_FOR_SHARE = 30
+# Phrases that cite the wiki instead of testing or explaining the idea.
+BOILERPLATE = {
+    "the wiki": "ask about the reader's situation",
+    "listed trap": "give the reason instead",
+}
 QUESTION_HEADING = re.compile(r"^## (.+?)\s*$")
 OPTION = re.compile(r"^- \[( |x)\] (.+?)\s*$")
 WHY = re.compile(r"^\*\*Why:\*\* (.+?)\s*$")
@@ -81,24 +90,68 @@ def _lint_question(path: str, q: Question) -> List[str]:
         problems.append(f"{label} has no **Why:** line")
     for line in q.stray:
         problems.append(f"{path}: unexpected line '{line}'")
+    ratio = _answer_length_ratio(q)
+    if ratio is not None and ratio > MAX_ANSWER_LENGTH_RATIO:
+        problems.append(f"{label} answer is {ratio:.1f}x the average wrong option (max {MAX_ANSWER_LENGTH_RATIO}x)")
+    text = " ".join([q.question, q.why, *q.options]).lower()
+    for phrase, advice in BOILERPLATE.items():
+        if phrase in text:
+            problems.append(f"{label} says '{phrase}'; {advice}")
+    return problems
+
+
+def _answer_length_ratio(q: Question):
+    if len(q.answers) != 1 or len(q.options) < 2:
+        return None
+    answer = len(q.options[q.answers[0]])
+    wrong = [len(o) for i, o in enumerate(q.options) if i != q.answers[0]]
+    return answer / (sum(wrong) / len(wrong))
+
+
+def _answer_is_longest(q: Question) -> bool:
+    answer = len(q.options[q.answers[0]])
+    return all(answer > len(o) for i, o in enumerate(q.options) if i != q.answers[0])
+
+
+def _answer_is_shortest(q: Question) -> bool:
+    answer = len(q.options[q.answers[0]])
+    return all(answer < len(o) for i, o in enumerate(q.options) if i != q.answers[0])
+
+
+def _lint_length_shares(questions: List[Question]) -> List[str]:
+    """Bank-wide: neither "pick the longest" nor "pick the shortest" should win."""
+    scored = [q for q in questions if len(q.answers) == 1 and len(q.options) >= 2]
+    if len(scored) < MIN_BANK_FOR_SHARE:
+        return []
+    problems = []
+    for name, test in (("longest", _answer_is_longest), ("shortest", _answer_is_shortest)):
+        count = sum(test(q) for q in scored)
+        share = count / len(scored)
+        if share > MAX_LENGTH_SHARE:
+            problems.append(
+                f"quizzes: the answer is the {name} option in {count} of {len(scored)} questions "
+                f"({share:.0%}); keep it under {MAX_LENGTH_SHARE:.0%}"
+            )
     return problems
 
 
 def lint_quizzes(quizzes: Dict[str, str], slugs: Set[str]) -> List[str]:
     """Every article has a quiz; every quiz is well formed and its links resolve."""
     problems = [f"quizzes: missing quiz for [[{s}]]" for s in sorted(slugs - set(quizzes))]
+    everything: List[Question] = []
     for slug in sorted(quizzes):
         path = f"quizzes/{slug}.md"
         if slug not in slugs:
             problems.append(f"{path}: no article with this slug")
         questions = parse_quiz(quizzes[slug])
+        everything.extend(questions)
         if len(questions) < MIN_QUESTIONS:
             problems.append(f"{path}: {len(questions)} question(s), need at least {MIN_QUESTIONS}")
         for q in questions:
             problems.extend(_lint_question(path, q))
             for target in sorted(q.links - slugs):
                 problems.append(f"{path}: broken link [[{target}]]")
-    return problems
+    return problems + _lint_length_shares(everything)
 
 
 def load_quizzes(quiz_root: str) -> Dict[str, str]:

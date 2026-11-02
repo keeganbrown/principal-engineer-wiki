@@ -5,24 +5,24 @@
 - [x] In unit tests of the discount calculation.
 - [ ] In end-to-end browser tests, one per edge case.
 - [ ] In integration tests against a real database.
-- [ ] In manual QA before each release.
+- [ ] In manual QA before each release goes out.
 
 **Why:** Put business logic where fast unit tests can reach it. Save end-to-end tests for a few critical journeys. See [[testing-pyramid]].
 
 ## A microservice has little internal logic and mostly talks to its database. What shape fits?
 
-- [x] More integration tests than unit tests, as in the "testing honeycomb."
-- [ ] Almost all end-to-end tests, since the service is simple.
-- [ ] Only unit tests with every dependency mocked.
+- [x] Mostly integration tests, with fewer unit and end-to-end tests.
+- [ ] Almost all end-to-end tests, since the service itself is simple.
+- [ ] Only unit tests, with every dependency mocked out.
 - [ ] No automated tests, since there's no logic to test.
 
-**Why:** The right shape depends on where risk lives. The principle holds everywhere: prefer the fastest test that gives real confidence. See [[testing-pyramid]].
+**Why:** Most of its risk is in how it talks to its database and neighbors, so that's where tests pay off (Spotify called this the "testing honeycomb"). Prefer the fastest test that gives real confidence. See [[testing-pyramid]].
 
-## Which is a listed testing-pyramid trap?
+## A team's unit tests are all green, but checkout fails in staging because a JSON field was renamed. What went wrong?
 
-- [x] Mocking so much that unit tests pass while the real code fails.
-- [ ] Writing one end-to-end test for a critical user journey.
-- [ ] Running integration tests against a real test database.
-- [ ] Tracking how long the test suite takes.
+- [x] The unit tests mocked the boundary, and no integration test covered it.
+- [ ] The team ran too few end-to-end tests, so every journey needs one now.
+- [ ] Staging is configured differently, so its failures can be ignored.
+- [ ] The unit tests ran too fast to catch problems of this kind.
 
-**Why:** Over-mocked unit tests lie. Pair them with integration tests at each boundary. See [[testing-pyramid]].
+**Why:** Over-mocked unit tests pass while the real code fails. Pair them with integration tests at each boundary. See [[testing-pyramid]] and [[contract-testing]].

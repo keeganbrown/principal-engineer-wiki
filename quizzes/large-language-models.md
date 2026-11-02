@@ -1,28 +1,37 @@
-# Quiz: Large Language Models (LLMs)
+# Quiz: Large Language Models
 
-## A support assistant invents a refund policy the company doesn't have. What fixes this best?
+## A support assistant invents a refund policy the company doesn't have. What reduces this most?
 
-- [x] Retrieve relevant help articles, tell the model to answer only from them, and offer a human when nothing fits.
-- [ ] Ask the model to be more careful in the prompt.
-- [ ] Switch to a larger model, which never invents facts.
-- [ ] Lower the temperature to zero so answers are deterministic.
+- [x] Answer only from retrieved help articles, with a human fallback.
+- [ ] Ask the model in the prompt to be more careful about facts.
+- [ ] Switch to a larger model, since bigger models invent less.
+- [ ] Send the whole help center along with every single question asked.
 
-**Why:** Give the model the facts it needs (retrieval-augmented generation). Measured against an evaluation set, accuracy rose from 61% to 93%. See [[large-language-models]].
+**Why:** Give the model the facts it needs (retrieval-augmented generation). In the article's example, accuracy rose from 61% to 93%; the remaining 7% are wrong answers nobody can spot at run time, so keep the fallback and sample answers weekly. See [[large-language-models]].
 
 ## What is an evaluation set for?
 
-- [x] Scoring every prompt or model change against real questions with approved answers.
-- [ ] Training the model on your company's data.
-- [ ] Limiting how many tokens each request can use.
-- [ ] Filtering harmful content from user input.
+- [x] Scoring every prompt or model change against approved answers.
+- [ ] Training the model on your company's own internal documents.
+- [ ] Limiting how many tokens each request is allowed to use.
+- [ ] Filtering harmful content out of user input before it's sent.
 
-**Why:** Without evaluation, you can't tell whether a change helped. "No evaluation" is a listed trap. See [[large-language-models]].
+**Why:** Without evaluation, you can't tell whether a change helped. See [[large-language-models]].
 
 ## When should you not use an LLM?
 
-- [x] When a regular expression or database query solves the problem exactly.
-- [ ] When the text is longer than a few paragraphs.
+- [x] When a regular expression or query solves it exactly.
+- [ ] When the input text is longer than a few paragraphs.
 - [ ] When users write in more than one language.
-- [ ] When you need to summarize a long document.
+- [ ] When you need a quick summary of a long internal document.
 
-**Why:** Deterministic tools are cheaper, faster, and exactly repeatable. Where errors can't be checked, an LLM shouldn't decide alone. See [[large-language-models]].
+**Why:** Deterministic tools are cheaper, faster, and exactly repeatable. See [[large-language-models]].
+
+## A human reviews every refund the model approves, and has approved all 2,000 so far. What does that suggest?
+
+- [x] The review may not be a real control.
+- [ ] The model has reached perfect accuracy on refunds.
+- [ ] The human reviewer can now be safely removed.
+- [ ] Refunds are a good fit for full automation now.
+
+**Why:** Keep humans on consequential decisions, and check that reviewers sometimes disagree; one who approves everything is not a control. See [[large-language-models]].

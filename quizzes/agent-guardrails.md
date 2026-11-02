@@ -1,28 +1,28 @@
 # Quiz: Agent Guardrails
 
-## An agent ran a test that deleted files in the user's home directory. Which guardrail addresses the root cause?
+## An agent's test called the real delete function and wiped files in the user's home directory. Which change makes the test itself safe to run?
 
-- [x] Put destructive operations behind an interface so tests inject a spy instead of deleting real files.
-- [ ] Add a line to the instruction file telling the agent never to delete files.
-- [ ] Ask the agent to review its own tests before running them.
-- [ ] Stop running tests during agent sessions.
+- [x] Put deletion behind an interface, so tests inject a spy.
+- [ ] Add a line to the instruction file saying never to delete files.
+- [ ] Ask the agent to review its own tests carefully before running them.
+- [ ] Stop running the test suite whenever an agent session is active.
 
-**Why:** Instructions are not limits. Make tests safe to run by anyone, and run unattended agents in a sandbox. See [[agent-guardrails]].
+**Why:** Instructions are not limits. The team also sandboxed agents to the repository, so even a bad path can't reach the home directory: layers, not one fix. See [[agent-guardrails]].
 
-## What is the "lethal trifecta"?
+## An agent reads public issues and the private repository, and its network is allowlisted to the package registry. Is the lethal trifecta broken?
 
-- [x] Access to private data, exposure to untrusted content, and a way to send data out.
-- [ ] Slow tests, flaky tests, and missing types.
-- [ ] Read access, write access, and admin access.
-- [ ] Hooks, permissions, and tool connections.
+- [x] Narrowed, not closed; the registry can still carry data out.
+- [ ] Yes; an allowlist removes the outbound path, so nothing can leak.
+- [ ] Yes, because public issues don't count as untrusted content.
+- [ ] No, and it can't be narrowed without removing the agent entirely.
 
-**Why:** With all three, prompt injection can leak data. Remove any one and that leak path closes. See [[agent-guardrails]].
+**Why:** The trifecta is private data, untrusted content, and a way out. For most coding agents the repository is the private data, so keep what's at stake small. See [[agent-guardrails]].
 
 ## When can an agent safely run with few limits?
 
-- [x] In a disposable container with no credentials and nothing valuable in it.
+- [x] Only in a disposable container with no credentials or anything of value.
 - [ ] On a senior engineer's laptop, since they know what they're doing.
-- [ ] Whenever the task description says to be careful.
-- [ ] Whenever the repository is private.
+- [ ] When the network is allowlisted to the package registry only.
+- [ ] When the repository is private and only employees can read it.
 
-**Why:** Scale the guardrails to what the agent can reach. A throwaway sandbox *is* the guardrail. See [[agent-guardrails]].
+**Why:** Scale the guardrails to what the agent can reach. A throwaway sandbox is the guardrail. See [[agent-guardrails]].

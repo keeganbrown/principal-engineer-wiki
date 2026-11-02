@@ -1,20 +1,20 @@
 # Quiz: Technical Debt
 
-## In the debt metaphor, what is the "interest"?
+## A rarely touched module runs on a runtime that no longer gets security patches. Can it wait, since its interest is low?
 
-- [x] The extra effort every future change costs because the code is harder to work with.
-- [ ] The work needed to fix the shortcut properly once.
-- [ ] The money spent on the original feature.
-- [ ] The time spent writing the ticket that records the debt.
+- [x] No; it carries risk that comes due on someone else's schedule.
+- [ ] Yes; prioritize debt by interest, and this module costs almost nothing.
+- [ ] Yes, until the module needs a feature change; then fix it all at once.
+- [ ] No; every piece of debt should be paid off before any new feature work.
 
-**Why:** The principal is the fix; the interest is the ongoing drag. Prioritize debt by its interest rate. See [[technical-debt]].
+**Why:** Interest is the extra effort each change costs, and it's the usual way to prioritize. Watch for debt that carries risk instead: an unsupported runtime, unpatched dependencies, or one person who understands it. See [[technical-debt]] and [[hero-culture]].
 
-## A team hard-codes one currency to launch on time and records it in an ADR. What happens?
+## A team hard-codes one currency to launch on time and records it in an architecture decision record. What does the record buy them?
 
-- [x] Interest still accrues, but when expansion comes they know what to search for and budget the fix.
-- [ ] Recording it stops the interest, so the code stays as cheap to change as before.
-- [ ] The debt disappears once the launch succeeds.
-- [ ] They must rewrite the whole pricing system before the next release.
+- [x] They still pay interest, but the fix is easy to find and budget.
+- [ ] It stops the interest, so the code stays as cheap to change as before.
+- [ ] It lets them skip the fix, since the decision is now on record.
+- [ ] It moves the debt to the team that owns the ADR process.
 
 **Why:** Recording deliberate debt doesn't stop the interest, but it turns a mid-launch surprise into planned work. See [[technical-debt]].
 

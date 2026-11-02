@@ -1,28 +1,28 @@
 # Quiz: Big-Bang Rewrite
 
-## Nine months into a rewrite, the new quoting engine handles 80% of policies. What's in the other 20%?
+## Why do rewrites of old systems so often stall at the last 20%?
 
-- [x] Edge cases like multi-car discounts and broker terms that existed only as `if` statements in the old code.
-- [ ] Features nobody uses, which can be dropped.
-- [ ] Performance optimizations the new engine doesn't need.
-- [ ] Bugs the rewrite was meant to remove.
+- [x] Old code holds rules nobody wrote down, found one by one.
+- [ ] The remaining work is features nobody uses, which teams hesitate to drop.
+- [ ] The new framework is slower, so the team spends the time tuning performance.
+- [ ] Teams save the bugs the rewrite was meant to fix for the very end.
 
-**Why:** The old system's strange code is often knowledge nobody wrote down. Rewrites rediscover it slowly. See [[big-bang-rewrite]].
+**Why:** In the insurer's rewrite, the last 20% was multi-car discounts, loyalty rates, and broker terms that existed only as `if` statements. Strange old code is often knowledge. See [[big-bang-rewrite]].
 
-## Why could the insurer safely run every quote through both engines?
+## A team wants to run every request through both the old and new engines and compare. When is that safe?
 
-- [x] A quote is a calculation with no side effects, so computing it twice harms nothing.
-- [ ] The new engine was faster, so it added no load.
-- [ ] Customers agreed to receive two quotes.
-- [ ] The old engine was being frozen anyway.
+- [x] When the work is a pure calculation with no side effects.
+- [ ] When the new engine is faster, so the extra load is small enough to ignore.
+- [ ] When customers have agreed to receive a result from each of the two engines.
+- [ ] When the old engine is frozen, so its results can no longer change.
 
-**Why:** Compare outputs before switching — but only where running both has no side effects. Running two billing systems would charge customers twice. See [[big-bang-rewrite]].
+**Why:** Computing a quote twice harms nothing; running billing twice charges customers twice. It isn't free: filter rounding and timing noise first, and someone owns the router until the old engine is off. See [[big-bang-rewrite]] and [[strangler-fig]].
 
-## When can a rewrite be the right call?
+## When can a full rewrite be the right call?
 
-- [x] For a small system, or one on a platform being shut down with no incremental path.
-- [ ] Whenever the code is ugly and the team dislikes the language.
-- [ ] Whenever the new design adds many features the old one lacks.
-- [ ] Whenever the old system is more than ten years old.
+- [x] When the system is small, or its platform is shutting down with no incremental path.
+- [ ] When the code is ugly and the team would rather work in a newer language.
+- [ ] When the new design adds many features that the old one has always lacked.
+- [ ] When the old system is more than ten years old and nobody enjoys changing it.
 
 **Why:** Even then, rewrite in slices where you can and plan a reversible cutover. See [[big-bang-rewrite]] and [[strangler-fig]].

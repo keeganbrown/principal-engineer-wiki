@@ -2,27 +2,27 @@
 
 ## A signup handler validates the email, queries the database, inserts a row, and sends mail inline. What is the main fix?
 
-- [x] Move the rules into a function that takes the user store and mailer as inputs, and keep the HTTP handler as a thin translator.
-- [ ] Split the handler into four microservices, one for each step.
-- [ ] Add comments above each step so readers can tell the concerns apart.
-- [ ] Move the SQL into a stored procedure so the handler is shorter.
+- [x] Pull the rules into a function that takes the user store and mailer.
+- [ ] Split it into controller, service, and repository layers by file type.
+- [ ] Add comments above each step, so readers can tell the concerns apart.
+- [ ] Move the SQL into a stored procedure, so the handler has less code in it.
 
-**Why:** Keep decisions apart from effects. The rules become testable with in-memory fakes, and the edge only translates between HTTP and results. See [[separation-of-concerns]].
+**Why:** Keep decisions apart from effects, and keep the HTTP handler a thin translator. The rules become testable with in-memory fakes, but uniqueness still comes from the database's unique index; fakes can't prove it. See [[separation-of-concerns]].
 
 ## Where does separation of concerns suggest putting boundaries?
 
-- [x] Where the shape of the data changes, such as at the HTTP or database edge.
-- [ ] Every 50 lines, so no single file grows too long.
+- [x] Where the shape of the data changes, as at the HTTP edge.
+- [ ] Every 50 lines, so that no single file grows too long to read.
 - [ ] Between each technical layer, regardless of what changes together.
-- [ ] Wherever a different engineer wrote the code.
+- [ ] Around each class, so that every class can be tested on its own.
 
-**Why:** Translate once, at the edge, and group code by what changes together. Splitting only by technical layer is a common trap. See [[separation-of-concerns]].
+**Why:** Translate once, at the edge, and group code by what changes together. Splitting only by technical layer scatters one change across many files. See [[separation-of-concerns]].
 
-## When is strict separation not worth it?
+## For which code is strict separation least worth it?
 
-- [x] A 50-line throwaway script that does everything top to bottom.
-- [ ] A long-lived service that several teams change every week.
+- [x] A 50-line script you'll run once and delete.
+- [ ] A long-lived service several teams change every week.
 - [ ] A shared library used by every product in the company.
-- [ ] A billing module that is growing a new feature each month.
+- [ ] A billing module that grows a new feature each month.
 
 **Why:** Boundaries pay off when code is long-lived, shared, or growing. Short-lived scripts rarely need them. See [[separation-of-concerns]].

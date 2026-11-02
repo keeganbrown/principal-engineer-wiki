@@ -2,27 +2,27 @@
 
 ## A team needs typo-tolerant product search. How should they add a search engine?
 
-- [x] As a secondary store fed from the relational database, which stays the system of record.
+- [x] As a secondary store fed from the database of record.
 - [ ] As the new system of record, replacing the relational database.
 - [ ] As a second database that the app writes to separately.
-- [ ] By loading the full catalog into the search engine once a month.
+- [ ] As a monthly snapshot of the full catalog, loaded in bulk.
 
-**Why:** Keep one system of record. Using the search index as the source of truth is a listed trap. See [[nosql-databases]].
+**Why:** Keep one system of record. The index lags by a few seconds, so the product page re-checks availability from the database. See [[nosql-databases]].
 
 ## What is the right starting point when choosing a NoSQL store?
 
-- [x] Your access patterns: how the data is read and written.
-- [ ] Which store is most popular this year.
-- [ ] The vague expectation that you'll need to scale.
-- [ ] Whichever store the team wants to learn.
+- [x] The exact queries: how the data is read and written.
+- [ ] The scale you expect to reach in a few years' time.
+- [ ] Which store has grown most in popularity this year.
+- [ ] Whichever store the team is most eager to learn.
 
-**Why:** Pick a store for a known access pattern, not for vague "scale." Measure before choosing for scale. See [[nosql-databases]].
+**Why:** Many NoSQL stores need the key designed around your queries up front. Measure before choosing for scale, unless the need is known in advance, like multi-region writes from day one. See [[nosql-databases]].
 
 ## Which data fits a document store worst?
 
-- [x] Orders, products, and customers with many relationships and cross-record transactions.
+- [x] Orders that must always point at an existing customer and product.
 - [ ] User profiles read and written as one document by ID.
 - [ ] A product catalog where each category has different fields.
-- [ ] Session data looked up by session ID.
+- [ ] Session data looked up by session ID on every request.
 
-**Why:** Relational data in a document store is a listed trap. A relational database is the better default for related records. See [[nosql-databases]] and [[relational-databases]].
+**Why:** Related records that need integrity across them are what relational databases do well, with foreign keys and transactions. See [[nosql-databases]] and [[relational-databases]].

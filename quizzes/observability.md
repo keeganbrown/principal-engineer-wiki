@@ -2,27 +2,27 @@
 
 ## Checkout is slow. What is the fastest path to the cause?
 
-- [x] Dashboard shows when p99 jumped, traces show which service is slow, the span points to the query.
-- [ ] Search all logs for the word "error" across every service.
-- [ ] Add new log lines, deploy, and wait for the problem to happen again.
-- [ ] Restart each service one by one until latency drops.
+- [x] Use metrics to see when it slowed, then traces to find the slow call.
+- [ ] Alert on CPU for every host and check whichever one is running high.
+- [ ] Add new log lines, deploy them, and wait for the slowdown to return.
+- [ ] Restart each service one by one until checkout latency finally drops again.
 
-**Why:** Metrics show *when*, traces show *where*, and spans or logs show *why*. Good telemetry answers new questions without shipping new code. See [[observability]].
+**Why:** Metrics show when, traces show where, and spans or logs show why. Good telemetry answers new questions without shipping new code. See [[observability]].
 
-## What should alerts fire on?
+## Which condition should page someone?
 
-- [x] Symptoms users feel, such as error rate or latency against a service level objective.
-- [ ] Every cause that might lead to a problem, such as high CPU on any host.
-- [ ] Every log line written at the warning level or above.
-- [ ] Any change in traffic, up or down, greater than 5%.
+- [x] Checkout errors rising against its service level objective (SLO).
+- [ ] CPU on any host passing 80%, since it may lead to a slowdown.
+- [ ] A circuit breaker opening on a call that has a working fallback.
+- [ ] Any change in overall traffic, up or down, of more than five percent.
 
-**Why:** Cause-based alerts fire constantly and train people to ignore them. Alert on what users feel. See [[observability]].
+**Why:** Page on symptoms users feel, and send most cause signals to dashboards; non-actionable pages teach people to ignore alerts. The exception is a near-certain failure, like a disk about to fill. See [[observability]].
 
 ## Why are user IDs a bad label on a metric?
 
-- [x] High-cardinality labels create a time series per value, which explodes cost.
-- [ ] Metrics can't store string values at all.
-- [ ] User IDs change every time a user logs in.
-- [ ] Labels are only allowed on log lines, not metrics.
+- [x] Each unique value creates its own time series, so cost explodes.
+- [ ] Metrics can't store string values of any kind, only numbers.
+- [ ] User IDs change every time a user logs in again.
+- [ ] Labels are allowed only on log lines, never on metric data points.
 
-**Why:** Per-user detail belongs in logs and traces. High-cardinality metric labels are a listed trap. See [[observability]].
+**Why:** Millions of users means millions of series. Per-user detail belongs in logs and traces. See [[observability]].
