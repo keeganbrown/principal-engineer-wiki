@@ -136,7 +136,7 @@
 
   function glossaryBlurb() {
     const terms = data.glossary || [];
-    if (!terms.length) return "Plain-English definitions of the terms used across the wiki.";
+    if (!terms.length) return "No terms yet.";
     return `${terms.length} plain-English definitions, from ${escapeHtml(terms[0].term)} to ${escapeHtml(terms[terms.length - 1].term)}.`;
   }
 
@@ -154,7 +154,7 @@
     view.innerHTML = `<div class="page home">
       <section class="hero">
         <p class="eyebrow">${total} articles</p>
-        <h1>Think like a <span>principal engineer</span>.</h1>
+        <h1>${escapeHtml(data.title)}</h1>
         <p>${escapeHtml(data.description)}</p>
         ${progressCard()}
       </section>
@@ -176,7 +176,7 @@
       view.querySelectorAll(".category-tabs button").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
       catalog.querySelectorAll("section").forEach((s) => { s.hidden = Boolean(filter) && s.dataset.cat !== filter; });
     });
-    document.title = "Principal Engineer Wiki";
+    document.title = data.title;
   }
 
   // ---------- Quiz widget (shared by articles and the Quiz tab) ----------
@@ -318,7 +318,7 @@
     if (a.quiz.length) renderArticleQuiz(a, view.querySelector(".quiz-block"));
     view.querySelector("[data-surprise]").addEventListener("click", () => { location.hash = `#/a/${pickSurprise(slug)}`; });
     markSeen(slug);
-    document.title = `${core.shortTitle(a.title)} · Principal Engineer Wiki`;
+    document.title = `${core.shortTitle(a.title)} · ${data.title}`;
   }
 
   function renderArticleQuiz(a, block) {
@@ -361,7 +361,7 @@
     view.innerHTML = `<div class="page">
       <p class="eyebrow">Search</p>
       <form class="search-box" role="search"><label class="visually-hidden" for="search-input">Search articles</label>
-        <input id="search-input" type="search" placeholder="Try “retries” or “testing”" autocomplete="off" enterkeyhint="search"></form>
+        <input id="search-input" type="search" placeholder="Search articles" autocomplete="off" enterkeyhint="search"></form>
       <div class="search-empty"><p class="search-hint">Search titles, tags, and summaries. Or start from a tag:</p>
         <div class="tag-cloud">${popular.map(([t]) => `<button type="button" data-tag="${escapeHtml(t)}">#${escapeHtml(t)}</button>`).join("")}</div></div>
       <div class="results" aria-live="polite"></div>
@@ -406,7 +406,7 @@
     } else if (!query) {
       input.focus();
     }
-    document.title = "Search · Principal Engineer Wiki";
+    document.title = `Search · ${data.title}`;
   }
 
   // ---------- Glossary ----------
@@ -424,7 +424,7 @@
       <h1>Terms to know</h1>
       <p class="lede">${glossary.length} short definitions. Each links to the article that explains it properly.</p>
       <form class="search-box" role="search"><label class="visually-hidden" for="terms-input">Filter terms</label>
-        <input id="terms-input" type="search" placeholder="Filter, e.g. “SLO” or “consistency”" autocomplete="off" enterkeyhint="search"></form>
+        <input id="terms-input" type="search" placeholder="Filter terms" autocomplete="off" enterkeyhint="search"></form>
       <nav class="letter-strip" aria-label="Jump to letter">${letters.map((l) => `<a href="#term-letter-${l === "#" ? "num" : l}">${l}</a>`).join("")}</nav>
       <div class="glossary prose"></div>
     </div>`;
@@ -460,7 +460,7 @@
       const target = document.getElementById(link.getAttribute("href").slice(1));
       if (target) target.scrollIntoView({ behavior: "smooth" });
     });
-    document.title = "Terms · Principal Engineer Wiki";
+    document.title = `Terms · ${data.title}`;
   }
 
   // ---------- Quiz tab ----------
@@ -561,7 +561,7 @@
     }
 
     showStart();
-    document.title = "Quiz · Principal Engineer Wiki";
+    document.title = `Quiz · ${data.title}`;
   }
 
   // ---------- Graph ----------
@@ -948,7 +948,7 @@
       select(state.selected, false);
     }
     frame = requestAnimationFrame(tick);
-    document.title = "Map · Principal Engineer Wiki";
+    document.title = `Map · ${data.title}`;
 
     return function cleanup() {
       cancelAnimationFrame(frame);

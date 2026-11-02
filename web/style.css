@@ -1,4 +1,4 @@
-/* Principal Engineer Wiki — reader styles. Mobile first; wider screens add room. */
+/* Reader styles. Mobile first; wider screens add room. */
 
 :root {
   --bg: #f7f5f0;
@@ -110,7 +110,6 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; letter-spacing: -0.01em; min-width: 0; }
 .brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.brand-name b { color: var(--accent); }
 .brand-mark { position: relative; width: 26px; height: 26px; flex: none; }
 .brand-mark i { position: absolute; border-radius: 50%; }
 .brand-mark i:nth-child(1) { width: 11px; height: 11px; left: 0; top: 3px; background: var(--c-principles); }
@@ -184,7 +183,6 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -0.015em; }
 /* ---------- Home ---------- */
 .hero { padding: 8px 0 4px; }
 .hero h1 { font-size: clamp(30px, 8vw, 44px); margin: 0 0 10px; }
-.hero h1 span { color: var(--accent); }
 .hero p { margin: 0 0 18px; color: var(--muted); font-size: 18px; }
 
 .progress-card {

@@ -7,7 +7,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
-from build_site import CATEGORIES, build_site, site_data  # noqa: E402
+from build_site import build_site, site_data  # noqa: E402
 from lint_wiki import load_wiki, parse_article, parse_glossary  # noqa: E402
 from quizzes import load_quizzes  # noqa: E402
 
@@ -79,9 +79,17 @@ class SiteDataTest(unittest.TestCase):
     def test_starter_path_comes_from_new_here_paragraph(self):
         self.assertEqual(self.data["path"], ["kiss", "yagni"])
 
-    def test_categories_are_listed_in_reading_order(self):
-        slugs = [c["slug"] for c in self.data["categories"]]
-        self.assertEqual(slugs, ["principles", "practices", "architecture", "technology", "leadership", "coding-with-ai", "antipatterns"])
+    def test_categories_are_the_index_sections_in_reading_order(self):
+        articles = {
+            "kiss": article("kiss", "KISS", "x"),
+            "cqrs": article("cqrs", "CQRS", "x", category="architecture"),
+            "ddd": article("ddd", "DDD", "x", category="architecture"),
+        }
+        index = "# W — Index\n\nIntro.\n\n## Architecture patterns\n\n- [[nope]]\n- See also [[kiss]]\n- [[cqrs]]\n- [[ddd]]\n\n## Principles\n\n- [[kiss]]\n\n## Empty\n\nNo links.\n"
+        self.assertEqual(site_data(articles, index)["categories"], [
+            {"slug": "architecture", "label": "Architecture patterns"},
+            {"slug": "principles", "label": "Principles"},
+        ])
 
     def test_link_text_uses_article_titles(self):
         self.assertIn(">KISS</a>", self.data["articles"]["yagni"]["html"])
@@ -93,6 +101,9 @@ class SiteCopyTest(unittest.TestCase):
     def test_description_is_the_first_paragraph_of_the_index_as_plain_text(self):
         data = site_data(sample_articles(), INDEX)
         self.assertEqual(data["description"], "A field guide to principles and simple things.")
+
+    def test_title_is_the_index_heading_without_its_index_suffix(self):
+        self.assertEqual(site_data(sample_articles(), INDEX)["title"], "Wiki")
 
 
 class GlossaryDataTest(unittest.TestCase):
@@ -167,18 +178,26 @@ class RealSiteConsistencyTest(unittest.TestCase):
         with open(os.path.join(self.REPO, *parts), encoding="utf-8") as f:
             return f.read()
 
-    def test_every_wiki_folder_is_a_site_category_and_vice_versa(self):
+    def real_data(self):
+        return site_data(load_wiki(os.path.join(self.REPO, "wiki")), self.read("index.md"))
+
+    def test_every_wiki_folder_is_an_index_section_and_vice_versa(self):
         folders = {d for d in os.listdir(os.path.join(self.REPO, "wiki")) if os.path.isdir(os.path.join(self.REPO, "wiki", d))}
-        self.assertEqual({slug for slug, _ in CATEGORIES}, folders)
+        slugs = [c["slug"] for c in self.real_data()["categories"]]
+        self.assertEqual(len(slugs), len(set(slugs)), "two index sections map to the same folder")
+        self.assertEqual(set(slugs), folders)
 
     def test_index_description_names_every_category(self):
-        description = site_data({}, self.read("index.md"))["description"].lower()
-        for _, label in CATEGORIES:
-            self.assertIn(label.lower(), description, f"index.md's first paragraph doesn't mention '{label}'")
+        data = self.real_data()
+        description = data["description"].lower()
+        for c in data["categories"]:
+            first_word = c["label"].split()[0].lower()
+            self.assertIn(first_word, description, f"index.md's first paragraph doesn't mention '{c['label']}'")
 
     def test_front_end_does_not_hard_code_wiki_content(self):
         articles = load_wiki(os.path.join(self.REPO, "wiki"))
-        names = [label for _, label in CATEGORIES]
+        data = self.real_data()
+        names = [c["label"] for c in data["categories"]] + [data["title"]]
         names += [str(a.frontmatter["title"]) for a in articles.values()]
         names += [e.term for e in parse_glossary(self.read("glossary.md"))]
         shell = {f: self.read("web", f) for f in ("app.js", "index.html", "manifest.webmanifest", "sw.js")}
@@ -244,9 +263,9 @@ class BuildSiteTest(unittest.TestCase):
             out = os.path.join(tmp, "out")
             os.makedirs(web)
             with open(os.path.join(web, "index.html"), "w") as f:
-                f.write('<meta name="description" content="__SITE_DESCRIPTION__">')
+                f.write('<title>__SITE_TITLE__</title><meta name="description" content="__SITE_DESCRIPTION__">')
             with open(os.path.join(web, "manifest.webmanifest"), "w") as f:
-                f.write('{"description": __SITE_DESCRIPTION_JSON__}')
+                f.write('{"name": __SITE_TITLE_JSON__, "description": __SITE_DESCRIPTION_JSON__}')
             build_site(sample_articles(), INDEX.replace("principles", 'the "best" & <worst>'), web, out)
             with open(os.path.join(out, "index.html")) as f:
                 page = f.read()
@@ -255,6 +274,8 @@ class BuildSiteTest(unittest.TestCase):
         expected = 'A field guide to the "best" & <worst> and simple things.'
         self.assertIn('content="A field guide to the &quot;best&quot; &amp; &lt;worst&gt; and simple things."', page)
         self.assertEqual(manifest["description"], expected)
+        self.assertIn("<title>Wiki</title>", page)
+        self.assertEqual(manifest["name"], "Wiki")
 
     def test_build_without_service_worker_template_still_works(self):
         with tempfile.TemporaryDirectory() as tmp:

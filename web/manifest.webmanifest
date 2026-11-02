@@ -1,5 +1,5 @@
 {
-  "name": "Principal Engineer Wiki",
+  "name": __SITE_TITLE_JSON__,
   "short_name": "PE Wiki",
   "description": __SITE_DESCRIPTION_JSON__,
   "start_url": "./",

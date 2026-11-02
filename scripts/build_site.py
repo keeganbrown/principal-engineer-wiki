@@ -15,27 +15,22 @@ import os
 import re
 import shutil
 import sys
+from collections import Counter
 from typing import Dict, List, Optional
 
 from lint_wiki import WIKILINK, Article, load_wiki, parse_glossary
 from markdown_html import render_inline, render_markdown, slugify
 from quizzes import load_quizzes, parse_quiz
 
-CATEGORIES = (
-    ("principles", "Principles"),
-    ("practices", "Practices"),
-    ("architecture", "Architecture"),
-    ("technology", "Technology"),
-    ("leadership", "Leadership"),
-    ("coding-with-ai", "Coding with AI"),
-    ("antipatterns", "Pitfalls"),
-)
 WORDS_PER_MINUTE = 230
 H1 = re.compile(r"^# .*\n", re.MULTILINE)
 STARTER_PATH = re.compile(r"\*\*New here\?\*\*(.*?)(?:\n\n|$)", re.DOTALL)
+INDEX_TITLE = re.compile(r"^# (.+?)(?:\s+—\s+Index)?\s*$", re.MULTILINE)
+ENTRY = re.compile(r"^- \[\[.*$", re.MULTILINE)
+SECTION = re.compile(r"^## (.+?)\s*$", re.MULTILINE)
 FIRST_PARAGRAPH = re.compile(r"^# .*?\n\s*\n(.+?)(?:\n\s*\n|$)", re.DOTALL)
 TAGS = re.compile(r"<[^>]+>")
-# Shell files that carry the site description; the build fills them in.
+# Shell files that carry the site title and description; the build fills them in.
 DESCRIBED_FILES = ("index.html", "manifest.webmanifest")
 DATA_FILE = "wiki-data.js"
 SERVICE_WORKER = "sw.js"
@@ -63,6 +58,26 @@ def describe(index_text: str, is_known, titles: Dict[str, str]) -> str:
         return ""
     rendered = render_inline(" ".join(match.group(1).split()), is_known, titles)
     return html.unescape(TAGS.sub("", rendered))
+
+
+def site_title(index_text: str) -> str:
+    """The index's H1, minus its "— Index" suffix: the site's name."""
+    match = INDEX_TITLE.search(index_text)
+    return match.group(1) if match else ""
+
+
+def categories(index_text: str, articles: Dict[str, Article]) -> List[dict]:
+    """Each index section is a category: its heading is the label, and the
+    folder its entries (list items that open with a link) live in is the
+    slug. Intro text and "See also" lines cross-link other folders."""
+    parts = SECTION.split(index_text)
+    found: List[dict] = []
+    for heading, body in zip(parts[1::2], parts[2::2]):
+        entries = "\n".join(ENTRY.findall(body))
+        folders = Counter(articles[s].folder for s in _ordered_links(entries, "") if s in articles)
+        if folders:
+            found.append({"slug": folders.most_common(1)[0][0], "label": heading})
+    return found
 
 
 def site_data(
@@ -115,10 +130,11 @@ def site_data(
     return {
         "articles": out,
         "edges": [list(edge) for edge in edges],
+        "title": site_title(index_text),
         "description": describe(index_text, is_known, titles),
         "home": render_markdown(_strip_h1(index_text), is_known, titles),
         "path": [s for s in path if s in articles],
-        "categories": [{"slug": s, "label": label} for s, label in CATEGORIES],
+        "categories": categories(index_text, articles),
         "glossary": [
             {
                 "term": e.term,
@@ -143,7 +159,7 @@ def build_site(
         shutil.rmtree(out_dir)
     shutil.copytree(web_dir, out_dir)
     site = site_data(articles, index_text, glossary_text, quizzes)
-    fill_description(out_dir, site["description"])
+    fill_site_copy(out_dir, site["title"], site["description"])
     data = json.dumps(site, ensure_ascii=False, separators=(",", ":"))
     with open(os.path.join(out_dir, DATA_FILE), "w", encoding="utf-8") as f:
         f.write(f"window.WIKI = {data};\n")
@@ -152,8 +168,10 @@ def build_site(
     write_service_worker(out_dir)
 
 
-def fill_description(out_dir: str, description: str) -> None:
+def fill_site_copy(out_dir: str, title: str, description: str) -> None:
     replacements = {
+        "__SITE_TITLE_JSON__": json.dumps(title, ensure_ascii=False),
+        "__SITE_TITLE__": html.escape(title, quote=True),
         "__SITE_DESCRIPTION_JSON__": json.dumps(description, ensure_ascii=False),
         "__SITE_DESCRIPTION__": html.escape(description, quote=True),
     }
