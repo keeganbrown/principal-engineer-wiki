@@ -26,3 +26,12 @@
 - [ ] It uses the team's internal shorthand, so it stays brief.
 
 **Why:** "Expected Cents, got float in `refund()`" lets an agent fix the bug; "AssertionError" makes it guess. Clear messages help humans too. See [[feedback-loops-for-agents]].
+
+## A team wants an agent to rerun nightly until a migration task is done, with nobody watching. What must the loop have first?
+
+- [x] A stop condition a machine can check, a token budget, and a human handoff.
+- [ ] A prompt telling the agent to stop running once it believes it's finished.
+- [ ] Production credentials, so it can verify each step against live data.
+- [ ] A longer test timeout, so slow checks never halt the loop partway.
+
+**Why:** Unattended loops need a finish line a machine can check, a budget, saved progress, and a point where a human takes over, and they belong in a sandbox. A loose stop condition burns budget repeating the same failure. See [[feedback-loops-for-agents]] and [[agent-guardrails]].

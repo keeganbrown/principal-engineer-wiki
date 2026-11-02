@@ -20,7 +20,7 @@ Two rules follow:
 
 ## Why it matters
 
-- **Agents increase the volume of code to review.** Adopters merge noticeably more PRs ([[adopting-coding-agents]] has the evidence), and if review doesn't keep up, it turns into rubber-stamping.
+- **Review becomes the bottleneck.** In a 2026 Harvard study of 655 firms, code waited about 60% longer for a reviewer after agent adoption and drew about 39% more comments per change. At one company told to double its output (a 2026 Carnegie Mellon and Stanford study), each reviewer's load doubled, and while automated review grew from 19% to 84% of PRs, careful human review fell from 39% to 21%. Neither study, both observational, found more bugs or reverts; the cost showed up as review time, and unchecked it turns into rubber-stamping ([[adopting-coding-agents]] has the wider evidence).
 - **Plausible errors slip past skimming.** Invented functions, wrong edge-case handling, and tests that check the wrong thing all read fluently.
 - **Ownership keeps knowledge in the team.** If nobody understands the code that was merged, nobody can debug it at 3 a.m.
 
@@ -37,6 +37,7 @@ Two rules follow:
   - *Duplication* — a new helper written beside an existing one the agent didn't find ([[navigable-codebases]]).
   - *Weakened checks* — deleted assertions, skipped tests, broader exception handling, loosened types.
 - **Use AI reviewers as a first pass, not an approval.** An AI review bot can catch real issues cheaply. It doesn't replace a human who understands the system and is accountable for the merge.
+- **Plan review capacity with authoring.** When agent use grows, budget reviewer hours, not just licenses, and watch how long PRs wait for a first review. Those hours come out of feature work. If bots take on more review, write down which changes a bot may approve, and check what humans have stopped reading.
 - **Keep checks the agent can't edit.** Branch protection and required reviewers for sensitive paths (repository settings that block merging until checks pass and named people approve), and CI (continuous integration) gates should not be changeable by the same change they guard.
 
 ## Example

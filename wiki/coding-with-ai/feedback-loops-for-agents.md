@@ -32,6 +32,7 @@ The limit: checks only catch what they check. An agent can make every test pass 
 - **Turn conventions into checks.** Types, linters, formatters, and architecture tests ("nothing in `core/` imports the database") enforce rules every time. Prose rules in an instruction file are only followed most of the time ([[agent-instruction-files]]).
 - **Write error messages for a reader with no context.** "Expected Cents, got float in `refund()`" lets an agent fix the bug. "AssertionError" makes it guess.
 - **Keep modules small, with clear boundaries.** An agent does better in a 300-line module with a clear interface than in a 5,000-line file ([[navigable-codebases]]).
+- **Give unattended loops a finish line.** An agent that reruns on a schedule or on repository events until a task is done needs a stop condition a machine can check, a token budget, saved progress, and a point where it hands off to a human; run it in a sandbox ([[agent-guardrails]]). A 2026 workshop paper (Lulla, Baltes, and others) found such loops in 217 open-source repositories, almost none of which committed the saved state, and no systematic evidence yet that loops pay off. Each part adds setup, and a loose stop condition burns budget repeating the same failure.
 - **Protect the tests themselves.** An agent stuck on a failing test may weaken or delete it to make it pass. Review test changes closely, and treat a deleted assertion as a red flag.
 
 ## Example

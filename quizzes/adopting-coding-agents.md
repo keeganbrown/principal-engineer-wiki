@@ -26,3 +26,12 @@
 - [ ] Yes, but only for the engineers who complain most about the pipeline.
 
 **Why:** Agents amplify a team's existing strengths and weaknesses, so a broken pipeline gets broken faster. That doesn't mean a perfect codebase first; fix the loop where agents will work most. See [[adopting-coding-agents]] and [[feedback-loops-for-agents]].
+
+## A firm's agent rollout raised pull requests opened by a third, but resolved issues barely moved. Where should it look first?
+
+- [x] Code review, where changes now wait longer and get sent back more.
+- [ ] Prompting skill, since engineers must not yet be using agents well.
+- [ ] Licenses, since more seats would push the new code through faster.
+- [ ] Ticket sizing, since extra pull requests mean scope is set too small.
+
+**Why:** More code isn't more delivered work. In a 2026 Harvard study of 655 firms, agents raised pull requests opened by about 36% but resolved issues by only about 14%, and code waited longer for review and drew more change requests. See [[adopting-coding-agents]] and [[reviewing-ai-generated-code]].
