@@ -34,4 +34,4 @@
 - [ ] Its image is too large to start within the default timeout.
 - [ ] Its secrets are injected at run time instead of build time.
 
-**Why:** Readiness says "send me traffic"; liveness says "restart me if I'm stuck." Mixing them up causes restart loops. See [[containers-and-kubernetes]].
+**Why:** Readiness says "send me traffic"; liveness says "restart me if I'm stuck." A liveness check that tests readiness restarts a warming-up container before it's ever ready; a startup probe also helps slow starters. See [[containers-and-kubernetes]].

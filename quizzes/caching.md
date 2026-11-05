@@ -7,14 +7,14 @@
 - [ ] Product images.
 - [ ] Customer reviews.
 
-**Why:** Decide how stale is acceptable per piece of data. A stale price or stock count is a legal and trust problem, so those come from the source. See [[caching]].
+**Why:** Decide how stale is acceptable per piece of data. A stale price is a legal and trust problem, and stock at checkout must be current, so both come from the source. See [[caching]].
 
 ## One very popular cache entry expires, and hundreds of requests hit the database at once. What prevents this?
 
 - [x] Letting one request refresh it while the others wait or get the stale value.
 - [ ] Adding random jitter to the entry's TTL, so it expires at a less busy moment.
 - [ ] Shortening the TTL, so the entry is refreshed more often and stays warm.
-- [ ] Removing the TTL entirely, so popular entries never expire at all.
+- [ ] Adding more cache nodes, so the entry is stored in more places.
 
 **Why:** Jitter stops many entries written together from expiring together, but it doesn't help a single hot key. See [[caching]].
 
@@ -27,7 +27,7 @@
 
 **Why:** If the database can't survive a cold cache, the cache is quietly carrying capacity. Warm caches before sending traffic, restart nodes gradually, or apply backpressure. See [[caching]] and [[backpressure]].
 
-## A bulk import updates 10,000 products directly in the database. What goes wrong?
+## Product pages are cached, and the app's edit code deletes the cache entry on save. A bulk import updates 10,000 products directly in the database. What goes wrong?
 
 - [x] It skips the code that deletes cache entries, so stale data stays until the TTL.
 - [ ] The cache refreshes itself instantly, because Redis watches the database.

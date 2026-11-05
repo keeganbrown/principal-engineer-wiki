@@ -16,17 +16,17 @@ A **relational database** stores data as tables of rows and columns, links table
 Two features make it the default choice for most business data:
 
 - **Constraints** — the database itself enforces rules: this column is never empty, this email is unique, every order points at a real customer. Bad data is rejected at the door, whatever code sent it.
-- **Transactions** — a group of changes either all happen or none do, and concurrent users don't see each other's half-finished work. This bundle of guarantees is called **ACID**: atomicity (all or nothing), consistency (constraints hold), isolation (concurrent transactions don't see each other's half-finished work; how fully they're shielded depends on the *isolation level*, and most defaults allow some anomalies), and durability (committed data survives a crash).
+- **Transactions** — a group of changes either all happen or none do. This bundle of guarantees is called **ACID**: atomicity (all or nothing), consistency (constraints hold), isolation (concurrent transactions don't see each other's half-finished work), and durability (committed data survives a crash). How fully isolation holds depends on the *isolation level*, and most defaults allow some anomalies: for example, two transactions can both read a value before either writes it.
 
 The relational model comes from Edgar F. Codd's 1970 paper at IBM; SQL followed in the 1970s, and the core ideas have outlasted every trend since.
 
 ## Why it matters
 
-- **Correctness is cheaper inside the database.** A unique constraint prevents duplicate accounts under any race. The same rule in application code fails the first time two requests arrive together.
+- **Correctness is cheaper inside the database.** A unique constraint prevents duplicate accounts under any race. The same rule in application code can fail whenever two requests arrive together.
 - **Questions change; tables adapt.** SQL can answer questions nobody planned for — "which customers ordered twice but never reviewed?" — without restructuring the data.
 - **It scales further than people think.** One large server with read replicas comfortably serves most companies' core data. Many teams move to exotic storage years before they need to.
 
-The limits are real: one main server (the *primary*) takes all writes, very large tables need care with indexes and migrations, and spreading one database across regions is hard.
+The limits are real: in the usual setup, one main server (the *primary*) takes all writes, very large tables need care with indexes and migrations, and spreading one database across regions is hard.
 
 ## How to apply it
 
@@ -42,7 +42,9 @@ The limits are real: one main server (the *primary*) takes all writes, very larg
 
 A startup stores carts, orders, and inventory in a document database "for flexibility." Six months in, they find orders pointing to deleted products and stock counts that go negative when two people buy the last item at once. Each bug gets an application-level fix, and each fix has a race.
 
-They move the core data to PostgreSQL: a foreign key from order lines to products, a `CHECK (stock >= 0)` constraint, and checkout in one transaction that decrements stock and inserts the order. The negative-stock bug becomes impossible: the second buyer's transaction fails the constraint and gets a clear "sold out." During flash sales, that single stock row becomes a lock hotspot that makes checkouts queue one at a time; the team accepts it at their volume and notes reserved or bucketed stock as the next step if it bites.
+They move the core data to PostgreSQL: a foreign key from order lines to products, a `CHECK (stock >= 0)` constraint, and checkout in one transaction that runs `UPDATE products SET stock = stock - 1 WHERE id = ?` and inserts the order. Because the decrement happens in SQL, relative to the current value, the negative-stock bug becomes impossible: the second buyer's transaction fails the constraint and gets a clear "sold out." Had the app read stock and written back a computed value, both buyers could write 0 and the constraint would never fire.
+
+During flash sales, that single stock row becomes a lock hotspot: every checkout waits for the row lock, so they queue one at a time. The team accepts it at their volume and notes the next step if it bites: split stock into several rows (buckets) that checkouts draw from, or reserve units ahead of payment.
 
 The cost: a two-month migration, and the team had to learn schema migrations. Their product catalog, which really is loosely structured, stays in a JSON column — relational databases handle semi-structured data well too.
 

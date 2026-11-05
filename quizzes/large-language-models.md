@@ -7,7 +7,7 @@
 - [ ] Switch to a larger model, since bigger models invent less.
 - [ ] Send the whole help center along with every single question asked.
 
-**Why:** Give the model the facts it needs (retrieval-augmented generation). In the article's example, accuracy rose from 61% to 93%; the remaining 7% are wrong answers nobody can spot at run time, so keep the fallback and sample answers weekly. See [[large-language-models]].
+**Why:** Give the model the facts it needs (retrieval-augmented generation); a bigger model or a sterner prompt doesn't supply facts it lacks. Some wrong answers remain that the system can't detect at run time, so keep a fallback and review a sample each week. See [[large-language-models]].
 
 ## What is an evaluation set for?
 

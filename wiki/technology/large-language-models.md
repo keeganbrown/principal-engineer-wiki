@@ -1,13 +1,13 @@
 ---
 title: Large Language Models (LLMs)
 category: technology
-summary: Large language models predict likely text from patterns in vast training data — which makes them remarkably capable and also confidently wrong at times — so design systems around their strengths, limits, and costs rather than treating them as oracles.
+summary: Large language models predict likely text from patterns in their training data, which makes them capable but sometimes confidently wrong; design around their strengths, limits, and costs instead of treating them as oracles.
 tags: [ai, llm, machine-learning, rag, product-design]
 ---
 
 # Large Language Models (LLMs)
 
-> **In one sentence:** Large language models predict likely text from patterns in vast training data — which makes them remarkably capable and also confidently wrong at times — so design systems around their strengths, limits, and costs rather than treating them as oracles.
+> **In one sentence:** Large language models predict likely text from patterns in their training data, which makes them capable but sometimes confidently wrong; design around their strengths, limits, and costs instead of treating them as oracles.
 
 ## The idea
 
@@ -21,7 +21,7 @@ A few properties matter for anyone building with them:
 - **Cost and latency per token** — every token in and out costs money and time.
 - **Tool use** — applications can let the model call functions, such as search, running code, or sending email. An LLM that calls tools in a loop toward a goal is an *agent*.
 
-Modern LLMs build on the transformer architecture from the 2017 Google paper "Attention Is All You Need."
+Modern LLMs build on the transformer, a network design that weighs every token against every other, from the 2017 Google paper "Attention Is All You Need."
 
 ## Why it matters
 
@@ -34,7 +34,7 @@ Modern LLMs build on the transformer architecture from the 2017 Google paper "At
 - **Give the model the facts it needs.** **Retrieval-augmented generation (RAG)** looks up relevant documents and includes them in the request, so answers draw on your data rather than the model's memory. Ask it to cite the sources it was given.
 - **Use embeddings for meaning-based search.** An **embedding** turns text into a list of numbers so that similar meanings are close together; it powers semantic search (finding text by meaning, not exact words) and RAG retrieval.
 - **Constrain the output.** Use the API's structured-output mode where available, which forces output to match a JSON schema, and still validate the values in code; retry or fall back on invalid results.
-- **Build an evaluation set.** Collect real examples with known-good answers and score every prompt or model change against them — the equivalent of a test suite ([[test-driven-development]]). Pin model versions where the provider allows it, and rerun the set before any model upgrade: a provider's update is a change you didn't write.
+- **Build an evaluation set.** Collect real examples with known-good answers and score every prompt or model change against them — the equivalent of a test suite ([[test-driven-development]]). Keep some examples back that you never tune against, or the score measures how well you fit the set. Pin model versions where the provider allows it, and rerun the set before any model upgrade: a provider's update is a change you didn't write.
 - **Keep humans on consequential decisions.** Drafts, suggestions, and triage are good fits; final calls on money, health, or access need review. Check that reviewers sometimes disagree; one who approves everything is not a control.
 - **Treat model input as untrusted.** Anything the model reads might contain instructions. Limit what tools and data it can reach ([[agent-guardrails]]).
 - **Budget and monitor tokens.** Cap request sizes, cache repeated work, and use smaller, cheaper models for simpler tasks.
@@ -50,6 +50,7 @@ Accuracy on the set rises from 61% to 93%, and invented policies largely disappe
 ## Common traps
 
 - **Treating output as fact.** Fluency isn't accuracy; check claims that matter.
+- **Fixing hallucination with a bigger model or a sterner prompt.** Neither gives the model facts it doesn't have; retrieval does.
 - **No evaluation.** Without a scored set of examples, every prompt change is a guess, and regressions go unnoticed.
 - **Stuffing the context.** More text isn't always better; irrelevant context can make answers worse and costs more.
 - **Ignoring injection.** A web page or email the model reads can say "ignore previous instructions" — and sometimes it works.
@@ -65,4 +66,4 @@ If a deterministic rule, a regular expression, or a database query solves the pr
 - [[adopting-coding-agents]] — how a team rolls out LLM-based coding tools and measures the result.
 - [[observability]] — log prompts, outputs, latency, and cost to understand behavior in production.
 - [[nosql-databases]] — search stores can hold embeddings for semantic search.
-- [[reversible-decisions]] — model vendors change fast; keep the choice reversible behind an interface.
+- [[reversible-decisions]] — model vendors change fast, which is a real reason to keep a thin seam at the model call; prompts and evaluation results still won't transfer for free.

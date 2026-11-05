@@ -28,33 +28,32 @@ The cost is large: Kubernetes has many concepts, many failure modes, and needs p
 
 ## How to apply it
 
-- **Containerize first; orchestrate when you need it.** Containers pay off almost everywhere. Kubernetes pays off when you have many services, teams, or machines to coordinate.
+- **Containerize first; orchestrate when you need it.** Containers pay off in most places, but someone must own rebuilding images when their base images get security fixes; an unpatched image is a vulnerability you shipped on purpose. Kubernetes pays off when you have many services, teams, or machines to coordinate.
 - **Prefer managed options.** A managed Kubernetes service, or a simpler container platform (Cloud Run, AWS Fargate, Fly.io), removes much of the operating burden.
 - **Keep images small and pinned.** Small base images start faster and carry fewer vulnerabilities. Pin versions so builds are reproducible.
-- **Set resource requests and memory limits.** A *request* is what the scheduler reserves; a *limit* is the most a container may use. Without them, one memory-hungry container can starve its neighbors. Be deliberate about CPU limits, which throttle bursts and can hurt latency-sensitive services.
-- **Define readiness and liveness checks.** **Readiness** says "send me traffic"; **liveness** says "restart me if I'm stuck." Mixing them up causes restart loops.
-- **Treat containers as disposable.** Anything that must survive a restart goes in a database, object storage, or a persistent volume — never in the container's own filesystem.
+- **Set resource requests and memory limits.** A *request* is what the scheduler reserves; a *limit* is the most a container may use. Without them, one memory-hungry container can starve its neighbors or cause surprise evictions. A sensible default is to set CPU requests and add CPU limits only where you must cap a noisy workload, because limits throttle bursts and can hurt latency-sensitive services.
+- **Define readiness and liveness checks.** **Readiness** says "send me traffic"; **liveness** says "restart me if I'm stuck." If the liveness check tests readiness, a container that's still warming up fails it and is restarted before it's ever ready, again and again. Slow starters can also use a **startup probe**, which holds off the other checks until the app has started.
+- **Treat containers as disposable.** Anything that must survive a restart goes in a database, object storage, or a persistent volume (storage the platform attaches to a container and keeps across restarts) — never in the container's own filesystem.
 - **Keep configuration in version control.** Manifests (files describing the desired state) and Helm charts (templated bundles of manifests) are code; review them ([[infrastructure-as-code]]).
 
 ## Example
 
-A company of 40 engineers runs 6 services on virtual machines with hand-run deploy scripts. Deploys are scary and take an afternoon. Someone proposes Kubernetes.
+A company of 40 engineers runs six services on virtual machines with hand-run deploy scripts. Deploys are scary and take an afternoon. Someone proposes Kubernetes.
 
 The principal engineer asks what problem it solves. The real pain is deploys and environment drift, not scheduling across hundreds of machines. They containerize all six services and move them to a managed container platform that runs images, scales on traffic, and does rolling deploys — without the team operating a cluster.
 
-Deploys drop to ten minutes and become a non-event. Two years later, with 30 services, several teams, and needs for custom networking and batch jobs, they move to managed Kubernetes and fund a small platform team. The images move unchanged, though health checks, configuration, and secrets wiring take a few weeks of rework; the earlier step made the later one cheap, and they avoided running Kubernetes for two years when they didn't need it.
+Deploys drop to ten minutes and become a non-event. Two years later, with 30 services, several teams, and needs for custom networking and batch jobs, they move to managed Kubernetes and fund a small platform team. The images move unchanged, though health checks, configuration, and secrets wiring take a few weeks of rework. The earlier step still made the later one cheaper, and they avoided running Kubernetes for two years when they didn't need it.
 
 ## Common traps
 
 - **Kubernetes as a resume item.** Adopting it for three services adds a full-time operating burden for little gain.
 - **Treating containers like pets.** Containers should be identical and replaceable, not unique and hand-tended. Logging in to patch a running container means the next restart loses the fix. Rebuild the image.
 - **Secrets in images.** Anything baked into an image is readable by anyone who can pull it. Inject secrets at run time.
-- **No resource limits.** Noisy neighbors and surprise evictions follow.
 - **Copy-pasted configuration.** Fifty services with fifty slightly different manifests is drift at scale. Use shared templates.
 
 ## When it doesn't apply
 
-A single app with modest traffic often runs best on a platform-as-a-service or a couple of virtual machines. Some workloads — heavy stateful databases, specialized hardware, very latency-sensitive systems — need extra care or are better outside containers. And serverless functions may fit spiky, event-driven work better than a cluster.
+A single app with modest traffic often runs best on a platform-as-a-service (a hosted service that runs your code without you managing servers) or a couple of virtual machines. Some workloads — heavy stateful databases, specialized hardware, very latency-sensitive systems — need extra care or are better outside containers. And serverless functions (small pieces of code the provider runs on demand, billed per call) may fit spiky, event-driven work better than a cluster.
 
 ## Related
 

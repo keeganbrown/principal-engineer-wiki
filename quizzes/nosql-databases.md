@@ -12,7 +12,7 @@
 ## What is the right starting point when choosing a NoSQL store?
 
 - [x] The exact queries: how the data is read and written.
-- [ ] The scale you expect to reach in a few years' time.
+- [ ] The scale the team hopes the product reaches someday.
 - [ ] Which store has grown most in popularity this year.
 - [ ] Whichever store the team is most eager to learn.
 

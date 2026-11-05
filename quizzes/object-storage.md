@@ -7,7 +7,7 @@
 - [ ] Move the photos to a second database used only for storing files.
 - [ ] Store the photos on the web servers' own local disks instead.
 
-**Why:** Databases are poor file stores. In the example, the database shrank from 2 TB to 40 GB. See [[object-storage]].
+**Why:** Databases are poor file stores. Moving photos to a bucket can shrink a 2 TB database to 40 GB. See [[object-storage]].
 
 ## A mobile app uploads a photo by pre-signed URL, then crashes before telling the API. What cleans up the orphaned object?
 
@@ -16,7 +16,7 @@
 - [ ] The app re-uploads the photo the next time the user opens it.
 - [ ] A database trigger that deletes the object when no row appears.
 
-**Why:** Gaps between two systems need a recovery job with an age threshold and idempotent deletes. A client that records a key days later could point at a deleted object, so the record API checks the object exists. See [[object-storage]].
+**Why:** Gaps between two systems need a recovery job with an age threshold and idempotent deletes. A client that records a key days later could point at a deleted object, so the record API refuses keys older than the job's threshold, with a safety margin. See [[object-storage]].
 
 ## Which workload does object storage not fit?
 

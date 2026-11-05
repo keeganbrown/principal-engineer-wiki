@@ -9,7 +9,7 @@
 
 **Why:** Queues distribute tasks among workers; logs keep an ordered history many consumers can read and replay. Choose by the job. See [[message-brokers]].
 
-## What should consumers assume about delivery?
+## What should consumers of a message broker assume about delivery?
 
 - [x] The same message may arrive more than once.
 - [ ] Each message arrives exactly once, if the broker is configured right.
@@ -25,7 +25,7 @@
 - [ ] Discarded, with a log line written after the last attempt.
 - [ ] To a different consumer that is set up to ignore errors.
 
-**Why:** A dead-letter queue stops one bad message from blocking the rest. What happens by default depends on the broker; set it up on purpose, and give it an owner, or it becomes a silent graveyard. See [[message-brokers]].
+**Why:** A dead-letter queue stops one bad message from blocking the rest. Set it up on purpose rather than relying on the broker's default, and give it an owner, or it becomes a silent graveyard. See [[message-brokers]].
 
 ## A small app needs background jobs to send emails. What's the simplest fit?
 
