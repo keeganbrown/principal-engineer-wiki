@@ -1,4 +1,4 @@
-# Quiz: Reversible Decisions
+# Quiz: Reversible Decisions (One-Way and Two-Way Doors)
 
 ## For a new notifications service, which decision deserves the most time?
 

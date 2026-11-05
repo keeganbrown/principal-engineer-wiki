@@ -1,4 +1,4 @@
-# Quiz: Load Balancers and CDNs
+# Quiz: Load Balancers and Content Delivery Networks (CDNs)
 
 ## A news site caches article pages at the CDN for 60 seconds. What's the trade-off?
 

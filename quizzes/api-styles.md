@@ -1,4 +1,4 @@
-# Quiz: API Styles
+# Quiz: API Styles (REST, gRPC, GraphQL)
 
 ## Partners in many languages will integrate with your public API, and an internal team proposes gRPC for it. What's the usual choice?
 

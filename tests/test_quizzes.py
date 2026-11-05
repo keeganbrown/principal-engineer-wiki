@@ -60,6 +60,17 @@ class LintQuizzesTest(unittest.TestCase):
     def test_well_formed_quizzes_have_no_problems(self):
         self.assertEqual(self.lint({"kiss": VALID, "yagni": VALID}), [])
 
+    def test_reports_quiz_title_that_differs_from_the_article_title(self):
+        titles = {"kiss": "Keep It Simple, Stupid (KISS)", "yagni": "Quiz: KISS"}
+        problems = lint_quizzes({"kiss": VALID, "yagni": VALID}, self.SLUGS, titles)
+        self.assertIn(
+            "quizzes/kiss.md: title should be '# Quiz: Keep It Simple, Stupid (KISS)'", problems
+        )
+
+    def test_quiz_title_matching_the_article_title_passes(self):
+        titles = {"kiss": "KISS", "yagni": "KISS"}
+        self.assertEqual(lint_quizzes({"kiss": VALID, "yagni": VALID}, self.SLUGS, titles), [])
+
     def test_reports_article_without_a_quiz(self):
         self.assertIn("quizzes: missing quiz for [[yagni]]", self.lint({"kiss": VALID}))
 

@@ -1,4 +1,4 @@
-# Quiz: Architecture Decision Records
+# Quiz: Architecture Decision Records (ADRs)
 
 ## An old architecture decision record (ADR) chose synchronous calls, and the team now moves to events. What should they do with it?
 

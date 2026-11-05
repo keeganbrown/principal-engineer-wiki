@@ -1,4 +1,4 @@
-# Quiz: Message Brokers
+# Quiz: Message Brokers (Queues and Logs)
 
 ## Which job fits a log, such as a Kafka topic, better than a queue?
 

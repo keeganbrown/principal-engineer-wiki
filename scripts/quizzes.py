@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Quiz question banks: one Markdown file per article in quizzes/<slug>.md.
 
-Format (the H1 is optional and ignored):
+Format (the H1, when checked against article titles, is "# Quiz: <title>"):
 
     ## A question that ends with a question mark?
 
@@ -18,7 +18,7 @@ from __future__ import annotations
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Set
+from typing import Dict, List, Optional, Set
 
 from lint_wiki import WIKILINK
 
@@ -135,14 +135,23 @@ def _lint_length_shares(questions: List[Question]) -> List[str]:
     return problems
 
 
-def lint_quizzes(quizzes: Dict[str, str], slugs: Set[str]) -> List[str]:
-    """Every article has a quiz; every quiz is well formed and its links resolve."""
+def lint_quizzes(
+    quizzes: Dict[str, str], slugs: Set[str], titles: Optional[Dict[str, str]] = None
+) -> List[str]:
+    """Every article has a quiz; every quiz is well formed and its links resolve.
+
+    With `titles` (slug -> article title), each quiz's H1 must be "# Quiz: <title>".
+    """
     problems = [f"quizzes: missing quiz for [[{s}]]" for s in sorted(slugs - set(quizzes))]
     everything: List[Question] = []
     for slug in sorted(quizzes):
         path = f"quizzes/{slug}.md"
         if slug not in slugs:
             problems.append(f"{path}: no article with this slug")
+        if titles and slug in titles:
+            expected = f"# Quiz: {titles[slug]}"
+            if quizzes[slug].splitlines()[:1] != [expected]:
+                problems.append(f"{path}: title should be '{expected}'")
         questions = parse_quiz(quizzes[slug])
         everything.extend(questions)
         if len(questions) < MIN_QUESTIONS:

@@ -1,4 +1,4 @@
-# Quiz: Infrastructure as Code
+# Quiz: Infrastructure as Code (IaC)
 
 ## An engineer opened a database port "temporarily" in the console and forgot. What fix prevents a repeat?
 

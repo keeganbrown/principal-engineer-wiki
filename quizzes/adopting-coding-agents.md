@@ -1,4 +1,4 @@
-# Quiz: Adopting Coding Agents
+# Quiz: Adopting Coding Agents as a Team
 
 ## A principal engineer is asked to "get the org using agents." What should they do first?
 

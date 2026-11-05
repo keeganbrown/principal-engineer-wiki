@@ -252,7 +252,8 @@ def main() -> int:
             problems.extend(lint_glossary(f.read(), set(articles)))
     from quizzes import lint_quizzes, load_quizzes  # quizzes imports this module
 
-    problems.extend(lint_quizzes(load_quizzes(os.path.join(repo_root, "quizzes")), set(articles)))
+    titles = {slug: str(article.frontmatter.get("title", "")) for slug, article in articles.items()}
+    problems.extend(lint_quizzes(load_quizzes(os.path.join(repo_root, "quizzes")), set(articles), titles))
     for problem in problems:
         print(problem)
     print(f"{len(articles)} articles checked, {len(problems)} problem(s).")

@@ -1,4 +1,4 @@
-# Quiz: Hexagonal Architecture
+# Quiz: Hexagonal Architecture (Ports and Adapters)
 
 ## Who defines a port in hexagonal architecture?
 

@@ -1,4 +1,4 @@
-# Quiz: Large Language Models
+# Quiz: Large Language Models (LLMs)
 
 ## A support assistant invents a refund policy the company doesn't have. What reduces this most?
 
