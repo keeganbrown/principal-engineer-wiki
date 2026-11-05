@@ -35,7 +35,7 @@ Climbing out:
 - **Find the problem the practice solved.** Read the original source, not the conference summary. Ask: what was hurting them, and how big were they at the time?
 - **Check whether you have that problem.** If you don't, you're buying a solution in search of one.
 - **Check the hidden supports.** Spotify's "squads and tribes" team model was widely copied from a 2012 write-up that its authors and former staff later described as partly aspirational. Teams that copied the org chart rarely copied the autonomy and engineering culture underneath it.
-- **Adopt the principle, then pick the practice.** "Small, safe deploys" is the principle. Feature flags, canary releases (shipping to a small slice of traffic first), or trunk-based development (everyone merging to one main branch at least daily) are ways to get it. Choose the one that fits your scale ([[feature-flags]]).
+- **Adopt the principle, then pick the practice.** "Small, safe deploys" is the principle. Feature flags, canary releases (shipping to a small slice of traffic first), or trunk-based development (everyone merging to one main branch at least daily) are ways to get it. Choose the one that fits your scale ([[continuous-delivery]], [[feature-flags]]).
 - **Define what success looks like before you start.** Then check after a few months whether you got it, and drop the practice if not.
 
 ## Example
@@ -49,13 +49,13 @@ The hard part is that the original rule felt safer, and loosening it got pushbac
 ## Common traps
 
 - **Dismissing every outside idea.** The opposite mistake is assuming nothing from elsewhere applies to you ([[not-invented-here]]). Learning from others is good; copying without understanding isn't.
-- **Copying the vocabulary.** Renaming teams to "squads" or meetings to "ceremonies" changes nothing by itself.
+- **Copying without a review date.** Adopted practices rarely get re-examined. Set a date to check whether it solved the problem you adopted it for, and drop it if it didn't.
 - **Copying your own past.** A practice that worked at your last company grew out of that company's conditions. Check that you have them here.
 - **Treating best practices as universal.** "Best practice" usually means "worked well somewhere, for someone." Ask where.
 
 ## When it doesn't apply
 
-Copying without full understanding is reasonable when a practice is cheap to try and easy to reverse ([[reversible-decisions]]). Trying a weekly demo or a postmortem template for a month costs little, and you learn more by doing than by analyzing. It's also fine to follow widely tested defaults — version control, automated tests, code review — without re-deriving their value each time. Save the scrutiny for practices that are expensive to adopt or hard to remove.
+Copying without full understanding is reasonable when a practice is cheap to try and easy to reverse ([[reversible-decisions]]). Trying a weekly demo or a postmortem template for a month costs little, and you learn more by doing than by analyzing. It's also fine to follow widely tested defaults — version control, automated tests, code review — without re-deriving their value each time, as long as you know what each is for; otherwise it decays into ritual. Save the scrutiny for practices that are expensive to adopt or hard to remove.
 
 ## Related
 

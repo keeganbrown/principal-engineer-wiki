@@ -34,17 +34,17 @@ Spotting it:
 
 Climbing out:
 
-- **Automate the matters of taste.** A formatter and linter settle style once, so nobody discusses it in review. Adopt the tool's defaults to skip a debate over its settings, and reformat in one commit that `git blame` is told to ignore.
+- **Automate the matters of taste.** A formatter and linter settle style once, so nobody discusses it in review. Adopt the tool's defaults to skip a debate over its settings, and reformat in one commit that `git blame` is told to ignore (list it in a `.git-blame-ignore-revs` file).
 - **Sort decisions by how reversible they are.** Spend discussion on [[reversible-decisions|one-way doors]], decisions that are expensive to undo. Give two-way doors, which are cheap to reverse, a default owner and a short deadline.
 - **Name a decider.** For each decision, one person decides after hearing input. Discussion has an end when someone is responsible for ending it.
 - **Timebox small decisions.** "We'll pick a name in five minutes, then move on" works better than letting it run.
-- **Point reviewers at the risky part.** In design docs and PRs, say where you most want scrutiny: "the retry logic is the part I'm unsure about" ([[design-docs]]). Label comment weight so small comments don't block merging ([[code-review]]).
+- **Point reviewers at the risky part.** In design docs and PRs, say where you most want scrutiny: "the retry logic is the part I'm unsure about" ([[design-docs]]). Mark each comment as blocking or optional (a `nit:` prefix, say), so small comments don't block merging ([[code-review]]).
 
 ## Example
 
 A design review for a new internal orders API runs for an hour. Forty minutes go to whether the endpoint should be `/orders` or `/purchase-orders` and whether field names use camelCase. Nobody asks what happens when the payment call times out after the order is saved.
 
-The next review is set up differently. The author opens with "decisions I need: idempotency on retries (a retried request must not create a second order, see [[idempotency]]), and whether stock is reserved before or after payment." Naming is delegated to the API style guide, with the author deciding anything it doesn't cover.
+The next review is set up differently. The author opens with "decisions I need: idempotency on retries, and whether stock is reserved before or after payment." (Idempotency here means a retried request doesn't create a second order; see [[idempotency]].) Naming is delegated to the API style guide, with the author deciding anything it doesn't cover.
 
 The hard part is that the risky questions are harder to discuss, and the room goes quiet when they come up. The reviewer leading the session asks specific questions — "what does a client see if we crash between saving and charging?" — which turns a vague worry into something people can answer.
 

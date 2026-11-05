@@ -16,7 +16,7 @@
 - [ ] Ranking individuals by their output each month.
 - [ ] Dropping measurement entirely in favor of judgment.
 
-**Why:** Gaming one shows up in the other, as with deploy frequency and change failure rate. Too many metrics dilute attention, and none leaves you guessing. See [[metric-fixation]].
+**Why:** Gaming one shows up in the other, as with deploy frequency and change failure rate. Too many metrics dilute attention, and dropping them all leaves you guessing. See [[metric-fixation]].
 
 ## When can a metric work as a target?
 

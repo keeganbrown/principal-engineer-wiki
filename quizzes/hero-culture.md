@@ -1,8 +1,8 @@
 # Quiz: Hero Culture
 
-## A five-person startup has one specialist for a reporting job that rarely changes. What should it do?
+## A five-person startup has one specialist for a reporting job that rarely fails, and an outage can wait until they're back. What should it do?
 
-- [x] Accept that risk knowingly, and first fix single points on the release path.
+- [x] Accept that risk knowingly; spread knowledge first where one person blocks releases.
 - [ ] Rotate all five engineers through the reporting job now, before any other work.
 - [ ] Ignore the bus factor until the specialist actually hands in notice.
 - [ ] Hire a second specialist so the job always has a backup.

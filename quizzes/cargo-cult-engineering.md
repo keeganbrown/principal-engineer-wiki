@@ -5,7 +5,7 @@
 - [x] The operating cost, without the coordination problem the split solved.
 - [ ] The same delivery speed as the large company, once the split is done.
 - [ ] Simpler operations, since each service is small and easy to understand.
-- [ ] Fewer incidents overall, since a failure stays inside one service.
+- [ ] A smaller coordination problem, since each team owns fewer services.
 
 **Why:** The visible practice was the output of conditions the copier doesn't have. Find the problem it solved first. See [[cargo-cult-engineering]].
 

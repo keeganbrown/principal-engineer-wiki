@@ -44,9 +44,9 @@ Climbing out:
 
 The team groups its methods by the fields they touch and finds four clusters: pricing, payment, fulfillment, and notification. They extract `Pricing` first, because it's pure calculation with no I/O (input and output, such as database calls) and is easiest to test. `OrderService.priceCart()` becomes a one-line call to `Pricing.quote()`.
 
-The hard part comes next: payment and fulfillment both update a shared `status` field. Splitting them means deciding who owns the order's status. They make fulfillment the owner: payment calls `Fulfillment.paymentCaptured(orderId)` instead of setting the field, and fulfillment alone writes `status`. Both still live in one process, so a plain method call keeps it in one transaction.
+The hard part comes next: payment and fulfillment both update a shared `status` field. Splitting them means deciding who owns the order's status. They make fulfillment the owner: payment calls `Fulfillment.paymentCaptured(orderId)` instead of setting the field, and fulfillment alone writes `status`. Both still run in one process and share one database transaction, so the payment and the status change are saved together.
 
-That decision took a design review, not a refactoring tool. It's why god objects resist being split: the tangled part is usually an undecided question of who owns what. If payment later moves to its own service, the call becomes an event, and the status can briefly lag behind the payment. The event must also be saved in the same transaction as the payment, or a crash loses it ([[transactional-outbox]]).
+That decision took a design review, not a refactoring tool. It's why god objects resist being split: the tangled part is usually an undecided question of who owns what. Moving payment into its own service later would reopen it, because the call would become an event that must be published reliably ([[transactional-outbox]]).
 
 ## Common traps
 
@@ -57,9 +57,9 @@ That decision took a design review, not a refactoring tool. It's why god objects
 
 ## When it doesn't apply
 
-A central object is fine when it does one job that is genuinely central. A small app's `App` class that wires dependencies together is a *composition root* — the one place that creates objects and connects them ([[hexagonal-architecture]]). It's large because it lists things, not because it decides things.
+A central object is fine when it does one job that is genuinely central. An app's `App` class that only wires dependencies together is a *composition root* — the one place that creates objects and connects them ([[hexagonal-architecture]]). That holds at any size: a large app's composition root is long because it lists things, not because it decides things.
 
-Likewise, a 500-line module with one clear purpose and few changes isn't worth splitting. Size alone isn't the problem — size combined with many reasons to change is.
+Likewise, a 500-line module with one clear purpose and few changes isn't worth splitting. Size alone isn't the problem — size combined with many reasons to change is. Splitting has a reading cost too: a feature that lived in one file now spans several.
 
 ## Related
 

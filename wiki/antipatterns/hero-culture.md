@@ -30,11 +30,11 @@ Spotting it:
 
 - **Measure the bus factor.** For each critical system, ask "who else could debug this tonight?" Tools that count distinct recent committers per directory give a rough first answer, usually an optimistic one, since committing isn't debugging.
 - **Notice whose name comes up in every incident.** If the same person is paged or pinged for most of them, the knowledge lives in one head.
-- **Watch for work waiting on one person.** "Blocked until Sam is back" in a standup is the signal.
+- **Watch for work waiting on one person.** "Blocked until Sam is back" in a stand-up is the signal.
 
 Climbing out:
 
-- **Make the hero a teacher, not a fixer.** During incidents, the expert advises while someone else types the commands and makes the calls. It's slower the first few times and spreads knowledge every time.
+- **Make the hero a teacher, not a fixer.** During incidents, the expert advises while someone else types the commands and makes the calls ([[incident-response]]). It's slower the first few times and spreads knowledge every time.
 - **Turn every rescue into a fix.** After each save, ask what change would mean nobody needs to be a hero next time: a runbook, a better alert, a simpler system.
 - **Reward prevention, not just rescue.** Praise the engineer who removed a class of incidents as loudly as the one who fixed one at 2 a.m.
 - **Rotate ownership.** Pair newer engineers on the hero's systems and rotate on-call so knowledge stays spread.
@@ -56,7 +56,7 @@ The hard part is Priya's own reluctance. Fixing things fast is how she has earne
 
 ## When it doesn't apply
 
-Small teams and early startups can't spread every piece of knowledge, and one person owning an area is normal. The point isn't zero dependency on anyone; it's knowing where your bus factor is one and choosing which of those risks you'll live with. A specialist in a rarely changed area is fine. A specialist on the critical path for every release is the risk worth fixing.
+Small teams and early startups can't spread every piece of knowledge, and one person owning an area is normal. The point isn't zero dependency on anyone; it's knowing where your bus factor is one and choosing which of those risks you'll live with. A specialist is fine where the system rarely fails, or where a failure can wait until they're back. A specialist on the critical path for every release or incident is the risk worth fixing.
 
 ## Related
 
@@ -65,3 +65,4 @@ Small teams and early startups can't spread every piece of knowledge, and one pe
 - [[influencing-without-authority]] — senior engineers lead by spreading knowledge.
 - [[paved-roads]] — the easy, documented way replaces tribal knowledge.
 - [[big-ball-of-mud]] — tangled systems are where heroes grow.
+- [[incident-response]] — the incident commander role keeps the expert advising, not typing.

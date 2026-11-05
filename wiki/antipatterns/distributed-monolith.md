@@ -19,7 +19,7 @@ It happens when a system is split along the wrong lines: by technical layer, by 
 
 - **You pay every cost of distribution.** Network latency, partial failures, distributed tracing, and service-to-service authentication are all real work.
 - **You get none of the benefits.** Teams still coordinate releases, so delivery speed doesn't improve.
-- **Failures cascade.** If service A calls B, which calls C, synchronously, the chain is only as available as all three together. Three services at 99.9% availability give about 99.7% if their failures are independent, and shared dependencies such as one database make it worse.
+- **Failures cascade.** If service A calls B, which calls C, synchronously, the chain is only as available as all three together. Three services at 99.9% availability give about 99.7% if their failures are independent ([[service-level-objectives]]). A shared dependency, such as one database, is one more link in the chain, and when it fails, every service fails at once.
 - **It's harder to fix than the original monolith.** Moving code back across service boundaries means migrating data and APIs, not just moving functions.
 
 ## How to apply it
@@ -36,8 +36,8 @@ Climbing out:
 
 - **Redraw boundaries by domain.** Find where the domain splits naturally ([[domain-driven-design]]), and accept that some services should merge.
 - **Merge services that always change together.** Two services that are always released together are one service. If different teams own them, merging the code means merging or reassigning ownership too; settle that first, or the result is a [[god-object|god service]].
-- **Replace synchronous chains with events where staleness is acceptable.** A service that keeps its own copy of the data it needs doesn't call out at request time ([[event-driven-architecture]]). The cost: copies go stale, new consumers need a backfill, and publishing reliably needs an outbox ([[transactional-outbox]]). Use it for the hottest chains, not everywhere.
-- **Version contracts so services can deploy separately.** Backward-compatible APIs and contract tests break the lockstep release ([[api-versioning]], [[contract-testing]]).
+- **Replace synchronous chains with events where staleness is acceptable.** A service that keeps its own copy of the data it needs doesn't call out at request time ([[event-driven-architecture]]). The cost: copies go stale, a new consumer must first be loaded with existing data (a *backfill*), and publishing reliably needs an outbox, a table the event is saved to in the same transaction as the change ([[transactional-outbox]]). Use it for the hottest chains, not everywhere.
+- **Version contracts so services can deploy separately.** Backward-compatible APIs and contract tests (tests that check a service still sends and accepts what its consumers expect) break the lockstep release ([[api-versioning]], [[contract-testing]]).
 
 ## Example
 
@@ -45,13 +45,13 @@ A team split their monolith into `user-service`, `product-service`, `order-servi
 
 Adding a "gift message" field took three weeks: a library change, four service releases, and a coordinated deploy night. Then `pricing-service` had a bad deploy, and nobody could place orders, because `order-service` blocked on it.
 
-They merged `pricing-service` back into `order-service`, since prices only matter at order time. The hard part was data: pricing had its own database, so merging meant migrating its data into the orders database, with both databases receiving writes until the move was verified ([[expand-and-contract]]). They also deleted `domain-models` and let each service define its own `Order` shape, with contract tests to catch drift between the shapes. That duplication is the price of independence.
+They merged `pricing-service` back into `order-service`, since pricing rules (discounts, tax) only run at checkout; the catalog shows a list price it already stores. The hard part was data: pricing had its own database, so merging meant migrating its data into the orders database, with both databases receiving writes until the move was verified ([[expand-and-contract]]). They also deleted `domain-models` and let each service define its own `Order` shape, with contract tests to catch drift between the shapes. That duplication is the price of independence.
 
 ## Common traps
 
 - **Splitting before the domain is understood.** Early boundaries are guesses, and wrong guesses are cheap inside a monolith and expensive across a network. Start with a [[modular-monolith]].
 - **Splitting by technical layer.** A "data service," a "logic service," and an "API service" will always change together.
-- **Treating merge as defeat.** Teams keep a bad split because merging feels like admitting a mistake. The cost of that pride compounds every sprint.
+- **Treating merge as defeat.** Teams keep a bad split because merging feels like admitting a mistake. Every sprint spent on the split costs more than the merge would.
 - **Adding a service mesh to manage the pain.** A service mesh is infrastructure that handles retries, encryption, and tracing between services. It can make a distributed monolith observable, but it doesn't make it independent.
 
 ## When it doesn't apply
@@ -64,6 +64,6 @@ Lockstep deploys can also be the right call for a while, mid-migration, as a tem
 
 - [[microservices]] — what independence is supposed to look like.
 - [[modular-monolith]] — enforce boundaries before adding a network.
-- [[coupling-and-cohesion]] — shared databases and shared models.
+- [[coupling-and-cohesion]] — why shared databases and shared models couple services that look separate.
 - [[conways-law]] — services drift toward the shape of the teams.
 - [[big-ball-of-mud]] — what a distributed monolith usually started as.

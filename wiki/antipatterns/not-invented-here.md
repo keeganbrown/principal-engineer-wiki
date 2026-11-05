@@ -15,7 +15,7 @@ tags: [build-vs-buy, technology-choice, judgment]
 
 The cost shows up later. A homegrown tool needs its own documentation, bug fixes, security patches, and an engineer who understands it. When that engineer leaves, the tool becomes a mystery that nobody wants to own.
 
-Ralph Katz and Thomas Allen studied the effect in 1982. Research and development (R&D) groups whose members had worked together for about five years or more communicated less with outside sources, and performed worse.
+Ralph Katz and Thomas Allen studied the effect in 1982. Research and development groups whose members had worked together for about five years or more increasingly dismissed outside ideas, communicated less with outside sources, and performed worse. So long-stable teams are where the reflex is strongest, and where an outside review of build-versus-adopt decisions pays off.
 
 ## Why it matters
 
@@ -45,7 +45,7 @@ A team needs background jobs with retries. One engineer says existing job librar
 
 Then the incidents start. Jobs vanish when a deploy kills a worker mid-job, because the queue has no visibility timeout: a lease that hides a job from other workers while one processes it, and returns it to the queue if that worker dies. Retries hammer a failing partner, because there's no backoff ([[retries-and-timeouts]]). Each fix takes days, and only the original author understands the code.
 
-The team migrates to a widely used job library behind a small adapter, which means running Redis, a datastore they hadn't operated before. Its visibility timeout stops the lost jobs but means a job can occasionally run twice, so they also make the jobs idempotent ([[idempotency]]). For a week, new jobs go to the new library while the old queue finishes the jobs already in it. The migration costs three weeks — far more than the "week" the homegrown version was supposed to take.
+The team migrates to a widely used job library behind a small adapter, which means running Redis, a datastore they hadn't operated before. Its visibility timeout stops the lost jobs but means a job can occasionally run twice, so they also make the jobs idempotent ([[idempotency]]). For a week, new jobs go to the new library while the old queue finishes the jobs already in it. Counting six months of incidents and the three-week migration, the "one-week" queue cost the team well over two months.
 
 ## Common traps
 
@@ -56,7 +56,7 @@ The team migrates to a widely used job library behind a small adapter, which mea
 
 ## When it doesn't apply
 
-Building your own is right when the thing *is* your product, when no existing option meets a hard requirement (performance, compliance, or data residency), or when the existing options are so large that your one narrow need is simpler to write and own. Large companies also build internal tools that pay off across hundreds of teams ([[paved-roads]]). The test is the same each time: is the lifetime cost of owning it lower than the lifetime cost of adopting?
+Building your own is right when the thing *is* your product, when no existing option meets a hard requirement (performance, compliance, or data residency), or when the existing options are so large that your one narrow need is simpler to write and own. A need isn't narrow if it includes failure behavior — crash recovery, retries, concurrency, or security — because that's where the libraries' "bloat" lives. Large companies also build internal tools that pay off across hundreds of teams ([[paved-roads]]). The test is the same each time: is the lifetime cost of owning it lower than the lifetime cost of adopting?
 
 ## Related
 

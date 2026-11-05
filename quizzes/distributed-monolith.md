@@ -9,7 +9,7 @@
 
 **Why:** Services that must change and deploy together pay for distribution without getting independence. See [[distributed-monolith]].
 
-## `order-service` calls `pricing-service` on every order, prices matter only at order time, and a bad pricing deploy stopped all orders. What should the team do?
+## In a shop split into services, `order-service` calls `pricing-service` on every order. Pricing rules only run at checkout, and a bad pricing deploy stopped all orders. What should the team do?
 
 - [x] Merge pricing into the order service, migrating its data.
 - [ ] Add a service mesh so retries between the two are handled for them.

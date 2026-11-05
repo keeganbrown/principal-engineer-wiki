@@ -1,13 +1,13 @@
 # Quiz: Big-Bang Rewrite
 
-## Why do rewrites of old systems so often stall at the last 20%?
+## Why does a rewrite of an old system so often stall near the end, after its visible features work?
 
 - [x] Old code holds rules nobody wrote down, found one by one.
 - [ ] The remaining work is features nobody uses, which teams hesitate to drop.
 - [ ] The new framework is slower, so the team spends the time tuning performance.
 - [ ] Teams save the bugs the rewrite was meant to fix for the very end.
 
-**Why:** In the insurer's rewrite, the last 20% was multi-car discounts, loyalty rates, and broker terms that existed only as `if` statements. Strange old code is often knowledge. See [[big-bang-rewrite]].
+**Why:** Strange old code is often knowledge: an edge-case fix, a pricing rule, a partner workaround. A rewrite has to rediscover each one, usually in testing or production. See [[big-bang-rewrite]].
 
 ## A team wants to run every request through both the old and new engines and compare. When is that safe?
 

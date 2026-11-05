@@ -13,7 +13,7 @@ tags: [structure, coupling, legacy]
 
 A big ball of mud is a codebase with no boundaries you can rely on. Any module may call any other, read any table, or reach into another's internals. Nobody designed it that way; it accumulated. Each shortcut — "just import the billing helper here," "just read that table directly" — was quick and locally sensible.
 
-It is the most common architecture in the world, because it is what you get by default. Structure has to be maintained; mud only has to be left alone. Brian Foote and Joseph Yoder named it in a 1997 paper, and noted, uncomfortably, that mud often wins because it ships.
+It may be the most common architecture there is, because it is what you get by default. Structure has to be maintained; mud only has to be left alone. Brian Foote and Joseph Yoder named it in a 1997 paper, called it the de facto standard software architecture, and noted, uncomfortably, that mud often wins because it ships.
 
 ## Why it matters
 

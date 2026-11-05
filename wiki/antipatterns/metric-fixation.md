@@ -32,10 +32,9 @@ Spotting it:
 
 Climbing out:
 
-- **Measure outcomes, not activity.** Lead time (commit to production), change failure rate (the share of deploys that cause a failure), and recovery time say more than lines of code or commits. These are three of the DevOps Research and Assessment (DORA) delivery metrics ([[adopting-coding-agents]]). They can be gamed too — empty deploys, relabeled failures — which is why the next step pairs them.
+- **Measure outcomes, not activity.** Lead time (commit to production), change failure rate (the share of deploys that cause a failure), and recovery time say more than lines of code or commits. These are three of the DevOps Research and Assessment (DORA) delivery metrics ([[continuous-delivery]]). They can be gamed too — empty deploys, relabeled failures — which is why the next step pairs them.
 - **Pair metrics that pull against each other.** Deployment frequency alongside change failure rate; speed alongside quality. Gaming one shows up in the other.
-- **Use metrics to ask questions, not to grade people.** A drop in a team's numbers is a reason for a conversation, not a performance rating.
-- **Never rank individuals by an output metric.** Software is a team activity; individual counts reward the wrong behavior and punish helping others.
+- **Use metrics to ask questions, not to grade people.** A drop in a team's numbers is a reason for a conversation, not a performance rating. Never rank individuals by an output metric: software is a team activity, and individual counts punish helping others.
 - **Review the metrics themselves.** Every few months, ask: is this still telling us what we thought? Has anyone found a way around it?
 
 ## Example
@@ -44,7 +43,9 @@ An engineering director sets a target of 80% test coverage for every service by 
 
 A review of the new tests shows why. Many call functions without checking results; some catch every exception, so the test passes even when the code crashes. The number measured lines executed, and the cheapest way to execute lines was to run them without asserting anything.
 
-The director drops the target and keeps coverage as a team-level signal, paired with escaped defects (bugs found after release). Teams instead pick their two riskiest modules and test those thoroughly. Escaped defects can be gamed too, by reclassifying bugs, so a lead reviews a sample each month. The hard part is that leadership wanted one number to report upward; the team reports the paired signal anyway, with a sentence of context, because a reportable number that means nothing is worse than none.
+The director drops the target and keeps coverage as a team-level signal, paired with escaped defects (bugs found after release). Teams instead pick their two riskiest modules and test those thoroughly. Escaped defects can be gamed too, by reclassifying bugs, so a lead reviews a sample each month.
+
+The hard part is that leadership wanted one number to report upward. The director reports the paired signal anyway, with a sentence of context: a number that means nothing is worse than none.
 
 ## Common traps
 
@@ -55,7 +56,7 @@ The director drops the target and keeps coverage as a team-level signal, paired 
 
 ## When it doesn't apply
 
-Some metrics hold up better as targets because the number and the outcome are close to the same thing. A latency budget (say, the page must load in under two seconds), an error budget (the amount of failure a reliability target allows), or a cost ceiling for a cloud account is mostly moved by improving the thing measured.
+Some metrics hold up better as targets because the number and the outcome are close to the same thing. A latency budget (say, the page must load in under two seconds), an error budget (the amount of failure a reliability target allows, used for team decisions rather than for ranking teams; see [[service-level-objectives]]), or a cost ceiling for a cloud account is mostly moved by improving the thing measured.
 
 Even these get gamed at the edges: averages instead of slow-request percentiles, timeouts left out of the count, spend moved to another account. They work as targets only when the measurement is defined tightly — the slowest 1% of requests, measured from the user's side — and someone audits how it's collected.
 

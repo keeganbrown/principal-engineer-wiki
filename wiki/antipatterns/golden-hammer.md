@@ -19,7 +19,7 @@ The saying is usually credited to psychologist Abraham Maslow (1966), though Abr
 
 ## Why it matters
 
-- **Bad fits cost forever.** A store that doesn't match your access pattern — how the data is read and written: by key, by range, by relationship — makes every query harder for the life of the system ([[nosql-databases]]).
+- **Bad fits cost forever.** A store that doesn't match your access pattern (how the data is read and written, such as by key, range, or relationship) makes every query harder for the life of the system ([[nosql-databases]]).
 - **Shiny tools carry unknown failure modes.** A tool nobody on the team has run in production will teach you its limits during an incident.
 - **Every new tool is a permanent operating cost.** Someone must patch it, monitor it, and know how to debug it at 3 a.m.
 - **The comfortable hammer hides better options.** Teams that always use one tool never learn when another is simpler.
@@ -35,7 +35,7 @@ Spotting it:
 Climbing out:
 
 - **Write the problem down before the solution.** State the access pattern, scale, latency, and consistency you need, in plain words, before naming any product.
-- **Make the boring option the default.** Choose the tool your organization already runs well unless the problem clearly needs something else ([[paved-roads]]). Dan McKinley's "Choose Boring Technology" (2015) suggests each company gets about three "innovation tokens" to spend.
+- **Make the boring option the default.** Choose the tool your organization already runs well unless the problem clearly needs something else ([[paved-roads]]). Dan McKinley's "Choose Boring Technology" (2015) suggests each company gets about three "innovation tokens" to spend. Each unfamiliar technology you adopt uses one, so spend them where they make your product different.
 - **Ask "what would we use if this tool didn't exist?"** If the answer is simpler and works, use it.
 - **Price the operating cost, not just the build cost.** Include on-call knowledge, upgrades, and the second engineer who must understand it.
 - **Try new tools where failure is cheap.** An internal tool or a prototype is a good place to learn; the payment path is not.

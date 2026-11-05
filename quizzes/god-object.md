@@ -18,7 +18,7 @@
 
 **Why:** Start with the safest extraction. The hard part comes later, when clusters share state like the order's status and you must decide who owns it. See [[god-object]].
 
-## A small app's `App` class is large because it wires all the dependencies together. Is it a god object?
+## An app's `App` class is large because it wires all the dependencies together, and it makes no decisions. Is it a god object?
 
 - [x] No; it's a composition root, which lists things rather than deciding them.
 - [ ] Yes; its size alone shows that it has taken on too many responsibilities.
