@@ -23,10 +23,11 @@ Kent Beck popularized TDD as part of Extreme Programming in the late 1990s.
 
 ## Why it matters
 
-- **Design feedback.** If something is hard to test, it's often too [[coupling-and-cohesion|coupled]]. TDD surfaces that while it's cheap to fix. But don't add interfaces and indirection *only* to make testing possible — if testability demands a layer the design doesn't otherwise need, test through a real boundary with a fake, or test at a higher level.
+- **Design feedback.** Code that's hard to test is often too [[coupling-and-cohesion|coupled]], and TDD surfaces that while it's cheap to fix. Don't add layers *only* for testability; test through a real boundary with a fake (a simple working stand-in, such as an in-memory database), or test at a higher level.
 - **Confidence to change.** A good suite lets you refactor boldly and deploy often.
 - **Living documentation.** Tests show how the code is meant to be used.
 - **Focus.** You build only what a test demands, which keeps scope tight.
+- **It isn't free.** Tests are code you maintain, and first drafts take longer. Studies comparing test-first with test-last are mixed, and some suggest the payoff comes from small steps and fast feedback, not from writing the test first.
 
 ## How to apply it
 
@@ -62,7 +63,7 @@ function shippingCost(order):
     return 0 if order.total > FREE_SHIPPING_THRESHOLD else FLAT_SHIPPING_FEE
 ```
 
-Each step is tiny, and the boundary case (`100`) is pinned down by a test.
+Each step is tiny, and the boundary case (`100`) is pinned down by a test. The hard part was asking "what about exactly 100?" before writing the code; choosing the next test is most of the skill.
 
 ## Common traps
 
@@ -75,7 +76,7 @@ Each step is tiny, and the boundary case (`100`) is pinned down by a test.
 
 Exploratory spikes — where you don't yet know what you're building — are often better done without tests, then thrown away and rebuilt with TDD. Visual design, performance tuning, and integration with poorly documented systems may need other feedback loops (screenshots, benchmarks, [[contract-testing|contract tests]]).
 
-In untested legacy code, TDD often stalls because there are no **seams** — places where you can swap in a test double (a mock, fake, or stub) without editing the code. Start with **characterization tests** that pin down what the code does today, then test-drive your changes.
+In untested legacy code, TDD often stalls because there are no **seams** — places where you can swap in a test double (a mock, a fake, or a stub that returns canned answers) without editing the code. Start with **characterization tests** that pin down what the code does today, then test-drive your changes.
 
 ## Related
 

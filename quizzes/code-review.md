@@ -14,7 +14,7 @@
 - [x] Measure the wait and fix response time; then consider ship/show/ask.
 - [ ] Add more required reviewers, so problems are caught before merge.
 - [ ] Batch changes into larger pull requests, so there are fewer to review.
-- [ ] Drop review for any change under 50 lines, to restore speed at once.
+- [ ] Drop review for every change until the review backlog has cleared.
 
 **Why:** Respond within a few working hours. If the gate still costs more than it catches, a high-trust team can ship trivial changes, show low-risk ones after merging, and ask only on risky code. See [[code-review]].
 

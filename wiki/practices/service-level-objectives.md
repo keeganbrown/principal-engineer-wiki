@@ -11,10 +11,10 @@ tags: [reliability, operations, sre, staff-plus]
 
 ## The idea
 
-"How reliable should this be?" usually gets the answer "as reliable as possible." That can't be measured, can't be achieved, and quietly blocks every risky change. A service level objective replaces it with a number users would actually notice. Three terms, from narrowest to widest:
+"How reliable should this be?" usually gets the answer "as reliable as possible." That can't be measured, can't be achieved, and quietly blocks every risky change. A service level objective replaces it with a number users would actually notice. Three terms, each building on the last:
 
 - **Service level indicator (SLI)** — what you measure, as good events over all events. For example, the share of checkout requests that succeed in under one second.
-- **Service level objective (SLO)** — the target for that indicator over a time window: 99.9% of checkouts are good, over 28 days.
+- **Service level objective (SLO)** — the target for that indicator over a time window: 99.9% of checkouts are good, over 30 days.
 - **Service level agreement (SLA)** — a promise to customers with a penalty, such as refunds, if it's broken. Keep it looser than the SLO, so you hear about trouble before it costs money.
 
 The gap between the SLO and 100% is the **error budget**. At 99.9% over 30 days, that's 0.1% of requests, or about 43 minutes of full outage. The budget is meant to be spent on deploys, experiments, and migrations; when it runs out, reliability work comes first until it recovers. The approach comes from Google's *Site Reliability Engineering* (2016) and *The Site Reliability Workbook* (2018).
@@ -28,19 +28,19 @@ The gap between the SLO and 100% is the **error budget**. At 99.9% over 30 days,
 
 ## How to apply it
 
-- **Start from what users notice.** Pick the few journeys that matter (log in, search, check out) and measure them as close to the user as you can: at the load balancer, or from the client. Server-side success rates miss requests that never arrived.
+- **Start from what users notice.** Pick the few journeys that matter (log in, search, check out) and measure them as close to the user as you can: at the load balancer, or from the client. Server and load-balancer metrics both miss requests that never arrived; client-side measurements or synthetic probes (scripted requests sent on a schedule) catch those.
 - **Define good and valid events precisely.** "Responses that aren't server errors and arrive within one second, divided by all requests except health checks and bots." Decide upfront whether client errors such as 404s count.
 - **Set the target from history, not ambition.** Look at the last few months and set the SLO a little below what you achieved while users were content. Tighten it if users complain while you're meeting it.
-- **Write the error budget policy before you need it.** Agree with the product owner what happens at 50% spent and at 100% (for example, a freeze on feature launches, with reliability and security fixes still allowed), and who can grant exceptions. Without an agreed policy, the budget is just a dashboard.
-- **Alert on burn rate, not on every error.** **Burn rate** is how fast you're spending the budget; a burn rate of 1 uses exactly the budget over the window. The *Workbook* suggests paging when an hour's burn rate passes 14.4, which spends 2% of a 30-day budget in one hour, and opening a ticket for slow burns.
-- **Don't promise more than your dependencies give.** If a request needs three services that each meet 99.9%, the chain is closer to 99.7%. Either add fallbacks or set a looser target.
+- **Write the error budget policy before you need it.** Agree with the product owner what happens at 50% spent and at 100% (for example, a freeze on feature launches, with reliability and security fixes still allowed), and who can grant exceptions. Decide too whether outages caused by a dependency (a cloud provider, another team) count, because a freeze that punishes a team for someone else's outage gets ignored. Without an agreed policy, the budget is just a dashboard.
+- **Alert on burn rate, not on every error.** **Burn rate** is how fast you're spending the budget; a burn rate of 1 uses exactly the budget over the window. The *Workbook* suggests paging when an hour's burn rate passes 14.4: 30 days is 720 hours, so that spends 14.4/720 = 2% of the budget in one hour, emptying it in about two days. Open a ticket for slow burns instead.
+- **Don't promise more than your dependencies give.** If a request needs three services that each meet 99.9%, the chain is closer to 99.7%. Either add fallbacks ([[circuit-breaker]]) or set a looser target.
 - **Review SLOs every quarter.** Compare breaches with user complaints. If users complained while you met the SLO, the indicator is measuring the wrong thing.
 
 ## Example
 
-A payments team sets a checkout SLO: 99.9% of checkout requests succeed in under two seconds over 28 days, measured at the load balancer. The policy, agreed with the product lead, says: below 25% budget left, every deploy needs a rollout plan with a canary; at zero, feature launches pause until the budget recovers.
+A payments team sets a checkout SLO: 99.9% of checkout requests succeed in under two seconds over 30 days, measured at the load balancer. The policy, agreed with the product lead, says: below 25% budget left, every deploy needs a named reviewer and a staffed rollout window; at zero, feature launches pause until the budget recovers.
 
-Mid-month, a bad configuration change spends 60% of the budget in 40 minutes, and the burn-rate alert pages within five minutes. Two smaller incidents empty the budget a week later. The team spends the freeze adding automatic rollback to its deploy pipeline ([[continuous-delivery]]).
+Mid-month, a bad configuration change spends 60% of the budget in 40 minutes, and the burn-rate alert pages within five minutes; at that pace, even a few minutes push the hourly burn rate far past 14.4. Two smaller incidents empty the budget a week later. The team spends the freeze adding automatic rollback to its deploy pipeline ([[continuous-delivery]]).
 
 The hard part was the marketing launch scheduled inside the freeze. The policy named the vice president of engineering as the person who grants exceptions, so the argument took one meeting: the launch went ahead behind a [[feature-flags|feature flag]] at 5% of users, and the rest waited a week. The SLO also missed something: a bug that charged a few customers twice returned fast successes, so the team added a correctness check on payment totals.
 

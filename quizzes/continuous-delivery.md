@@ -12,11 +12,11 @@
 ## A canary at 5% of traffic is judged by an engineer glancing at a dashboard for a few minutes. What is the main risk?
 
 - [x] A small rise in errors gets missed without a numeric comparison to baseline.
-- [ ] Canaries should always start at 50% of traffic to give a fair comparison.
-- [ ] Canaries can't catch any problems at all, so the step should be dropped.
-- [ ] A dashboard is fine as long as the engineer watching is very experienced.
+- [ ] 5% is too small a slice to show any difference from the old version.
+- [ ] The canary slows the rollout, so the deploy waits longer than needed.
+- [ ] The engineer may stop watching before the canary has finished starting.
 
-**Why:** Compare the canary's error rate and latency with the rest of traffic numerically, and roll back automatically if it does worse. Eyeballing misses a 2% error rise. See [[continuous-delivery]].
+**Why:** Compare the canary's error rate and latency numerically with a same-sized baseline on the old version, and roll back automatically if it does worse. Eyeballing misses a 2% error rise. See [[continuous-delivery]].
 
 ## A team wants fast rollback, but some deploys change the database schema. What keeps rollback safe?
 

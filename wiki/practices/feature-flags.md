@@ -29,8 +29,8 @@ The flag types below follow Pete Hodgson's widely used taxonomy, published on ma
 
 ## Why it matters
 
-- **Merges get smaller and safer.** Unfinished work can merge to the main branch, hidden behind a flag. No long-lived branches.
-- **Rollouts can be gradual.** Turn a feature on for 1% of users — a **canary release** — watch the metrics, then 10%, 50%, 100% ([[continuous-delivery]]).
+- **Merges get smaller and safer.** Unfinished work can merge to the main branch, hidden behind a flag. No long-lived branches. Each live flag doubles the code paths to test, though, so the safety lasts only as long as you delete flags quickly.
+- **Rollouts can be gradual.** Turn a feature on for 1% of users, watch the metrics, then 10%, 50%, 100%. That's a canary by percentage of users; a deploy canary on new instances catches different problems ([[continuous-delivery]]).
 - **Behavior rolls back fast.** Flipping a flag takes seconds; redeploying takes minutes or more. But it rolls back *code paths*, not *side effects*: anything the new path wrote, sent, or charged stays done. Make sure the old path can read data the new path produced.
 - **Experiments become cheap.** Show variants to different groups and measure which works better (A/B testing).
 - **Releases stay reversible.** A flag turns many release decisions into [[reversible-decisions|two-way doors]] — choices you can cheaply undo.
@@ -49,11 +49,20 @@ Know which kind of flag you're making — they have different lifetimes:
 Guidelines:
 
 - **Give every release flag an owner and an expiry date.** Delete it soon after full rollout.
-- **Keep flag checks at the edges.** One decision point, not checks scattered through the code.
+- **Keep flag checks at the edges.** Check the flag once, where the request enters (a controller or route), and pass the decision down, rather than scattering checks through the code.
 - **Test both paths.** Keep tests for each side while the flag exists ([[testing-pyramid]]).
-- **Choose a safe fallback.** When the flag service is unreachable, use the last known value, cached locally. Without one, fall back to what's safe to show everyone: *the old path* for a release flag, *the feature still running* for a kill switch, and *access denied* for a permission flag — never *fail open* by granting access because the check couldn't run.
 - **Treat the flag service as a production dependency.** Monitor it and cache its values. A cached value can't be changed while the service is down, so give critical kill switches a path that doesn't depend on it, such as an environment variable or a config push.
+- **Flip kill switches on purpose.** Exercise each one now and then, in a game day or in staging. A switch nobody has flipped in a year may have a rotted old path behind it, and you can't trust it in an incident ([[incident-response]]).
 - **Watch each rollout step.** Pair rollouts with dashboards ([[observability]]).
+- **Choose a safe fallback.** When the flag service is unreachable, use the last known value, cached locally. Without one, fall back to what's safe for everyone:
+
+| Flag type | Fallback with no value available |
+| --- | --- |
+| Release | The old path |
+| Ops / kill switch | Not tripped: the feature keeps running normally |
+| Permission | Access denied |
+
+Never *fail open* by granting access because the check couldn't run.
 
 ## Example
 
@@ -79,3 +88,5 @@ Tiny, low-risk changes don't need a flag; the overhead isn't worth it. Flags can
 - [[reversible-decisions]] — flags keep release decisions reversible.
 - [[strangler-fig]] — flags are a common way to route traffic from old code to new.
 - [[technical-debt]] — stale flags are a classic form of debt.
+- [[continuous-delivery]] — flags let unfinished work merge daily; deploy canaries complement them.
+- [[incident-response]] — kill switches turn many incidents into a quick flip.

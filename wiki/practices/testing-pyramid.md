@@ -21,7 +21,7 @@ Tests trade **speed and precision** against **realism**:
     /--------\    Unit         — many; fast; test small pieces of logic
 ```
 
-- **Unit tests** — check one unit of *behavior* — often several real objects working together — isolated only from slow or unpredictable things like the network, the clock, or the database. Milliseconds each. When one fails, you know where to look.
+- **Unit tests** — check one unit of *behavior*, often several real objects working together, isolated only from slow or unpredictable things like the network, the clock, or the database. Milliseconds each. When one fails, you know where to look.
 - **Integration tests** — check that your code works with real infrastructure or other modules: a real database, a real queue, a real HTTP client.
 - **End-to-end (E2E) tests** — drive the whole system like a user would, through the UI or public API.
 
@@ -31,7 +31,7 @@ Mike Cohn popularized the pyramid in *Succeeding with Agile* (2009).
 
 ## Why it matters
 
-A suite that's mostly E2E tests (the "ice-cream cone" anti-pattern) is slow, flaky, and hard to debug. Developers stop running it, continuous integration (CI) takes an hour, and a red build tells you *something* broke but not *what*.
+A suite that's mostly E2E tests (the "ice-cream cone" antipattern) is slow, flaky, and hard to debug. Developers stop running it, continuous integration (CI) takes an hour, and a red build tells you *something* broke but not *what*.
 
 A suite that's *only* unit tests misses the bugs that live between components: wrong SQL, mismatched JSON fields, misconfigured auth.
 
@@ -41,8 +41,8 @@ A suite that's *only* unit tests misses the bugs that live between components: w
 - **Write integration tests for each boundary.** Cover database queries, message formats, and external API clients.
 - **Keep E2E tests for a few critical user journeys.** Sign up, checkout, login — not every edge case.
 - **Use contract tests between services.** Each side verifies the API without running the other ([[contract-testing]]).
-- **Track suite time.** If CI is creeping past ~10 minutes, find the slow tests and push them down the pyramid.
-- **Fix flaky tests fast.** A flaky test teaches people to ignore red builds.
+- **Track suite time.** If CI is creeping past ~10 minutes, find the slow tests and push them down the pyramid: replace them with faster, lower-level tests that check the same behavior.
+- **Fix flaky tests fast.** A flaky test, one that passes or fails without any code change, teaches people to ignore red builds.
 
 ## Example
 

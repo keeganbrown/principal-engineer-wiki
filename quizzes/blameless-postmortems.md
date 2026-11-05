@@ -18,11 +18,11 @@
 
 **Why:** Pick the few items that remove the hazard, like separating credentials so a script can't reach production. Adding approvals everywhere is process accretion. See [[blameless-postmortems]].
 
-## What does "blameless" not cover?
+## An engineer deliberately deleted production data to cover up an earlier mistake. Does a blameless postmortem shield them?
 
-- [x] Deliberate misconduct or malicious acts.
-- [ ] Mistakes made by senior engineers.
-- [ ] Incidents that caused customer data loss.
-- [ ] Errors made late at night while on call.
+- [x] No; blamelessness covers honest mistakes, not deliberate misconduct.
+- [ ] Yes; a blameless culture means no one is ever held responsible.
+- [ ] Yes, as long as the data can be restored from a recent backup.
+- [ ] No, and no postmortem should be held for this incident at all.
 
 **Why:** Blamelessness covers honest mistakes. It isn't the same as being free of accountability, and misconduct is handled differently. See [[blameless-postmortems]].

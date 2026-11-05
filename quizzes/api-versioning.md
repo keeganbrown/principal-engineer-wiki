@@ -1,4 +1,4 @@
-# Quiz: API Versioning
+# Quiz: API Versioning and Evolution
 
 ## Which of these changes to a JSON API response is backward-compatible?
 
@@ -26,3 +26,12 @@
 - [ ] Replacing enums in the API with free-text strings.
 
 **Why:** Clients that handle every value explicitly break when one is added. Document that enums may grow, give unknown values a default, and keep the server strict about what it accepts. See [[api-versioning]].
+
+## A backend API is used only by one web app, which ships in the same release. The team wants to rename a response field. Do they need a new API version?
+
+- [x] Usually not; change both in lockstep, but rolling deploys still favor additive steps.
+- [ ] Yes; every breaking change to any API needs a new major version first.
+- [ ] Yes, and keep the old version running for a year for safety.
+- [ ] No, and old and new code never run at the same time, so any change is safe.
+
+**Why:** When you control every client and deploy them together, you can change in lockstep. Rolling deploys still mean old and new versions briefly coexist, so additive changes remain the safer habit. See [[api-versioning]].

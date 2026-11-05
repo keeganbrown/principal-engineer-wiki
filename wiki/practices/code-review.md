@@ -17,10 +17,10 @@ A good review is a conversation between peers about making the code better. It a
 
 ## Why it matters
 
-- **Shared ownership.** No part of the system is understood by only one person ([[hero-culture]]).
-- **Earlier feedback.** A design problem caught in review is far cheaper than one caught in production.
-- **Mentorship at scale.** For senior engineers, review comments are one of the most effective ways to raise the team's skill level.
-- **Readability check.** The reviewer is the first "next reader." If they're confused, future readers will be too.
+- **Ownership is shared.** No part of the system is understood by only one person ([[hero-culture]]).
+- **Feedback comes earlier.** A design problem caught in review is far cheaper than one caught in production.
+- **Mentorship scales.** For senior engineers, review comments are one of the most effective ways to raise the team's skill level.
+- **The reviewer tests readability.** The reviewer is the first "next reader." If they're confused, future readers will be too.
 
 ## How to apply it
 
@@ -34,7 +34,7 @@ A good review is a conversation between peers about making the code better. It a
 - **Review in priority order.** Correctness, then design, then readability, then style. Let linters and formatters handle style ([[paved-roads]]).
 - **Ask questions instead of issuing orders.** "What happens if this list is empty?"
 - **Label comment weight.** Use `nit:` (optional), `suggestion:`, or `blocking:`.
-- **Respond within a few working hours.** Waiting a day kills momentum.
+- **Respond within a few working hours.** Waiting a day kills momentum. Batch reviews into two or three fixed slots a day rather than reacting to every notification, so reviewing doesn't break up everyone's deep work.
 - **Praise good work.** It tells people what to keep doing.
 
 ## Example
@@ -42,7 +42,7 @@ A good review is a conversation between peers about making the code better. It a
 The change under review:
 
 ```
-for attempt in range(1, retryCount):
+for attempt in range(1, retryCount):    # range's upper bound is exclusive
     if send(request): break
 ```
 
@@ -55,14 +55,14 @@ The helpful version names the problem, explains the impact, suggests a fix, and 
 ## Common traps
 
 - **Rubber-stamping.** Approving without reading defeats the purpose. If you don't have time, say so.
-- **Bike-shedding.** Long debates over naming and formatting while missing a race condition.
+- **Bikeshedding.** Long debates over naming while a race condition slips through ([[bikeshedding]]).
 - **Gatekeeping.** Using reviews to enforce personal preference rather than shared standards.
 - **Giant PRs.** "LGTM" ("looks good to me") on a 3,000-line diff means nobody really reviewed it.
 - **Reviewing only code, not tests.** Tests are part of the change and deserve the same scrutiny.
 
 ## When it doesn't apply
 
-Mandatory pre-merge review on every change is a policy choice, not a law. Some high-trust teams use **ship / show / ask** (Rouan Wilsenach, martinfowler.com, 2021): *ship* trivial changes directly, *show* low-risk ones by merging and reviewing afterwards, and *ask* for blocking review only on risky or unfamiliar code. Measure how long PRs wait for review; if it's measured in days, the gate costs more than it catches. Where regulation requires a second approval on every production change, ship/show/ask applies only to what the rules exempt.
+Mandatory pre-merge review on every change is a policy choice, not a law. Some high-trust teams use **ship / show / ask** (Rouan Wilsenach, martinfowler.com, 2021): *ship* trivial changes directly, *show* low-risk ones by merging and reviewing afterwards, and *ask* for blocking review only on risky or unfamiliar code. The sort is by risk, not by line count: a one-line change to a permission check is still an *ask*. Measure how long PRs wait for review; if it's measured in days, the gate costs more than it catches. Where regulation requires a second approval on every production change, ship/show/ask applies only to what the rules exempt.
 
 Pair or ensemble (mob) programming provides continuous review, so a separate review may add little. Emergency fixes may merge first and get reviewed immediately after — but that should be rare and explicit.
 

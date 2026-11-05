@@ -1,6 +1,6 @@
 # Quiz: Observability
 
-## Checkout is slow. What is the fastest path to the cause?
+## Checkout is slow, and the services emit metrics and traces. What is the fastest path to the cause?
 
 - [x] Use metrics to see when it slowed, then traces to find the slow call.
 - [ ] Alert on CPU for every host and check whichever one is running high.
@@ -26,3 +26,12 @@
 - [ ] Labels are allowed only on log lines, never on metric data points.
 
 **Why:** Millions of users means millions of series. Per-user detail belongs in logs and traces. See [[observability]].
+
+## A single-service internal tool has structured logs and an alert when it fails. Should the team add distributed tracing now?
+
+- [x] Not yet; add it once a typical request crosses more than two or three services.
+- [ ] Yes; every service should emit traces from its very first deploy.
+- [ ] Yes, and add a metric label for each user so every request can be found.
+- [ ] No; tracing only helps teams that run hundreds of services.
+
+**Why:** A small internal tool needs little more than basic logs and a failure alert. Tracing pays off once requests cross several services. See [[observability]].

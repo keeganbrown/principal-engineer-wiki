@@ -18,14 +18,14 @@
 
 **Why:** Writes during the change are the hard part. A row copied at 10:00 and edited on an old server at 10:01 stays stale for good. See [[expand-and-contract]].
 
-## Which step of expand and contract can't be undone by redeploying the previous version?
+## During an expand-and-contract rename, after which step does going back to code that reads the old column need the new data copied back first?
 
 - [x] Stopping writes to the old shape.
 - [ ] Adding the new column.
 - [ ] Backfilling the new column.
 - [ ] Switching reads to the new shape.
 
-**Why:** After that step, rolling back would read stale data from the old shape. Measure with query logs that nothing still reads it first. See [[expand-and-contract]].
+**Why:** After that step, the old shape stops getting writes, so code that reads it would see stale data. Rolling back one step is still safe. Measure with query logs that nothing still reads the old shape first. See [[expand-and-contract]].
 
 ## When can you skip the full expand-and-contract sequence?
 

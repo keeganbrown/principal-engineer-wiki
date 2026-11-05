@@ -16,9 +16,9 @@
 - [ ] Wait for the next scheduled deploy, which may include a fix already.
 - [ ] Post a status update and hold any changes until the postmortem.
 
-**Why:** Mitigate first, diagnose later: roll back, turn off a flag, fail over, or shed load. Rollback is safe only if the deploy's data changes are backward compatible, so know before deploying which changes can be undone. See [[incident-response]].
+**Why:** Mitigate first, diagnose later: roll back, turn off a flag, fail over, or shed load. Rollback may not be clean if the deploy changed the schema or data format, so know before deploying which changes can be undone. See [[incident-response]].
 
-## An incident has run for an hour with no progress to report. How often should stakeholders hear from the team?
+## A severity 1 incident has run for an hour with no progress to report. How often should stakeholders hear from the team?
 
 - [x] On a fixed schedule, such as every 30 minutes, even when there's no news.
 - [ ] Only once the cause is found, so updates are accurate and not alarming.

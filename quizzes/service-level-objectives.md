@@ -18,14 +18,14 @@
 
 **Why:** Fast, wrong answers count as good unless you measure correctness. An SLO covers only what its indicator measures, so choosing the indicator is most of the work. See [[service-level-objectives]].
 
-## How should a team get paged on its SLO?
+## A checkout SLO's hourly burn rate has sat at about 2 for most of a day, using its 30-day error budget twice as fast as planned. What should the alert do?
 
-- [x] When the error budget is burning fast enough to run out within hours.
-- [ ] Every time a single request fails, so that no error goes unnoticed.
-- [ ] Whenever any server's CPU rises above 80% for more than a minute.
-- [ ] Only at the end of the window, once the SLO is known to be missed.
+- [x] Open a ticket; a slow burn like this can wait for working hours.
+- [ ] Page on-call now, since any burn rate above 1 will miss the SLO.
+- [ ] Nothing until the end of the window, when the miss is certain.
+- [ ] Page only if the checkout servers' CPU is also running high.
 
-**Why:** Alert on burn rate: page when the budget is draining fast and open a ticket for slow burns. Paging on every error or on machine metrics wakes people for things users don't feel. See [[service-level-objectives]] and [[observability]].
+**Why:** Page when the budget is draining fast, such as 2% of a 30-day budget in one hour (a burn rate of 14.4), and open a ticket for slow burns. At a burn rate of 2, the budget lasts about two weeks. See [[service-level-objectives]] and [[observability]].
 
 ## A new internal product gets about a hundred requests a day. Should the team set up SLOs with burn-rate alerts now?
 

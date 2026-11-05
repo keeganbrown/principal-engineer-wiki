@@ -20,7 +20,7 @@
 
 ## What can contract tests not tell you?
 
-- [x] Whether the provider's values are actually correct.
+- [x] Whether the provider's behavior is right, such as sort order.
 - [ ] Whether a field the consumer requires is missing.
 - [ ] Whether a field changed type from number to string.
 - [ ] Whether the provider renamed a field the consumer reads.

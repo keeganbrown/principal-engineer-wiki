@@ -19,14 +19,14 @@ In a running system, you can't change everything at once. During a deploy, old a
 2. **Migrate** — move every reader and writer to the new thing, and copy existing data across.
 3. **Contract** — once nothing uses the old thing, remove it.
 
-Between steps, the system is always fully working. Until you stop writing the old shape, any step can be rolled back by redeploying the previous version. Stopping writes to the old shape (step 4) is the real [[reversible-decisions|one-way door]], so measure before you take it. Dropping the old thing (step 5) just makes that permanent.
+Between steps, the system is always fully working, and each step can be rolled back by redeploying the previous version. The exception is going back past the point where you stop writing the old shape, near the end of Migrate: code that reads the old shape would see stale data unless you first copy the new data back. That makes stopping the old writes close to a [[reversible-decisions|one-way door]] — a decision that's expensive to reverse — so measure before you take it. Contracting makes it permanent.
 
 The technique is also called *parallel change*, a name from Danilo Sato's 2014 article on martinfowler.com.
 
 ## Why it matters
 
 - **Changes need no downtime.** No "maintenance window" to rename a column.
-- **Rolling deploys become safe.** A rolling deploy updates servers a few at a time, so old and new code briefly coexist; expand and contract makes that harmless.
+- **Rolling deploys become safe.** A rolling deploy updates servers a few at a time, so old and new code briefly coexist; expand and contract makes that harmless ([[continuous-delivery]]).
 - **Teams move on their own schedule.** Consumers update independently instead of in a coordinated big-bang release.
 - **It costs time and temporary complexity.** One rename becomes five deploys, often spread over weeks, plus dual-write code someone must remember to delete.
 
@@ -35,23 +35,24 @@ The technique is also called *parallel change*, a name from Danilo Sato's 2014 a
 Renaming a database column `name` → `fullName`, in five deploys:
 
 **Expand**
-1. Run a migration that adds the `fullName` column. Then deploy code that *writes both* columns (a **dual write**) and still *reads* `name`.
+
+1. **Add the column and dual-write.** Run a migration that adds the `fullName` column; once it has run, deploy code that *writes both* columns (a **dual write**) and still *reads* `name`. The dual write is safe here because both columns sit in one row and one transaction; when the new shape lives in another store, it isn't atomic, so use an outbox ([[transactional-outbox]]). A database trigger can do the dual write instead, at the cost of logic hidden from the code.
 
 **Migrate**
 
 2. **Backfill.** Once step 1 is on every server, copy `name` into `fullName` in batches, each one a single in-database statement: `UPDATE users SET fullName = name WHERE fullName IS NULL AND id BETWEEN …`.
 3. **Switch reads.** Deploy code that reads `fullName`. Keep writing both, so you can still roll back.
-4. **Stop writing the old.** Deploy code that writes only `fullName`. From here, rolling back would read stale data from `name`.
+4. **Stop writing the old.** Deploy code that writes only `fullName`. Rolling back to step 3's code is still safe, but from here you can't go back to code that *reads* `name` without first copying `fullName` back into it.
 
 **Contract**
 
-5. Drop the `name` column.
+5. **Drop the old column.** Remove `name` once nothing reads it.
 
 Guidelines:
 
 - **Don't merge two steps into one deploy.** That recreates the breaking change.
 - **Measure before you stop writing the old.** Use query logs or usage metrics to confirm nothing still reads it; after step 4, anything that does reads stale data.
-- **Make backfills safe to rerun.** Each batch should be [[idempotency|idempotent]] — running it twice has the same effect as once — and resumable after a failure.
+- **Make backfills safe to rerun.** Each batch should be [[idempotency|idempotent]] — running it twice has the same effect as once — and resumable after a failure. The team making the change owns the backfill and watches it to completion.
 - **Decide on purpose whether to contract.** For a public API, usage of an old field may never reach zero. Keeping a cheap deprecated field forever is a legitimate choice — make it deliberately and record it.
 
 ## Example
@@ -69,7 +70,7 @@ The team also finds a nightly report, owned by the finance team, that queries `n
 - **Skipping the dual write.** Data written mid-migration ends up in only one column.
 - **Running huge backfills in one transaction.** They lock tables and cause an outage.
 - **Forgetting non-code readers.** Reports, data pipelines, and analysts' queries also use the old column.
-- **Never contracting by accident.** Old columns and fields pile up and confuse everyone when nobody decides.
+- **Leaving the old shape forever by default.** Old columns and fields pile up and confuse everyone when nobody decides.
 
 ## When it doesn't apply
 

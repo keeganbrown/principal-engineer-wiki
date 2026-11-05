@@ -11,12 +11,12 @@
 
 ## Where should a team focus when threat modeling a new feature?
 
-- [x] The trust boundaries, where data passes into more-trusted parts of the system.
+- [x] The trust boundaries, where data crosses between differently trusted parts.
 - [ ] The most sophisticated attacker they can imagine, regardless of likelihood.
 - [ ] Every function in the codebase, reviewed line by line for possible flaws.
 - [ ] Only the parts of the system that face the public internet directly.
 
-**Why:** Most attacks cross a trust boundary, so walk each one with STRIDE. Boundaries aren't only public ones: webhooks, uploads, and jobs that handle many customers' data count too. See [[threat-modeling]].
+**Why:** Most attacks cross a trust boundary, so walk each one with STRIDE. Boundaries aren't only public ones: webhooks, uploads, outgoing emails, and jobs that mix many customers' data count too. See [[threat-modeling]].
 
 ## A threat model lists eight threats, but nobody has decided what to do about them. What is missing?
 

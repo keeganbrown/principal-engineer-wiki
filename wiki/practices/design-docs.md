@@ -15,13 +15,13 @@ A design doc (sometimes called an RFC — "request for comments" — or a tech s
 
 The main purpose isn't documentation — it's **thinking**. Writing forces you to turn a vague plan into concrete decisions, and gives others a chance to spot problems you can't see. Changing a paragraph costs minutes; changing a shipped system costs months.
 
-**Design docs and ADRs do different jobs.** The design doc is for *deliberation*: it explores the problem, compares options, and gathers feedback. The [[architecture-decision-records|architecture decision record (ADR)]] is the *record*: a page or two stating what was decided and why. A design doc usually ends by producing one or more ADRs.
+**Design docs and architecture decision records (ADRs) do different jobs.** The design doc is for *deliberation*: it explores the problem, compares options, and gathers feedback. The [[architecture-decision-records|ADR]] is the *record*: a page or two stating what was decided and why. A design doc usually ends by producing one or more ADRs.
 
 ## Why it matters
 
-- **Catches big mistakes early.** Reviewers find missing requirements, scaling problems, and security gaps before they're built in.
-- **Aligns people.** Product, engineering, and dependent teams agree on scope and approach.
-- **Scales your influence.** A clear doc can be read by fifty people across time zones; a meeting reaches only the people in the room.
+- **Big mistakes surface early.** Reviewers find missing requirements, scaling problems, and security gaps before they're built in.
+- **People align.** Product, engineering, and dependent teams agree on scope and approach.
+- **Your influence scales.** A clear doc can be read by fifty people across time zones; a meeting reaches only the people in the room.
 
 ## How to apply it
 
@@ -72,3 +72,4 @@ Watch for the process turning into bureaucracy. If doc review routinely takes lo
 - [[threat-modeling]] — the security section of a design doc.
 - [[yagni]] — non-goals are where YAGNI ("you aren't gonna need it") gets written down.
 - [[spec-first-agent-tasks]] — the same "plan in writing first" habit, applied to coding agents.
+- [[technical-strategy]] — recent design docs are the raw material for a bottom-up strategy.

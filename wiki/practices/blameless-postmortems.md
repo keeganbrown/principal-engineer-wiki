@@ -19,7 +19,7 @@ The approach comes from safety-critical fields like aviation and medicine. In so
 
 - **Blame hides information.** If people fear punishment, they leave out details — and the details are where the real causes are.
 - **"Human error" is a starting point, not a conclusion.** If one typo can take down production, the problem is the system that let one typo do that.
-- **Learning compounds.** Teams that learn from every incident get steadily more reliable. Teams that blame repeat the same failures with different people.
+- **Learning compounds.** Teams that act on what incidents teach tend to get steadily more reliable. Teams that blame repeat the same failures with different people.
 - **Safety surfaces near-misses.** When people aren't afraid, they report near-misses — free lessons.
 
 ## How to apply it

@@ -13,7 +13,7 @@ tags: [documentation, decision-making, communication]
 
 Every codebase is full of decisions: why Postgres and not MongoDB, why events instead of direct calls, why this library. Months later, nobody remembers the reasons. New engineers either fear changing anything or change things without understanding the trade-offs.
 
-An **architecture decision record (ADR)** is a record, a page or two long, of one decision. ADRs are numbered, stored in the repo next to the code (e.g., `docs/adr/0007-use-postgres.md`), and never deleted — only superseded by newer ADRs.
+An **architecture decision record (ADR)** is a one- or two-page record of a single decision. ADRs are numbered, stored in the repository next to the code (e.g., `docs/adr/0007-use-postgres.md`), and never deleted — only superseded by newer ADRs.
 
 **ADRs and design docs do different jobs.** A [[design-docs|design doc]] is for *deliberation*: exploring a big problem and getting feedback. An ADR is the *record*: what was decided and why, in a page. A big design doc usually ends in one or more ADRs, but many decisions are too small for a design doc and still deserve an ADR.
 
@@ -22,9 +22,9 @@ Michael Nygard popularized the format in a 2011 blog post.
 ## Why it matters
 
 - **The "why" survives.** Code shows *what* was built; ADRs explain *why*, including options rejected.
-- **Speeds onboarding.** Reading ten ADRs gives a newcomer the history of the architecture in an hour.
-- **Makes decisions transparent.** Anyone can see what was decided, by whom, and on what basis.
-- **Cheap.** A good ADR takes under an hour to write.
+- **Onboarding gets faster.** Reading ten ADRs gives a newcomer the history of the architecture in an hour.
+- **Decisions become transparent.** Anyone can see what was decided, by whom, and on what basis.
+- **It's cheap to write.** A good ADR takes under an hour to type; the discussion it triggers is the real cost, and the point.
 
 ## How to apply it
 
@@ -48,7 +48,7 @@ Each option with its main pros and cons.
 What becomes easier, what becomes harder, what we must now do.
 ```
 
-Status is one of Proposed, Accepted, or Superseded by ADR NNNN.
+Typical statuses are Proposed, Accepted, Deprecated, or Superseded by ADR NNNN.
 
 Guidelines:
 - **Write one for every significant decision.** "Significant" means costly to reverse, or affecting other teams ([[reversible-decisions]]).
@@ -89,3 +89,4 @@ Small, easily reversed decisions — a variable name, a minor library inside one
 - [[conways-law]] — ADRs are a key communication channel across teams.
 - [[technical-debt]] — record deliberate shortcuts so they can be repaid later.
 - [[code-review]] — propose ADRs as PRs to get the same review benefits.
+- [[technical-strategy]] — individual decisions under a strategy get recorded as ADRs.

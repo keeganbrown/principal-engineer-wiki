@@ -23,9 +23,9 @@ Martin Fowler's **debt quadrant**:
 | | Reckless | Prudent |
 | --- | --- | --- |
 | **Deliberate** | "We don't have time for design." | "Ship now, fix after launch — we've noted it." |
-| **Inadvertent** | "What's layering?" | "Now we know how we *should* have built it." |
+| **Inadvertent** | "We didn't know about separating layers." | "Now we know how we *should* have built it." |
 
-*Deliberate* means you knew you were borrowing; *inadvertent* means you didn't. *Prudent* debt is a reasonable trade; *reckless* debt comes from ignoring good practice. Prudent debt is normal. Reckless debt is what to stamp out.
+*Deliberate* means you knew you were borrowing; *inadvertent* means you didn't. *Prudent* debt is a reasonable trade and normal; *reckless* debt comes from ignoring good practice, and it's what to stamp out.
 
 Ward Cunningham coined the metaphor in 1992.
 
@@ -41,8 +41,8 @@ As a principal engineer, your job is to **translate debt into business terms** �
 - **Pay down principal where you work.** Follow the "boy scout rule": leave the code a bit better than you found it.
 - **Prioritize by interest rate.** Fix debt in code that changes often first.
 - **Watch for debt that carries risk, not interest.** A rarely touched module can wait — *unless* it runs on an unsupported runtime, has unpatched dependencies, or only one person understands it ([[hero-culture]]). That debt comes due on someone else's schedule: a security advisory, a forced upgrade, a resignation.
-- **Find the debt nobody recorded.** Look for **hotspots**: files with high churn and frequent bug fixes. Measure lead time for changes (from commit to production) there before and after paying debt down, to show it worked.
-- **Budget for it.** Many teams reserve roughly 10–20% of capacity for paying down debt continuously.
+- **Find the debt nobody recorded.** Look for **hotspots**: files with high churn (edited very often) and frequent bug fixes. Measure lead time for changes (from commit to production; see [[continuous-delivery]]) there before and after paying debt down, to show it worked.
+- **Budget for it.** Many teams reserve roughly 10–20% of capacity for paying down debt continuously. Hold that allocation to the same rules — hotspots and outcomes — or it turns into a fund for whatever someone dislikes.
 - **Record deliberate debt when you take it.** Note the shortcut, the reason, and the trigger for repaying it.
 - **Frame it in outcomes.** Not "refactor the order module," but "cut time-to-ship for checkout features from 2 weeks to 3 days."
 
@@ -65,6 +65,8 @@ When international expansion reached the roadmap, though, the team knew exactly 
 ## When it doesn't apply
 
 Code that will be thrown away — a prototype, an experiment, a one-time migration — doesn't accrue meaningful interest. Don't spend effort polishing it. Just be honest about which code is disposable, and don't let prototypes quietly become production.
+
+A system you'll replace within a year, for example through a [[strangler-fig]], should get only its risk debt paid: security fixes and unsupported runtimes. Paying down its interest is paying off a loan you're about to walk away from.
 
 ## Related
 

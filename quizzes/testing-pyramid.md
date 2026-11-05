@@ -18,7 +18,7 @@
 
 **Why:** Most of its risk is in how it talks to its database and neighbors, so that's where tests pay off (Spotify called this the "testing honeycomb"). Prefer the fastest test that gives real confidence. See [[testing-pyramid]].
 
-## A team's unit tests are all green, but checkout fails in staging because a JSON field was renamed. What went wrong?
+## A team's unit tests mock the HTTP client and are all green, but checkout fails in staging because a JSON field was renamed. What went wrong?
 
 - [x] The unit tests mocked the boundary, and no integration test covered it.
 - [ ] The team ran too few end-to-end tests, so every journey needs one now.

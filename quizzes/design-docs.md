@@ -22,7 +22,7 @@
 
 - [x] Shrink the template or the list of reviewers.
 - [ ] Require docs only from the most junior engineers.
-- [ ] Add a deadline after which docs approve themselves.
+- [ ] Add a second round of review so docs are approved more carefully.
 - [ ] Drop design docs entirely, since review is too slow.
 
 **Why:** A doc process that outweighs the work has turned into bureaucracy. Keep the thinking, cut the ceremony. See [[design-docs]].

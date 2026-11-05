@@ -17,13 +17,15 @@ Shipping is risky in proportion to how much changes at once. A release with fort
 - **Continuous delivery** — every change that passes the pipeline *could* go to production at the push of a button.
 - **Continuous deployment** — it goes automatically, with no button.
 
-**Trunk-based development** is the branching style that goes with it: branches live for hours or a day or two, then merge into main (the "trunk"), with unfinished work hidden behind [[feature-flags]]. The last step is **progressive delivery**: release to a small slice of traffic first (a **canary release**), compare it with the rest, then widen or roll back. Continuous integration comes from Extreme Programming (Kent Beck, late 1990s). Jez Humble and David Farley's *Continuous Delivery* (2010) named the wider practice, and James Governor of RedMonk coined "progressive delivery" in 2018.
+**Trunk-based development** is the branching style that goes with it: branches live for hours, a day at most, then merge into main (the "trunk"), with unfinished work hidden behind [[feature-flags]]. The last step is **progressive delivery**: release to a small slice of traffic first (a **canary release**), compare it with a baseline, then widen or roll back. A deploy canary routes traffic to new instances, so it catches startup, config, and memory problems; a flag set to 1% of users only changes behavior inside instances already running.
+
+Grady Booch used the term "continuous integration" in 1991, and Extreme Programming (Kent Beck, late 1990s) made it a core practice. Jez Humble and David Farley's *Continuous Delivery* (2010) defined and popularized the wider practice, and James Governor of RedMonk coined "progressive delivery" in 2018.
 
 ## Why it matters
 
 - **Small batches are easier to debug and undo.** One change per deploy means the cause of a failure is obvious, and rolling back loses little.
 - **Integration pain shrinks when it's frequent.** Merging a day's work is easy; merging a month-old branch is a project.
-- **Speed and stability tend to go together.** The DevOps Research and Assessment (DORA) surveys, summarized in *Accelerate* (Forsgren, Humble, and Kim, 2018), found that teams deploying more often also tended to have fewer failed changes. That's a correlation from self-reported surveys, so it doesn't prove that deploying more makes you stabler, but it does show the assumed trade-off isn't inevitable.
+- **Speed and stability tend to go together.** The DevOps Research and Assessment (DORA) surveys, summarized in *Accelerate* (Forsgren, Humble, and Kim, 2018), found that teams deploying more often also tended to have fewer failed changes. That's a correlation from self-reported surveys, so it doesn't prove that deploying more makes you stabler, but it does show the assumed trade-off isn't inevitable. DORA now tracks five delivery metrics: lead time for changes (commit to production), deployment frequency, change failure rate, failed deployment recovery time, and rework rate (unplanned deploys to fix a recent release).
 - **Canaries limit the damage.** A bad change reaches a few percent of users for minutes, not everyone for an hour.
 
 ## How to apply it
@@ -31,10 +33,11 @@ Shipping is risky in proportion to how much changes at once. A release with fort
 - **Treat a red main branch as the team's top priority.** Fix it within minutes or revert the change. A main branch that's often broken can't be released, and people stop trusting it.
 - **Merge small changes at least daily.** Hide unfinished work behind flags rather than on long branches.
 - **Keep the pipeline fast.** If the commit checks take much more than ten minutes, people batch their changes to avoid waiting ([[testing-pyramid]]).
-- **Build once, then promote the same artifact.** The package you tested is the package you deploy; only configuration differs between environments.
-- **Make deploy and rollback one command each, and use both often.** A rollback path nobody exercises won't work when needed. Database changes must keep working with the previous version of the code, or rollback breaks ([[expand-and-contract]]).
-- **Roll out in steps, with automatic checks.** Send a canary 1–5% of traffic (or one region), compare its error rate and latency with the rest for a set time, then widen in steps, rolling back automatically if the canary does worse. A canary has limits: at low traffic it may see too few requests to show a difference, it can't catch problems that appear only at full load or after hours (a slow memory leak, a nightly job), and old and new versions must run side by side safely.
-- **Pause risky deploys when reliability is low.** When the error budget is spent, ship fixes, not features ([[service-level-objectives]]).
+- **Build once, then promote the same package.** Build the deployable package once and move that same package through each environment; the package you tested is the package you deploy, and only configuration differs.
+- **Make deploy and rollback one command each, and use both often.** A rollback path nobody exercises won't work when needed. Database changes must keep working with the previous version of the code, or rollback breaks ([[expand-and-contract]]). Restoring a backup isn't a rollback: it discards every write since.
+- **Roll out in steps, with automatic checks.** Send a canary 1–5% of traffic (or one region), and compare its error rate and latency for a set time with a same-sized baseline running the old version, started at the same time. Then widen in steps, rolling back automatically if the canary does worse.
+- **Know a canary's blind spots.** At low traffic it may see too few requests to show a difference. It can't catch problems that appear only at full load or after hours (a slow memory leak, a nightly job). And old and new versions must run side by side safely.
+- **Pause risky deploys when reliability is low.** When the error budget (the amount of failure your reliability target allows in a period) is spent, ship fixes, not features ([[service-level-objectives]]).
 
 ## Example
 

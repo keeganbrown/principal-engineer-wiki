@@ -13,7 +13,7 @@ tags: [testing, api-design, microservices]
 
 When two services talk, there's an implicit agreement — a **contract** — about what requests look like and what responses come back. If the provider renames a field, the consumer breaks. But each team's unit tests only check their own code, so nobody notices until production.
 
-The obvious fix is end-to-end tests that run both services together. They work, but they're slow, flaky, and need a shared environment that's always broken.
+The obvious fix is end-to-end tests that run both services together. They work, but they're slow, flaky, and need a shared environment that's often broken.
 
 A **contract test** checks the agreement without running both sides at once:
 
@@ -30,13 +30,13 @@ Ian Robinson named consumer-driven contracts in a 2006 article on martinfowler.c
 - **Breaks surface before merge.** The provider's build fails, where the fix is cheapest.
 - **Tests stay fast and reliable.** Each side tests alone; no shared environment, no network flakiness.
 - **Providers see what's used.** A field no contract mentions is a strong signal it's unused — but only consumers that publish contracts are counted. Confirm with usage metrics before removing anything ([[expand-and-contract]]).
-- **Teams can deploy independently.** That's the main promise of separate services, and contracts make it real.
+- **Teams can deploy independently.** That's the main promise of separate services, and contracts remove one of the main reasons teams can't.
 
 ## How to apply it
 
 - **Start where it hurts.** Pick the API boundary that breaks most often, or the one between two teams who rarely talk.
 - **Have consumers specify only what they use.** A contract that asserts every field leaves the provider unable to change anything.
-- **Verify against every consumer version still in production.** For a mobile app, that's every supported release, not just the latest. Old app versions stay installed for years. This set only grows, so pair it with a published support window: when a release falls out of support, its contracts retire. Otherwise the oldest client sets the pace for every provider change.
+- **Verify against every consumer version still in production.** For a mobile app, old versions stay installed for years, so that's every supported release, not just the latest. This set only grows, so pair it with a published support window: when a release falls out of support, its contracts retire. Otherwise the oldest client sets the pace for every provider change.
 - **Run a contract broker.** A broker is a shared store for contracts; it answers "is it safe to deploy?" against what's actually live.
 - **Diff schemas automatically.** Even without consumer-driven contracts, checking an OpenAPI or Protobuf schema for breaking changes catches structural breaks cheaply.
 - **Remember contracts check shape, not meaning.** Changed sort order, stricter validation, or different error codes still pass. Those need review ([[api-versioning]] lists them).
@@ -46,7 +46,7 @@ Ian Robinson named consumer-driven contracts in a 2006 article on martinfowler.c
 
 The mobile app shows an order's `total`. The orders team, cleaning up, renames it to `totalAmount` and updates their own tests. Everything passes.
 
-With contract testing, the mobile team's contract — for every app version still supported — says "`GET /orders/{id}` returns `total` as a number." The orders team's CI runs those contracts and fails: *"Consumer mobile-app 4.2 expects field `total`."* The team adds `totalAmount` alongside `total` instead of replacing it, and nothing breaks for users who haven't updated.
+With contract testing, the mobile team's contract — for every app version still supported — says "`GET /orders/{id}` returns `total` as a number." The orders team's CI runs those contracts and fails: *"Consumer mobile-app 4.2 expects field `total`."* The team adds `totalAmount` alongside `total` instead of replacing it, and nothing breaks for users who haven't updated. The cost: `total` must now stay until app 4.2 falls out of support, and the orders team keeps the fixtures each supported version's contracts assume.
 
 ## Common traps
 
