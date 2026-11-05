@@ -63,7 +63,7 @@ The style guide moves into the linter config, so it's enforced rather than reque
 ## Common traps
 
 - **Writing an essay.** Long files dilute every rule. Link to deeper docs instead of pasting them.
-- **Treating it as enforcement.** "Always run the tests" in a file is a hope. A CI (continuous integration) check that fails without tests is a guarantee.
+- **Treating it as enforcement.** "Always run the tests" in a file is a hope. A continuous integration (CI) check that fails without tests is a guarantee.
 - **Letting it rot.** A file that names a command you renamed last month teaches the agent wrong things with confidence. The Stanford and Carnegie Mellon study found about three-quarters of committed agent configuration files were never edited after their first commit, within its roughly 14-month window. Give it an owner and touch it when the build changes.
 - **Personal files for team rules.** Rules that only live in one person's local config split the team into different behaviors. Shared rules go in the shared file.
 - **Putting secrets or private data in it.** It's checked into the repository and sent to the model every session.

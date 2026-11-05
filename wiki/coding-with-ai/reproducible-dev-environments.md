@@ -20,7 +20,7 @@ A reproducible environment also gives you a natural sandbox. If the whole enviro
 ## Why it matters
 
 - **Agents fail on environment problems in confusing ways.** A missing tool shows up as a strange test failure, and the agent may rewrite working code to get around it. The same environment everywhere removes a whole class of false failures.
-- **CI and local runs agree.** If CI (continuous integration) builds from the same definition, "passes locally, fails in CI" mostly disappears — for humans and agents.
+- **Local runs and continuous integration (CI) agree.** If CI builds from the same definition, "passes locally, fails in CI" mostly disappears — for humans and agents.
 - **It's the easiest path to a sandbox.** Isolating an agent is hard on a hand-built laptop and easy when the environment is already a container ([[agent-guardrails]]).
 - **New people and new agents start fast.** Day one becomes "open the repository and run one command."
 

@@ -27,7 +27,7 @@ The limits: each request has latency measured in milliseconds, there's no in-pla
 
 - **Store the file in object storage, the reference in the database.** The database row holds the key, size, type, and checksum; the bytes live in the bucket.
 - **Upload and download directly from clients.** Issue a short-lived **pre-signed URL** — a link that grants one operation on one object for a few minutes — so large files don't pass through your servers. The cost: your servers never see the bytes, so enforce size and type in the signed policy, and scan or validate each file after upload before marking it usable.
-- **Keep buckets private by default.** Public buckets are a leading cause of data leaks ([[threat-modeling]]). Serve public content through a CDN (content delivery network) in front of a private bucket ([[load-balancers-and-cdns]]).
+- **Keep buckets private by default.** Public buckets are a leading cause of data leaks ([[threat-modeling]]). Serve public content through a content delivery network (CDN) in front of a private bucket ([[load-balancers-and-cdns]]).
 - **Use lifecycle rules.** Move old objects to cheaper storage classes and delete what you no longer need automatically; without them, buckets grow forever with temp files and old versions.
 - **Turn on versioning for important data.** Keeping previous versions protects against accidental overwrites and deletes, at the cost of paying to store them.
 - **Design keys for your access patterns.** Prefixes like `tenant-42/2026/10/` make listing and lifecycle rules per tenant or month easy.

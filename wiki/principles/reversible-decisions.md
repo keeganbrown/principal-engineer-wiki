@@ -32,7 +32,7 @@ Telling the two apart is a core principal-engineer skill. It's often the most us
 - **Look for the one-way parts inside a two-way decision.** Choosing a queue technology is reversible; the message format other teams build on may not be.
 - **Make a one-way door two-way only where it pays.** You can version a data format from day one ([[expand-and-contract]] then lets it evolve), start with an internal API before publishing it, or ship gradually behind [[feature-flags]]. But each hedge is code you carry, and abstractions over a vendor rarely hide every vendor-specific behavior. Buy reversibility only for doors you have a real reason to expect to walk back through.
 - **Decide two-way doors quickly, at the lowest level.** Let the person closest to the work choose. Set a short timebox.
-- **Invest in one-way doors.** Write a [[design-docs|design doc]], consider alternatives, prototype, get review from the people affected, and record the decision in an [[architecture-decision-records|ADR (architecture decision record)]].
+- **Invest in one-way doors.** Write a [[design-docs|design doc]], consider alternatives, prototype, get review from the people affected, and record the decision in an [[architecture-decision-records|architecture decision record (ADR)]].
 - **Notice when a door is closing.** Reversible decisions often become irreversible gradually — as more data, more callers, or more teams depend on them. Revisit before that happens.
 
 ## Example

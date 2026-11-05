@@ -34,7 +34,7 @@ The key threat is **prompt injection**: text in the agent's input — a README, 
 - **Keep production credentials away from agents.** Agents work against development and test environments. Changes reach production through the same reviewed pipeline as human changes ([[continuous-delivery]]).
 - **Make tests safe to run by anyone, including an agent.** Code that deletes files, runs shell commands, or calls paid APIs gets a **fake** or **spy** in tests — a stand-in that records the call instead of doing it ([[hexagonal-architecture]]).
 - **Check permission settings into the repository.** Team-wide allow and deny rules belong in version control, reviewed like code, so every engineer's agent has the same limits ([[shared-agent-configuration]]).
-- **Keep an audit trail.** Log what agents ran and changed, especially in shared or CI (continuous integration) environments, so you can reconstruct what happened.
+- **Keep an audit trail.** Log what agents ran and changed, especially in shared or continuous integration (CI) environments, so you can reconstruct what happened.
 
 ## Example
 

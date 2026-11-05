@@ -11,7 +11,7 @@ tags: [containers, kubernetes, deployment, infrastructure, platforms]
 
 ## The idea
 
-A **container** bundles an application with its runtime, libraries, and settings into one **image**. The image runs the same on a laptop, in CI (continuous integration), and in production. Unlike a virtual machine, a container shares the host's operating system kernel, so it starts in seconds and adds little overhead.
+A **container** bundles an application with its runtime, libraries, and settings into one **image**. The image runs the same on a laptop, in continuous integration (CI), and in production. Unlike a virtual machine, a container shares the host's operating system kernel, so it starts in seconds and adds little overhead.
 
 Running one container is easy. Running hundreds — restarting crashed ones, spreading them across machines, rolling out new versions, connecting them to each other — needs an **orchestrator**. **Kubernetes** is the dominant one.
 
