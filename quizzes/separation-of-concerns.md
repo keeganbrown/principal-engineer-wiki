@@ -3,7 +3,7 @@
 ## A signup handler validates the email, queries the database, inserts a row, and sends mail inline. What is the main fix?
 
 - [x] Pull the rules into a function that takes the user store and mailer.
-- [ ] Split it into controller, service, and repository layers by file type.
+- [ ] Move the whole handler, unchanged, into a new `services/` folder.
 - [ ] Add comments above each step, so readers can tell the concerns apart.
 - [ ] Move the SQL into a stored procedure, so the handler has less code in it.
 

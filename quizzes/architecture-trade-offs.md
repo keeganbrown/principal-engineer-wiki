@@ -25,7 +25,7 @@
 - [ ] Yes, and record a weighted score for each library in an ADR.
 - [ ] No; ask each engineer to use whichever library they prefer.
 
-**Why:** For choices that are cheap to undo, the analysis costs more than a mistake. Save the full comparison for decisions that lock you in. Letting everyone choose turns many small doors into one org-wide migration. See [[architecture-trade-offs]] and [[reversible-decisions]].
+**Why:** For choices that are cheap to undo, the analysis costs more than a mistake. Save the full comparison for decisions that lock you in. Letting each engineer choose adds up, though: many cheap choices made differently become one org-wide migration later. See [[architecture-trade-offs]] and [[reversible-decisions]].
 
 ## A team chose a modular monolith over services last year. An engineer wants to reopen it, though team count and traffic are unchanged. What should happen?
 

@@ -30,7 +30,7 @@ Telling the two apart is a core principal-engineer skill. It's often the most us
 
 - **Ask what undoing it would cost in a year.** Think about data migrations, consumers you don't control, contracts, and the people who'd have to coordinate.
 - **Look for the one-way parts inside a two-way decision.** Choosing a queue technology is reversible; the message format other teams build on may not be.
-- **Make a one-way door two-way only where it pays.** You can version a data format from day one ([[expand-and-contract]] then lets it evolve), start with an internal API before publishing it, or ship gradually behind [[feature-flags]]. But each hedge is code you carry, and abstractions over a vendor leak. Buy reversibility only for doors you have a real reason to expect to walk back through.
+- **Make a one-way door two-way only where it pays.** You can version a data format from day one ([[expand-and-contract]] then lets it evolve), start with an internal API before publishing it, or ship gradually behind [[feature-flags]]. But each hedge is code you carry, and abstractions over a vendor rarely hide every vendor-specific behavior. Buy reversibility only for doors you have a real reason to expect to walk back through.
 - **Decide two-way doors quickly, at the lowest level.** Let the person closest to the work choose. Set a short timebox.
 - **Invest in one-way doors.** Write a [[design-docs|design doc]], consider alternatives, prototype, get review from the people affected, and record the decision in an [[architecture-decision-records|ADR (architecture decision record)]].
 - **Notice when a door is closing.** Reversible decisions often become irreversible gradually — as more data, more callers, or more teams depend on them. Revisit before that happens.
@@ -43,7 +43,7 @@ A team is building a new notifications service. In the design review:
 - **Which database?** Mostly two-way at first, but harder to change as data grows. Start with the company's standard Postgres ([[relational-databases]]) and keep data access behind one module.
 - **What event format will other teams subscribe to?** One-way door — once ten teams consume it, changes need coordinating across all of them. Spend a week on it, review it with two consuming teams, and version it from day one.
 
-Two engineers disagree about the database: one calls it a one-way door. The cost-to-undo question settles most of it — at today's data size, a migration is a week of work. The tech lead calls it two-way, and the dissent goes in the ADR so it can be revisited when the data grows.
+Two engineers disagree about the database: one calls it a one-way door. The cost-to-undo question settles most of it — at today's data size, a migration is a week of work. The tech lead decides it's two-way, keeps data access behind one module so a later database swap touches one place, and records the dissent in the ADR so it can be revisited when the data grows.
 
 ## Common traps
 
@@ -66,4 +66,4 @@ In a crisis, even one-way decisions sometimes have to be made fast, with whateve
 - [[api-versioning]] — published APIs are a classic one-way door.
 - [[paved-roads]] — how to standardize the small doors that add up.
 - [[influencing-without-authority]] — spend your credibility on one-way doors, not two-way ones.
-- [[bikeshedding]] — debate out of proportion to how hard a decision is to undo.
+- [[bikeshedding]] — the trap of spending one-way-door effort on a two-way door.

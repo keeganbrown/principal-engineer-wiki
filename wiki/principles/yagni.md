@@ -42,7 +42,7 @@ Even a correct guess costs delay and carry. A wrong guess â€” which is common â€
 
 You're building export-to-CSV. A teammate suggests a generic `Exporter` interface with pluggable formats (CSV, JSON, XML, Parquet).
 
-**YAGNI response:** write an `exportCsv(rows)` function with tests. Six months later, a customer asks for JSON, so you add `exportJson(rows)` next to it. Two plain functions are fine; the rule of thumb is to extract a shared abstraction for look-alike code at the third copy ([[dry|the rule of three]]). Meanwhile you never wasted time on XML or Parquet, which nobody asked for.
+**YAGNI response:** write an `exportCsv(rows)` function with tests. Six months later, a customer asks for JSON, so you add `exportJson(rows)` next to it. Two plain functions are fine; wait for a third before extracting a shared abstraction ([[dry|the rule of three]]). Meanwhile you never wasted time on XML or Parquet, which nobody asked for.
 
 ## Common traps
 
@@ -55,6 +55,7 @@ You're building export-to-CSV. A teammate suggests a generic `Exporter` interfac
 YAGNI weakens wherever later change is expensive, no matter how good your tests are:
 
 - **One-way doors resist change.** Public API shapes, database schemas with lots of data, security models, and data formats shared with partners are hard to undo. Spend more thought up front ([[reversible-decisions]]).
+- **Data you don't record is gone.** Adding a field later is cheap; recovering the history you didn't store is impossible. Capture cheap facts (who, when, what changed) now.
 - **Team boundaries multiply the cost.** Anything other teams build on is costly to change later because of coordination, not code quality. Ten consumers means ten migrations.
 
 Most decisions are two-way doors, and there YAGNI applies.

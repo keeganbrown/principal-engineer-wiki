@@ -32,6 +32,6 @@
 - [x] Only for vendors it has a real reason to expect to leave.
 - [ ] Yes; every vendor choice is a one-way door, so hedge them all.
 - [ ] Yes, because abstractions over vendors make switching free.
-- [ ] No; vendor choices are cheap two-way doors in most cases.
+- [ ] No; abstractions over vendors never pay off, whatever the vendor.
 
-**Why:** Each hedge is code you carry, and abstractions over a vendor leak. Buy reversibility only for doors you expect to walk back through. See [[reversible-decisions]] and [[yagni]].
+**Why:** Each hedge is code you carry, and abstractions over a vendor rarely hide every vendor-specific behavior. Buy reversibility only for doors you have a real reason to expect to walk back through. See [[reversible-decisions]] and [[yagni]].

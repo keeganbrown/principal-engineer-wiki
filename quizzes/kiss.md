@@ -1,4 +1,4 @@
-# Quiz: KISS (Keep It Simple)
+# Quiz: Keep It Simple, Stupid (KISS)
 
 ## A team needs a nightly report email and runs no queues yet. Which design does KISS favor?
 
@@ -11,8 +11,8 @@
 
 ## A team that already runs a monitored job queue in production needs a nightly report email. Which design does KISS favor?
 
-- [x] Put the report on the existing queue.
-- [ ] Write a one-off scheduled job, since cron is the simpler tool here.
+- [x] Usually the existing queue, since it's already monitored and familiar.
+- [ ] A new scheduled job with its own new alerting stack to watch it.
 - [ ] Stand up a second queue, so the report can't affect other work.
 - [ ] Build a plugin framework so other teams can add reports later.
 

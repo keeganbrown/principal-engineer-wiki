@@ -1,4 +1,4 @@
-# Quiz: DRY (Don't Repeat Yourself)
+# Quiz: Don't Repeat Yourself (DRY)
 
 ## Two functions have identical code, but one validates shipping addresses and the other billing addresses, owned by different teams. What does DRY suggest?
 
@@ -22,7 +22,7 @@
 
 - [x] Two teams keep separate copies of similar logic to evolve independently.
 - [ ] Two modules in one service compute the same discount rule slightly differently.
-- [ ] A configuration value is copied into four files so each service can start alone.
+- [ ] A configuration value is copied into four files because nobody knew where the original lived.
 - [ ] A discount rule is pasted into a second module because importing it felt awkward.
 
 **Why:** Prototypes, generated code, and deliberate independence are legitimate reasons to repeat. Copying the same business rule within one system is what DRY warns against. See [[dry]].

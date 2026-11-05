@@ -21,7 +21,7 @@ The term comes from Edsger Dijkstra (1974), who called it the only technique he 
 
 - **You can read one concern at a time.** The pricing logic makes sense without wading through SQL and HTTP code.
 - **Logic tests run in milliseconds.** Pure business rules need no database or browser to test.
-- **Change stays at the edges.** Adding a mobile app or changing storage touches the boundary code, not the rules. Storage swaps still leak transaction and query behavior into the logic, though; the reliable win is testability.
+- **Change stays at the edges.** Adding a mobile app or changing storage touches the boundary code, not the rules. Storage swaps still leak into the logic, though: the rules may need to know whether two writes happen in one transaction.
 - **People can work in parallel.** Different concerns mean fewer merge conflicts.
 
 ## How to apply it
@@ -63,7 +63,9 @@ function handleSignup(request):
 
 `users` and `mailer` are **ports**: small interfaces the rules define for the outside world. In tests you pass **fakes** — simple working stand-ins, like a list instead of a database.
 
-The tangled version checks *then* inserts, so two simultaneous signups can both pass the check. In the separated version, uniqueness is guaranteed by a unique index in the database; `users.add` catches the duplicate-key error and reports it. In-memory tests can't prove uniqueness — the database constraint does.
+The tangled version checks *then* inserts, so two simultaneous signups can both pass the check. Separately, that race is fixed by a unique index in the database, in either version; the separated version just puts the detail in the `users` adapter, where `users.add` catches the duplicate-key error and reports it. In-memory tests can't prove uniqueness — the database constraint does.
+
+One partial failure remains: if the mailer fails after `users.add` succeeds, the user exists but the caller gets an error. Send the welcome email from a retried job or an outbox instead of inline ([[transactional-outbox]]).
 
 ## Common traps
 

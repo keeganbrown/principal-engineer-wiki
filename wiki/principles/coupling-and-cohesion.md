@@ -39,18 +39,18 @@ Cohesion determines **findability**. When related code lives together, you know 
 ## How to apply it
 
 - **Hide internals.** Expose a small interface; keep data structures and helpers private.
-- **Depend on stable things.** Depend on interfaces and well-defined contracts, not on implementations that change often ([[hexagonal-architecture|dependency inversion]]).
-- **Pass plain data across boundaries.** Plain data can't call back into the sender, so the receiver depends only on the data's shape, not the sender's code.
+- **Depend on stable things.** Depend on interfaces and well-defined contracts, not on implementations that change often. With *dependency inversion*, your code defines the interface it needs and the implementation plugs in ([[hexagonal-architecture]]).
+- **Pass plain data across boundaries.** Unlike an object with methods, plain data carries no behavior, so the receiver depends only on its fields, not the sender's code.
 - **Group by domain.** Keep "everything about orders" together rather than scattering it across `models/`, `views/`, `services/`. Code in one domain changes together; code in one technical layer usually doesn't. ([[domain-driven-design]] covers how to find domain boundaries.)
 - **Watch the change log.** If two modules are always edited in the same commit, consider merging them. If one module is edited for unrelated reasons, consider splitting it.
 
 ## Example
 
-A common, invisible kind is **shared-database coupling**. Two services, `Orders` and `Shipping`, both read and write the same `orders` table. Shipping adds a column; Orders' reports break. They're coupled through shared storage — and nothing in either codebase shows it.
+**Shared-database coupling** is common and invisible. Two services, `Orders` and `Shipping`, both read and write the same `orders` table. Shipping adds a column; Orders' reports break. They're coupled through shared storage — and nothing in either codebase shows it.
 
 **Fix:** `Orders` owns the table. It publishes an `OrderPlaced` event (or offers an API). `Shipping` keeps its own copy of what it needs.
 
-The coupling doesn't disappear — it **moves** to the `OrderPlaced` contract, which now needs careful [[api-versioning]]. Shipping's copy is also [[cap-theorem|eventually consistent]]: it may lag a few seconds behind. The win is that the coupling is now *explicit and narrow* — one documented message instead of a whole table — not that it's gone.
+The coupling doesn't disappear — it **moves** to the `OrderPlaced` contract, which now needs careful [[api-versioning]]. Shipping's copy is also [[cap-theorem|eventually consistent]]: it may lag a few seconds behind. And saving the order and publishing the event are two separate writes, so publishing reliably needs an outbox ([[transactional-outbox]]), one more moving part the shared table didn't have. The win is that the coupling is now *explicit and narrow* — one documented message instead of a whole table — not that it's gone.
 
 ## Common traps
 

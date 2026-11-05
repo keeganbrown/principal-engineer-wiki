@@ -37,17 +37,17 @@ Consistency models, from strongest to weakest:
 
 | Model | Plain English | Typical use |
 | --- | --- | --- |
-| Linearizable (strong) | Behaves like one single copy, in real time. | Locks, leader election, unique usernames |
-| Sequential | Everyone sees all operations in the same order, though maybe not instantly. | Reads from replicas that apply one shared log in order (e.g., ZooKeeper followers) |
+| Linearizable (strong) | Behaves like one single copy, in real time. | Locks, picking one node to coordinate (leader election), unique usernames |
+| Sequential | Everyone sees all operations in the same order, though maybe not instantly. | Read-only copies that apply one shared change log in order |
 | Causal | If B depends on A (a reply to a comment), everyone sees A before B. Unrelated events may appear in different orders. | Comments and replies, chat |
 | Read-your-writes | You always see your own changes. | Profile edits, settings |
 | Eventual | Copies converge "soon" if writes stop. | Like counts, feeds, analytics |
 
-Then:
+Choosing among them:
 
-- **Default to one strong store.** Every extra consistency model is something every engineer must remember, and bugs live at the seams. Relax consistency only where latency, availability, or cost forces it.
+- **Default to one strong store.** Every extra consistency model is something every engineer must remember, and bugs live at the seams. Relax consistency only where latency, availability, cost, or team independence forces it ([[coupling-and-cohesion]]).
 - **Decide per operation when you do relax.** Checkout payment needs strong consistency; "recommended for you" doesn't.
-- **Ask the business what being wrong costs.** A stale like count costs nothing; overselling the last concert ticket costs a lot.
+- **Ask the business what being wrong costs.** A stale like count costs nothing; overselling the last concert ticket costs a lot. Sometimes the cheapest answer is to stay available and compensate: accept the order, and if it oversold, apologize, refund, or rebook ([[saga-pattern]]). Choose this when an error page costs more than the rare conflict.
 - **Know your tools' defaults.** Many databases and caches are eventually consistent unless configured otherwise.
 - **Design the user experience (UX) for staleness where you choose availability.** Show "updated a few seconds ago," use optimistic updates (show the change immediately, reconcile later), and read from the **primary** — the main copy that takes writes — right after a user's own write.
 

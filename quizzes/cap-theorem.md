@@ -1,4 +1,4 @@
-# Quiz: CAP Theorem
+# Quiz: CAP Theorem and Consistency Models
 
 ## The link between two data centers fails. What choice does CAP say the system now faces?
 

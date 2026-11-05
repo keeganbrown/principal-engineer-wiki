@@ -38,11 +38,11 @@ The phrase is usually credited to Lockheed engineer Kelly Johnson in the 1960s; 
 
 A team needs to send a nightly report email.
 
-**Option A:** add a new message queue, a worker service, a retry scheduler, and a templating service — "so it scales."
+**Option A:** add a new message queue and a worker service — "so it can retry and scale."
 
 **Option B:** a scheduled job that runs one script, renders a template, and calls the email API. If it fails, the scheduler alerts and someone reruns it. Option B ships in a day and has one place to look when it breaks.
 
-The harder call: suppose the team *already* runs a job queue in production for other work. Now putting the report on that queue may be the simpler choice — one familiar system with existing monitoring beats a special-case cron job nobody remembers. Simple is relative to what you already operate.
+The harder call: suppose the team *already* runs a job queue in production for other work. Now putting the report on that queue may be the simpler choice — one familiar system with existing monitoring beats a special-case scheduled (cron) job nobody remembers. Simple is relative to what you already operate.
 
 ## Common traps
 

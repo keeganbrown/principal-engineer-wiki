@@ -9,7 +9,7 @@ shape: the idea → why it matters → how to apply it → an example → common
 traps → when it doesn't apply.
 
 **New here?** A good first path:
-[[kiss]] → [[yagni]] → [[reversible-decisions]] → [[separation-of-concerns]] →
+[[kiss]] → [[yagni]] → [[reversible-decisions]] → [[architecture-trade-offs]] → [[separation-of-concerns]] →
 [[coupling-and-cohesion]] → [[functional-core-imperative-shell]] → [[test-driven-development]] →
 [[conways-law]] → [[influencing-without-authority]].
 

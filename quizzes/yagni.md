@@ -1,9 +1,9 @@
-# Quiz: YAGNI (You Aren't Gonna Need It)
+# Quiz: You Aren't Gonna Need It (YAGNI)
 
 ## You're building CSV export. A teammate proposes a pluggable `Exporter` for CSV, JSON, XML, and Parquet. What does YAGNI suggest?
 
 - [x] Write `exportCsv(rows)` with tests, and add formats when asked.
-- [ ] Build the pluggable interface now, since adding formats later costs more than adding them now.
+- [ ] Build the pluggable interface now, so new formats are cheap to add.
 - [ ] Skip tests on the CSV export, since the plugin may replace it later.
 - [ ] Build CSV and JSON now, and leave XML and Parquet as stubs for later.
 

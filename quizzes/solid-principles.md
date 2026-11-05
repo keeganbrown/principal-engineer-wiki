@@ -23,6 +23,6 @@
 - [x] Not yet; a single switch in one place is often simplest.
 - [ ] Yes; the open/closed principle forbids switch statements.
 - [ ] Yes, and add an interface for each payment type now.
-- [ ] No; a switch is clearer than polymorphism in most code.
+- [ ] Yes, so the next payment type can be added without editing it.
 
 **Why:** Replace a switch when the same one repeats in several places, so new cases become additions. Use SOLID to diagnose pain you have, not as a checklist. See [[solid-principles]].

@@ -27,13 +27,13 @@ Robert C. Martin collected these principles around 2000, and Michael Feathers co
 
 ## Why it matters
 
-All five aim at the same goal: **limit the blast radius of change.** When requirements shift, you want to touch one small place, not ten. SOLID gives you named checks for spotting designs that will fight you later.
+All five aim at the same goal: **limit the blast radius of change.** When requirements shift, you want to touch one small place, not ten. SOLID gives you names for the design smells that will fight you later.
 
 ## How to apply it
 
 - **S: describe the module in one sentence without "and".** Ask "who would ask for this to change?" — Martin later clarified that a "reason to change" means one *actor*, one group of stakeholders.
-- **O: replace a switch only when it repeats.** When the *same* `switch` on a type appears in several places, polymorphism or a lookup table lets new cases be additions. A single switch in one place is often the simplest thing ([[kiss]]).
-- **L: watch for "not supported" errors.** If a subclass throws for an inherited method, the hierarchy is wrong. Prefer composition.
+- **O: replace a switch only when it repeats.** When the *same* `switch` on a type appears in several places, polymorphism (each type supplies its own version of the method) or a lookup table lets new cases be additions. A single switch in one place is often the simplest thing ([[kiss]]).
+- **L: watch for "not supported" errors.** If a subclass throws for an inherited method, the hierarchy is wrong. Prefer composition: a `ReadOnlyFile` that holds a file it reads from, rather than inheriting a `write` it can't honor.
 - **I: split fat interfaces.** A `Printer` that also has `fax()` and `scan()` burdens every simple printer.
 - **D: let business logic declare what it needs.** The logic defines an interface; infrastructure provides the implementation and passes it in as a parameter (called **dependency injection**). [[hexagonal-architecture]] applies this to a whole system.
 
@@ -58,12 +58,12 @@ The rule doesn't know or care about the system clock, so tests are deterministic
 
 - **An interface for everything.** An interface with exactly one implementation and no **test double** (a fake or stub used in tests) is often just noise.
 - **Over-applying S.** Splitting every class into one-method fragments makes code harder to follow, not easier.
-- **Open/closed as an excuse for speculation.** Don't build extension points on speculation; [[dry]] explains when real cases justify one.
+- **Open/closed as an excuse for speculation.** Add an extension point only when real cases demand one; [[dry]] explains when.
 - **Treating SOLID as a review checklist.** It's a vocabulary for discussing trade-offs, not a scoring rubric.
 
 ## When it doesn't apply
 
-In functional or data-oriented code, some principles translate differently — "pass a function" often replaces "define an interface." In small programs, the indirection SOLID introduces can cost more than it saves. Use the principles to diagnose pain, not to prevent pain you don't have yet.
+In functional or data-oriented code, some principles translate differently — "pass a function" often replaces "define an interface." In small programs, the indirection SOLID introduces can cost more than it saves: each interface is one more hop when reading code, and dependency-injection frameworks can hide the wiring entirely. Use the principles to diagnose pain, not to prevent pain you don't have yet.
 
 ## Related
 
