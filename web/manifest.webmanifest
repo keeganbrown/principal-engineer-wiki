@@ -1,6 +1,6 @@
 {
   "name": __SITE_TITLE_JSON__,
-  "short_name": "PE Wiki",
+  "short_name": __SITE_SHORT_TITLE_JSON__,
   "description": __SITE_DESCRIPTION_JSON__,
   "start_url": "./",
   "scope": "./",

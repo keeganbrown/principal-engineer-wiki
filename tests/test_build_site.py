@@ -7,7 +7,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 
-from build_site import build_site, site_data  # noqa: E402
+from build_site import build_site, short_title, site_data  # noqa: E402
 from lint_wiki import load_wiki, parse_article, parse_glossary  # noqa: E402
 from quizzes import load_quizzes  # noqa: E402
 
@@ -104,6 +104,14 @@ class SiteCopyTest(unittest.TestCase):
 
     def test_title_is_the_index_heading_without_its_index_suffix(self):
         self.assertEqual(site_data(sample_articles(), INDEX)["title"], "Wiki")
+
+
+class ShortTitleTest(unittest.TestCase):
+    def test_short_titles_are_kept_whole(self):
+        self.assertEqual(short_title("Wiki"), "Wiki")
+
+    def test_long_titles_abbreviate_all_but_the_last_word(self):
+        self.assertEqual(short_title("Principal Engineer Wiki"), "PE Wiki")
 
 
 class GlossaryDataTest(unittest.TestCase):
@@ -265,7 +273,8 @@ class BuildSiteTest(unittest.TestCase):
             with open(os.path.join(web, "index.html"), "w") as f:
                 f.write('<title>__SITE_TITLE__</title><meta name="description" content="__SITE_DESCRIPTION__">')
             with open(os.path.join(web, "manifest.webmanifest"), "w") as f:
-                f.write('{"name": __SITE_TITLE_JSON__, "description": __SITE_DESCRIPTION_JSON__}')
+                f.write('{"name": __SITE_TITLE_JSON__, "short_name": __SITE_SHORT_TITLE_JSON__, '
+                        '"description": __SITE_DESCRIPTION_JSON__}')
             build_site(sample_articles(), INDEX.replace("principles", 'the "best" & <worst>'), web, out)
             with open(os.path.join(out, "index.html")) as f:
                 page = f.read()
@@ -276,6 +285,7 @@ class BuildSiteTest(unittest.TestCase):
         self.assertEqual(manifest["description"], expected)
         self.assertIn("<title>Wiki</title>", page)
         self.assertEqual(manifest["name"], "Wiki")
+        self.assertEqual(manifest["short_name"], "Wiki")
 
     def test_build_without_service_worker_template_still_works(self):
         with tempfile.TemporaryDirectory() as tmp:

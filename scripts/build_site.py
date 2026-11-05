@@ -66,6 +66,18 @@ def site_title(index_text: str) -> str:
     return match.group(1) if match else ""
 
 
+# Home-screen labels truncate past about a dozen characters.
+SHORT_TITLE_MAX = 12
+
+
+def short_title(title: str) -> str:
+    """A home-screen name: the title, or its leading words as initials ("PE Wiki")."""
+    words = title.split()
+    if len(title) <= SHORT_TITLE_MAX or len(words) < 2:
+        return title
+    return "".join(w[0].upper() for w in words[:-1]) + " " + words[-1]
+
+
 def categories(index_text: str, articles: Dict[str, Article]) -> List[dict]:
     """Each index section is a category: its heading is the label, and the
     folder its entries (list items that open with a link) live in is the
@@ -172,6 +184,8 @@ def fill_site_copy(out_dir: str, title: str, description: str) -> None:
     replacements = {
         "__SITE_TITLE_JSON__": json.dumps(title, ensure_ascii=False),
         "__SITE_TITLE__": html.escape(title, quote=True),
+        "__SITE_SHORT_TITLE_JSON__": json.dumps(short_title(title), ensure_ascii=False),
+        "__SITE_SHORT_TITLE__": html.escape(short_title(title), quote=True),
         "__SITE_DESCRIPTION_JSON__": json.dumps(description, ensure_ascii=False),
         "__SITE_DESCRIPTION__": html.escape(description, quote=True),
     }
