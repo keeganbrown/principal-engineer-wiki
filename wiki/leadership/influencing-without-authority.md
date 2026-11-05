@@ -38,11 +38,11 @@ The best technical idea is worthless if nobody adopts it. Many senior engineers 
 
 **Choosing your fights:**
 - **Spend credibility on one-way doors.** Save your energy for decisions that are high-impact and hard to reverse ([[reversible-decisions]]). Let small things go.
-- **Disagree and commit.** When a decision goes the other way, say so once, clearly — then help it succeed.
+- **Disagree and commit.** When a decision goes the other way, say so once, clearly — then help it succeed. The exception is a safety, legal, or ethical concern: escalate it instead.
 
 ## Example
 
-A principal engineer wants all services to adopt structured logging (logs as named fields, not free text) and trace IDs (one ID that follows a request across services, also called a correlation ID; see [[observability]]). A memo mandating it would be ignored.
+A principal engineer wants all services to adopt structured logging (logs as named fields, not free text) and trace IDs (one ID that follows a request across services, also called a correlation ID; see [[observability]]). A memo alone would likely be ignored.
 
 Instead, they:
 1. Interview on-call engineers and collect stories about painful incidents caused by missing logs.
@@ -51,7 +51,7 @@ Instead, they:
 4. Have that team present the results at an engineering all-hands.
 5. Add the library to the service template, with a named owner, so new services get it for free.
 
-Within two quarters, most teams have adopted it — and nobody was ordered to. The last few holdouts moved only after a sponsor added "trace ID present?" to the incident-review checklist: escalation, used legitimately.
+Within two quarters, most teams have adopted it — and nobody was ordered to. The last few holdouts moved only after a sponsor added "trace ID present?" to the incident-review checklist: escalation, used legitimately. It cost roughly a quarter of the principal's time for two quarters, and the library now needs an owner for good; influence is slower than a mandate, which is why it's kept for things that need commitment, not just compliance.
 
 ## Common traps
 
@@ -64,7 +64,7 @@ Within two quarters, most teams have adopted it — and nobody was ordered to. T
 
 ## When it doesn't apply
 
-Some situations call for direct authority: security incidents, legal compliance, or an outage in progress. Be clear about who's deciding and why, then return to collaborative influence afterward. And if influence repeatedly fails on something critical, escalating through your sponsors is legitimate, not a failure.
+Some situations call for direct authority: security incidents, legal compliance, or an outage in progress ([[incident-response]]). Be clear about who's deciding and why, then return to collaborative influence afterward. And if influence repeatedly fails on something critical, escalating through your sponsors is legitimate, not a failure.
 
 ## Related
 

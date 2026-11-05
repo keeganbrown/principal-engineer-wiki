@@ -19,28 +19,30 @@ Richard Rumelt's *Good Strategy Bad Strategy* (2011) gives it three parts:
 - **Guiding policy** — the overall approach. A good one rules options out.
 - **Coherent actions** — a few concrete steps that carry out the policy and support each other.
 
-Rumelt's "bad strategy" is a goal dressed up as a plan: "become cloud-native," "be world-class at reliability." Will Larson (*Staff Engineer*, 2021) suggests writing strategy from the bottom up: look at several recent design docs, notice the decisions they share, and write those down as policy.
+One of Rumelt's marks of bad strategy is a goal dressed up as a plan: "become cloud-native," "be world-class at reliability."
+
+Will Larson (*Staff Engineer*, 2021) suggests writing strategy from the bottom up: look at several recent design docs, notice the decisions they share, and write those down as policy.
 
 ## Why it matters
 
 - **It lets people decide without you.** A clear guiding policy answers the next ten questions before they're asked, which is how a principal engineer's judgment reaches teams they never meet.
-- **It makes saying no possible.** "That doesn't fit the strategy" is a reason; "I don't like it" is an argument.
+- **It makes saying no possible.** "That doesn't fit the strategy" is a reason; "I don't like it" is a preference.
 - **It connects technical work to business outcomes.** Investment in a platform gets funded when the diagnosis shows what the problem costs the business.
-- **Its value depends on follow-through.** A strategy nobody staffs or revisits does nothing, so plan for both.
+- **Its value depends on follow-through.** It changes nothing until someone revisits it and acts on it.
 
 ## How to apply it
 
 - **Start with the diagnosis, and make it specific.** Gather evidence: incident reviews, delivery times, costs, interviews with teams. "Deploys are slow" is a symptom; "60% of lead time is waiting for the one shared staging environment" is a diagnosis.
-- **Choose a guiding policy that excludes something.** "We'll use one supported database engine for new services" is a choice. "We'll use the right tool for each job" excludes nothing and guides nobody.
+- **Choose a guiding policy that excludes something.** "New services use our one supported database engine; exceptions need a written case" is a choice. The exit matters, or the default becomes a mandatory hammer ([[golden-hammer]]). "We'll use the right tool for each job" excludes nothing and guides nobody.
 - **List a few coherent actions, with owners and dates.** Three to five, each traceable to the diagnosis. If an action doesn't follow from the diagnosis, it belongs somewhere else.
-- **Say what you won't do.** Name the options you rejected and why ([[architecture-trade-offs]]). This is the part people will test.
+- **Say what you won't do.** Name the options you rejected and why ([[architecture-trade-offs]]). This is the part people will push back on.
 - **Keep it short.** Two to five pages. A strategy people can't summarize after one read won't shape their decisions.
-- **Build it with the teams it affects.** Interview them for the diagnosis and share drafts early ([[influencing-without-authority]]). Get an executive sponsor who will fund the actions; a strategy without staffing is a wish.
+- **Build it with the teams it affects.** Interview them for the diagnosis and share drafts early ([[influencing-without-authority]]). Get an executive sponsor who will fund the actions.
 - **Write down when to revisit it.** State what would change the diagnosis, and check on a schedule, perhaps every six months.
 
 ## Example
 
-An online retailer has fifteen teams running four message brokers and three job frameworks. A principal engineer reviews the last twenty serious incidents and finds nine involved background jobs, each on a stack only one or two people understood.
+An online retailer has fifteen teams running four message brokers and three job frameworks. A principal engineer reviews the postmortems for the last twenty serious incidents ([[blameless-postmortems]]) and finds nine involved background jobs, each on a stack only one or two people understood ([[hero-culture]]).
 
 The diagnosis: too many async stacks for the on-call knowledge available, plus patching work for each one. The guiding policy: one supported broker and job framework on the [[paved-roads|paved road]]; new async work uses it, and existing systems move only when they need major changes anyway. The actions: the platform team ships templates and runbooks in one quarter, and the two systems with the most incidents migrate the next.
 
@@ -65,3 +67,4 @@ One or two teams who talk every day don't need a strategy document; a handful of
 - [[paved-roads]] — a common way to carry out a guiding policy.
 - [[design-docs]] — the raw material for a bottom-up strategy.
 - [[architecture-decision-records]] — where individual decisions under the strategy get recorded.
+- [[golden-hammer]] — why a standard needs a documented way out.

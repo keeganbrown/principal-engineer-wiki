@@ -11,12 +11,12 @@
 
 ## Which guiding policy will actually guide teams?
 
-- [x] "New services use our one supported database engine."
+- [x] "New services use our one database engine, with written exceptions."
 - [ ] "Each team should pick the right tool for each job."
 - [ ] "We value simplicity, reliability, and developer speed."
 - [ ] "We will adopt modern technology wherever it makes sense."
 
-**Why:** A good guiding policy rules options out. "The right tool for each job" excludes nothing and guides nobody. See [[technical-strategy]].
+**Why:** A good guiding policy rules options out, and a documented exit keeps the default from becoming mandatory. "The right tool for each job" excludes nothing and guides nobody. See [[technical-strategy]].
 
 ## A principal engineer writes a strong strategy alone and publishes it as a surprise, with no funding for its actions. What is likely to happen?
 
@@ -25,7 +25,7 @@
 - [ ] Leadership funds it automatically once it's published to everyone.
 - [ ] It succeeds, provided the document is long enough to cover every case.
 
-**Why:** Build it with the teams it affects and get a sponsor who will fund the actions. A strategy without staffing is a wish, and one written in isolation gets ignored. See [[technical-strategy]] and [[influencing-without-authority]].
+**Why:** Build it with the teams it affects and get a sponsor who will fund the actions. Without staffing it becomes a document everyone agrees with and nobody follows, and one written in isolation gets ignored. See [[technical-strategy]] and [[influencing-without-authority]].
 
 ## Two teams of engineers who talk every day want a formal technical strategy document. Do they need one?
 
