@@ -12,7 +12,7 @@
 ## "My Shipments" lags a few seconds behind checkout, because shipping reacts to an event. What should the page show meanwhile?
 
 - [x] "Processing…" instead of an empty list.
-- [ ] Nothing new; make shipping synchronous.
+- [ ] The new order, by making shipping synchronous again.
 - [ ] An error, so users know to check back later.
 - [ ] An empty list, since users won't notice.
 

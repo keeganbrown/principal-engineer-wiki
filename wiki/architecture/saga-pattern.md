@@ -21,7 +21,7 @@ Reserve flight ✔ → Reserve hotel ✔ → Reserve car ✘
           Cancel flight ◄── Cancel hotel ◄┘   (compensate in reverse)
 ```
 
-What you give up is **isolation**: other processes can see the half-finished state until the saga completes or compensates. You also lose *instant* all-or-nothing — it's restored only eventually, by running compensations. Across services, the end state is eventually consistent: every service agrees, but only after the remaining steps or compensations finish ([[cap-theorem]]).
+What you give up is **isolation**: other processes can see the half-finished state until the saga completes or compensates. You also lose *instant* all-or-nothing: the end state is eventually consistent, reached only once the remaining steps or compensations finish ([[cap-theorem]]).
 
 The idea comes from a 1987 paper by Hector Garcia-Molina and Kenneth Salem.
 
@@ -40,11 +40,11 @@ There are two ways to coordinate a saga:
 
 Guidelines:
 - **Design compensations with the business.** "Undo" is often not a true rollback — it's a refund, a cancellation email, a credit.
-- **Order steps by how easy they are to undo.** Put cheap, invisible compensations (releasing a reservation) early, and costly or customer-visible ones (a refund) late. Put steps that can't be undone at all — like sending a confirmation email — last. This is *two-way-door* thinking — a two-way door is a decision you can cheaply undo ([[reversible-decisions]]) — applied to one workflow.
+- **Order steps by how easy they are to undo.** Put cheap, invisible compensations (releasing a reservation) early, and costly or customer-visible ones (a refund) late. Put steps that can't be undone at all — like sending a confirmation email — last. This is two-way-door thinking applied to one workflow: a two-way door is a decision you can cheaply undo ([[reversible-decisions]]).
 - **Make every step and compensation idempotent.** Messages get [[retries-and-timeouts|retried]] and duplicated ([[idempotency]]).
 - **Persist saga state.** A crash mid-saga should resume, not restart.
-- **Mark records as pending.** A status field like `PENDING` acts as a **semantic lock**: other processes see it and avoid acting on the record until the saga finishes. Give every pending lock a timeout and an owner, or a stalled saga leaves records locked forever.
-- **Consider a workflow engine for orchestration.** Temporal or AWS Step Functions usually beat building your own, but an engine is one more critical system to run, with its own constraints — Temporal workflow code, for example, must be deterministic.
+- **Mark records as pending.** A status field like `PENDING` acts as a **semantic lock**: other processes see it and avoid acting on the record until the saga finishes. Give every pending lock a timeout and an owner, or a stalled saga leaves records locked forever, and decide what the timeout does: resume from saved state, compensate, or escalate to a person.
+- **Consider a workflow engine for orchestration.** Temporal or AWS Step Functions usually beat building your own, but an engine is one more critical system to run, with its own constraints — Temporal workflow code, for example, must be deterministic, because the engine replays it to recover state after a crash.
 
 ## Example
 
@@ -56,7 +56,7 @@ An online store's checkout saga, orchestrated:
 4. `Payments`: *capture* the payment. *Compensation: refund (slow and visible, so it comes late).*
 5. `Orders`: mark the order `CONFIRMED`; send the confirmation email (last, since it can't be undone).
 
-If inventory is out of stock at step 2, nothing has touched the customer's card — the orchestrator just marks the order `CANCELLED` and tells the customer. If authorization fails at step 3, it releases the reservation. Every outcome is planned, logged, and traceable.
+If inventory is out of stock at step 2, nothing has touched the customer's card — the orchestrator just marks the order `CANCELLED` and tells the customer. If authorization fails at step 3, it releases the reservation. If step 5 fails after capture — say `Orders` is down — the orchestrator retries it rather than refunding; it refunds only if the order can't be confirmed at all, such as when the reserved items turn out to be damaged. Every outcome is planned, logged, and traceable.
 
 ## Common traps
 

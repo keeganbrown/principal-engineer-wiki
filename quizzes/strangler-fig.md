@@ -1,11 +1,11 @@
 # Quiz: Strangler Fig
 
-## What is the first step in a strangler fig migration?
+## A team wants to replace a billing system one endpoint at a time, strangler-fig style. What do they need before moving any traffic?
 
 - [x] Put a routing layer, such as a proxy, in front of the old system.
 - [ ] Copy the old database into the new system so both share the data.
 - [ ] Rewrite the riskiest part of the system first, to retire risk early.
-- [ ] Freeze the old system so its behavior stops changing under you.
+- [ ] A complete rewrite running in parallel, ready to switch over in one day.
 
 **Why:** The routing layer lets you move one slice of traffic at a time to the new code. See [[strangler-fig]].
 
@@ -25,7 +25,7 @@
 - [ ] The first slices have to be redone, because the old code has changed.
 - [ ] The routing layer starts sending traffic to the old system on its own.
 
-**Why:** Plan to delete the old code. In the example, the last two slices, which touched shared data, took as long as the first ten. See [[strangler-fig]].
+**Why:** Pausing is safe only briefly: a half-strangled system means running two systems, a router, and data sync, which can be worse than either alone. Budget for the overlap and plan to delete the old code. See [[strangler-fig]].
 
 ## A slice moved to the new system is failing. When can you safely route it back?
 

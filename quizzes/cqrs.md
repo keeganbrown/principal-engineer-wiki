@@ -1,4 +1,4 @@
-# Quiz: CQRS
+# Quiz: Command Query Responsibility Segregation (CQRS)
 
 ## A product page assembles data from four services and takes 800ms. How does CQRS help?
 
@@ -16,7 +16,7 @@
 - [ ] Block the product page until the read model is fully up to date.
 - [ ] Charge the displayed price and reconcile any differences monthly.
 
-**Why:** Don't let decisions that matter rely on a lagging view, and tell users what might be stale. See [[cqrs]] and [[cap-theorem]].
+**Why:** Don't let decisions that matter rely on a lagging view; checkout re-checks with the services that own price and stock. See [[cqrs]] and [[cap-theorem]].
 
 ## Reads are 50 times writes, but every screen reads the same shape as the table. What should the team try first?
 

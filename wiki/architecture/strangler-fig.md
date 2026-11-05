@@ -35,10 +35,10 @@ Martin Fowler named the pattern in 2004.
 
 The strangler fig approach:
 
-- **Delivers value continuously** — each migrated slice is in production.
-- **Limits risk** — if a slice fails, route it back, as long as the old system can read whatever the new one wrote while it was live.
-- **Keeps learning** — each slice teaches you more about the legacy system's hidden behaviors.
-- **Can pause safely** — if priorities change, you still have a working system. But a half-strangled system means running two systems, a router, and data sync, which can be worse than either alone. Budget for that overlap, and don't pause for long.
+- **Each slice delivers value.** It's in production as soon as it's migrated.
+- **Risk stays small.** If a slice fails, route it back, as long as the old system can read whatever the new one wrote while it was live.
+- **You keep learning.** Each slice teaches you more about the legacy system's hidden behaviors.
+- **You can pause, briefly.** If priorities change, you still have a working system. But a half-strangled system means running two systems, a router, and data sync, which can be worse than either alone. Budget for that overlap, and don't pause for long.
 
 ## How to apply it
 
@@ -66,7 +66,7 @@ First, they rebuild the read-only "view invoice PDF" endpoint and route 5% of tr
 
 ## When it doesn't apply
 
-If the legacy system is small, well understood, and has no way to intercept calls, a direct replacement may be faster. Systems with no clear seams (e.g., a single batch job) may need other techniques. And sometimes the right answer is not to replace the legacy system at all — just to stop it from growing.
+If the legacy system is small, well understood, and has no way to intercept calls, a direct replacement may be faster. Systems with no clear seams, such as a single batch job, may suit running the old and new jobs in parallel and comparing their outputs instead. And sometimes the right answer is not to replace the legacy system at all — just to stop it from growing.
 
 ## Related
 

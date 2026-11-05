@@ -28,14 +28,14 @@ CQRS splits these into two sides:
 
 The code that listens for changes and updates the read store is called a **projector**. When the read side is updated asynchronously, it lags slightly behind — this is **eventual consistency**.
 
-Greg Young described CQRS around 2010, building on Bertrand Meyer's *command–query separation* principle from 1988.
+Greg Young named and described CQRS between about 2008 and 2010, building on Bertrand Meyer's *command–query separation* principle from 1988.
 
 ## Why it matters
 
 - **Each side gets simpler.** The write model enforces rules; the read model serves fast lookups.
-- **Performance.** Read views can be pre-joined and cached — no expensive queries at request time.
-- **Independent scaling.** Many systems read far more than they write; scale each side separately. Try [[relational-databases|read replicas]] (read-only copies of the database) and [[caching]] first — a separate read model is for when the *shape* of reads differs, not just the volume.
-- **Multiple views.** Build several read models (search index, dashboard, mobile feed) from the same writes.
+- **Reads get faster.** Read views can be pre-joined and cached — no expensive queries at request time.
+- **Each side scales on its own.** Many systems read far more than they write; scale each side separately. Try [[relational-databases|read replicas]] (read-only copies of the database) and [[caching]] first — a separate read model is for when the *shape* of reads differs, not just the volume.
+- **One write feeds many views.** Build several read models (search index, dashboard, mobile feed) from the same writes.
 
 ## How to apply it
 
@@ -47,9 +47,9 @@ Greg Young described CQRS around 2010, building on Bertrand Meyer's *command–q
 
 ## Example
 
-A marketplace's product page needs data from inventory, pricing, reviews, and seller ratings. Assembling it on each request takes 800ms.
+A marketplace's product page needs data from inventory, pricing, reviews, and seller ratings. Assembling it on each request takes 800ms. A cache of the assembled page didn't fit: prices must update within seconds, and the long tail of products kept missing the cache, so those pages still paid the full 800ms.
 
-Here the write side is four services, and each publishes change events. A `ProductPageView` projector listens and keeps one pre-built document per product in a fast key-value store. The page now loads with a single lookup in 10ms. Writes still go through each service's own rules.
+The write side doesn't have to be one model: here it's four services, and each publishes change events. A `ProductPageView` projector listens and keeps one pre-built document per product in a fast key-value store. The page now loads with a single lookup in 10ms. Writes still go through each service's own rules.
 
 The trade-off: the price or stock level shown on the page can lag by a few seconds. So checkout doesn't trust the page — it re-checks price and stock with the owning services before charging.
 
@@ -58,7 +58,7 @@ The trade-off: the price or stock level shown on the page can lag by a few secon
 - **Applying it everywhere.** CQRS for a simple CRUD (create, read, update, delete) form adds two models, sync logic, and eventual consistency for no gain.
 - **Confusing CQRS with event sourcing.** Event sourcing stores the history of events as the source of truth. It pairs well with CQRS, but they're separate ideas.
 - **Forgetting read-your-writes.** A user who just updated their profile expects to see the change. Read from the write side right after a change ([[cap-theorem]]).
-- **No rebuild path.** If a read model gets corrupted and can't be regenerated, your only fix is a manual data repair.
+- **No rebuild path.** If a read model gets corrupted and can't be regenerated, your only fix is a manual data repair. Even with one, a full rebuild from several services' events can take hours, so know how long it takes before you need it, and alert on projector lag.
 
 ## When it doesn't apply
 

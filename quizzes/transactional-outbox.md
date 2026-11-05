@@ -2,12 +2,12 @@
 
 ## What is the dual-write problem?
 
-- [x] A crash between the database save and the broker publish does only one.
+- [x] Saving and publishing can't share a transaction, so a crash can leave one undone.
 - [ ] Two services writing the same table at once, so one update overwrites the other.
 - [ ] Writing the same row twice because a client retried after a timeout.
 - [ ] Two relays publishing the same outbox row, so consumers see it twice.
 
-**Why:** They can't share one transaction. Save-then-publish can lose events; publish-then-save can announce what never happened. The outbox puts both writes in one database transaction. See [[transactional-outbox]].
+**Why:** Save-then-publish can lose events; publish-then-save can announce what never happened. The outbox puts both writes in one database transaction. See [[transactional-outbox]].
 
 ## The relay publishes an event, then crashes before marking it sent. What happens?
 
@@ -18,14 +18,14 @@
 
 **Why:** The outbox trades lost events for duplicate ones. Make consumers idempotent. See [[transactional-outbox]] and [[idempotency]].
 
-## A team runs a second outbox relay for availability, and every event is now published twice. What fixes it?
+## A team runs a second outbox relay for availability, and both relays now publish every outbox row. What stops the double publishing?
 
 - [x] Leader election, or relays that claim rows with `SKIP LOCKED`.
 - [ ] Deleting outbox rows as soon as either relay reads them.
-- [ ] Having consumers drop any event that arrives a second time.
+- [ ] Raising the batch size, so each poll claims more rows at once.
 - [ ] Running both relays less often, so that their polling rarely overlaps.
 
-**Why:** One active relay keeps order; claiming rows shares the load but gives up ordering. Consumers still need to be idempotent either way. See [[transactional-outbox]].
+**Why:** One active relay publishes in a single sequence; claiming rows shares the load but gives up even that. Consumers still need to be idempotent either way, because a relay can crash after publishing. See [[transactional-outbox]].
 
 ## When is a direct publish without an outbox reasonable?
 

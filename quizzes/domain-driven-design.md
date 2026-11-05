@@ -1,4 +1,4 @@
-# Quiz: Domain-Driven Design
+# Quiz: Domain-Driven Design (DDD)
 
 ## Underwriting, billing, and claims all add columns to one `Policy` table. What does DDD suggest?
 
@@ -14,11 +14,11 @@
 - [x] A shared word starts meaning something else to its users.
 - [ ] The code switches from one programming language to another one.
 - [ ] A different database technology stores the data from here on.
-- [ ] A module grows past the size one team can comfortably own.
+- [ ] A new feature is added to a screen that already exists.
 
 **Why:** Look for language shifts. Drawing contexts around technology splits things that share a language. See [[domain-driven-design]].
 
-## For a simple create-read-update-delete (CRUD) app with little business logic, what part of DDD is still worth using?
+## For a simple CRUD (create, read, update, delete) app with little business logic, what part of DDD is still worth using?
 
 - [x] The strategic ideas: shared language and clear boundaries.
 - [ ] The full tactical toolkit of aggregates, repositories, and value objects.

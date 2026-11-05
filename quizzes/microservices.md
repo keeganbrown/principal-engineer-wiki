@@ -25,4 +25,13 @@
 - [ ] Rewriting all of its tests from scratch.
 - [ ] Losing the ability to use a relational database.
 
-**Why:** In the example, that platform work took roughly two engineers' full-time work across the extracted services. See [[microservices]].
+**Why:** Every service needs its own pipeline, monitoring, and on-call; across a few extracted services, that platform work can cost roughly two full-time engineers. See [[microservices]].
+
+## A six-person startup with an early product wants to build on microservices from day one, to be ready for scale. Should it?
+
+- [x] Not yet; a monolith is faster until the domain and team size call for services.
+- [ ] Yes; starting with services avoids a painful migration later on.
+- [ ] Yes, as long as each service is kept small enough for one person.
+- [ ] No; microservices only make sense for companies with thousands of engineers.
+
+**Why:** For a small team and a domain you don't understand well yet, you can't draw good boundaries, and a monolith is almost always faster and safer. See [[microservices]] and [[modular-monolith]].

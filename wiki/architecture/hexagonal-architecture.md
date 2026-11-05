@@ -41,8 +41,8 @@ Alistair Cockburn proposed the pattern in 2005. *Clean Architecture* and *Onion 
 
 ## Why it matters
 
-- **Use cases are easy to test.** Run every one against in-memory fakes — fast, deterministic tests with no infrastructure. This is the dependable win.
-- **Business rules are easy to find.** It's always obvious where they live.
+- **Use cases are easy to test.** Run every one against in-memory fakes — fast, deterministic tests with no infrastructure. This is the dependable win, as long as the fakes behave like the real adapters: run one shared test suite against both, especially for conditional and transactional behavior, which fakes rarely reproduce under concurrency ([[contract-testing]] applies the same idea across services).
+- **Business rules have one home.** They live in the core, not scattered across controllers and queries.
 - **Logic outlives frameworks.** Frameworks come and go; your business logic doesn't need to go with them.
 - **Adapters can be swapped, partly.** You *can* switch providers by writing a new adapter, but a port designed around one vendor rarely fits the second without reshaping, and database transaction behavior leaks through repository ports. Don't justify a port by a swap you've never planned ([[yagni]]).
 
@@ -51,7 +51,7 @@ Alistair Cockburn proposed the pattern in 2005. *Clean Architecture* and *Onion 
 - **Start from the use case.** Write what the application *does* as plain code first.
 - **Define ports in the core's language.** `findOrder(id)`, not `executeSql(...)`.
 - **Keep adapters thin.** Translate, call, translate back.
-- **Wire everything in one place.** At startup, a single *composition root* builds the adapters and passes them in.
+- **Wire everything in one place.** At startup, a single *composition root* (usually `main`) creates the real adapters and passes them into the use cases. Keeping that wiring explicit keeps the indirection searchable; avoid auto-wiring by naming convention, which hides which implementation runs where ([[navigable-codebases]]).
 - **Test the core with fakes.** Test each adapter separately, with focused integration tests against the real technology.
 - **Decide what must succeed or fail together.** That's the **unit of work**, usually one database transaction. If a use case calls two ports and the second fails after the first succeeded, what happens?
 
@@ -77,7 +77,8 @@ function placeOrder(cart, checkoutAttemptId, repo, payments):
     repo.insertIfAbsent(order.asPending())           # record intent first
     receipt = payments.charge(cart.customerId, order.total,
                               idempotencyKey=checkoutAttemptId)
-    repo.completeIfPending(order.id, receipt)        # loses to a cancel
+    if not repo.completeIfPending(order.id, receipt):
+        return Rejected                              # reconciler cancelled it; a refund follows
     return order
 
 # adapters
@@ -88,7 +89,9 @@ class StripeGateway implements PaymentGateway: ...
 
 The `checkoutAttemptId` comes from the caller, so if the client retries the whole request, both attempts carry the same key and the provider charges once ([[idempotency]]).
 
-Saving the order as pending *before* charging means a crash between the steps leaves a pending order, not a charged customer with no order. A background reconciler finds pending orders older than a few minutes, looks each charge up by the order's own reference, and completes or cancels it. Completing and cancelling are both conditional on the order still being pending, so a late retry and the reconciler can't both win; if a cancelled order turns out to have been charged, cancelling means refunding.
+Saving the order as pending *before* charging means a crash between the steps leaves a pending order, not a charged customer with no order. A retry that finds a still-pending order re-sends the charge with the same key, so the provider returns the original result instead of charging again.
+
+A background reconciler, owned by the orders team, finds pending orders older than a few minutes, looks each charge up by the order's own reference, and completes or cancels it. Completing and cancelling are both conditional on the order still being pending, so a late retry and the reconciler can't both win. A retry that loses returns `Rejected`, and if a cancelled order turns out to have been charged, cancelling means refunding.
 
 ## Common traps
 

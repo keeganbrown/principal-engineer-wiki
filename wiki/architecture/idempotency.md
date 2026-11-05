@@ -29,8 +29,9 @@ Without idempotency, normal network hiccups cause real damage: customers charged
 - **Prefer naturally idempotent operations.** "Set status to SHIPPED" is idempotent; "toggle status" is not. "Set balance to 50" is idempotent; "add 10" is not. Idempotent isn't order-safe, though: a delayed retry of "set address to A" that lands after "set address to B" overwrites B, so pair concurrent writes with a version check.
 - **Use idempotency keys for operations that aren't naturally idempotent.** The client generates a unique ID per *intended action* and sends it with every retry. The server remembers each key and its result; if it sees the key again, it returns the stored result instead of redoing the work.
 - **Claim the key before doing the work.** Insert the key with status `IN_PROGRESS` under a unique index *first*. A concurrent duplicate fails that insert and backs off.
-- **Pass idempotency downstream.** Most real effects — charging a card, sending an email — happen in *other* systems, outside your database transaction. You can't make them succeed or fail together with your write. Instead, pass your key to the downstream service as *its* idempotency key, so a repeated call has no extra effect there either. If it doesn't accept a key — many email and legacy systems don't — query its status by your own reference before retrying, or don't retry at all — *at-most-once*: the effect may be lost, never doubled — and run a periodic check that finds and repairs misses. Choose by which hurts more: a duplicate or a miss.
-- **Deduplicate messages in consumers.** Track processed message IDs.
+- **Pass idempotency downstream.** Most real effects — charging a card, sending an email — happen in *other* systems, outside your database transaction. You can't make them succeed or fail together with your write. Instead, pass your key to the downstream service as *its* idempotency key, so a repeated call has no extra effect there either.
+- **Choose a fallback when downstream takes no key.** Many email and legacy systems don't accept one. Either query the status by your own reference before retrying, or don't retry at all (*at-most-once*: the effect may be lost, never doubled). Either way, run a periodic check that finds and repairs misses, and choose by which hurts more: a duplicate or a miss.
+- **Deduplicate messages in consumers.** Record each processed message ID in the same transaction as the effect it guards; recorded separately, a crash between the two loses or repeats the effect. Keep IDs at least as long as the broker can redeliver a message.
 - **Use database constraints as a last line of defense.** Unique indexes catch duplicates everything else missed.
 - **Know your HTTP semantics.** `GET`, `PUT`, and `DELETE` are meant to be idempotent; `POST` is not, unless you add a key.
 
@@ -63,7 +64,7 @@ server:
 
 The hard case is a crash *after* the provider charges the card but *before* the result is saved. The key is stuck in `IN_PROGRESS`. Because the same key was passed to the provider, retrying the charge is safe: the provider recognizes the key and returns the original result instead of charging again.
 
-A background sweeper finds keys stuck in progress for more than a few minutes — after a crash *or* a provider timeout — and re-runs the *stored* request with the same key. It must finish well inside the provider's key-retention window (Stripe keeps keys for about 24 hours). Past that window, it looks the charge up by your own order reference instead of re-sending, and keys that old page someone.
+A background sweeper finds keys stuck in progress for more than a few minutes — after a crash *or* a provider timeout — and re-runs the *stored* request with the same key. It must finish well inside the provider's key-retention window (Stripe keeps keys for about 24 hours). Past that window, it looks the charge up by your own order reference instead of re-sending, and alerts a person about any key that old.
 
 Stripe's API works this way: it accepts an `Idempotency-Key` header on requests that create or change things.
 

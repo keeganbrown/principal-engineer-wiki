@@ -27,12 +27,12 @@ Gary Bernhardt named the pattern in a 2012 *Destroy All Software* screencast and
 - **Testing becomes easy.** The core needs no mocks — just call a function and check the return value. Thousands of tests run in seconds.
 - **Reasoning becomes easy.** Pure functions can be read in isolation. No hidden state changes.
 - **The risky part shrinks.** The shell is so simple it needs only a few integration tests.
-- **Portability.** The core can move to a new framework unchanged; the shell, and any assumptions baked into the data you load, still need rewriting.
+- **The core can outlive the framework.** It can move to a new framework unchanged; the shell, and any assumptions baked into the data you load, still need rewriting.
 
 ## How to apply it
 
 - **Ask of each function: "Does this decide, or does this do?"** Split ones that do both.
-- **Pass everything the core needs as arguments.** That includes "now" and random seeds.
+- **Pass everything the core needs as arguments.** That includes "now" and random seeds. Injecting a `Clock` object ([[solid-principles]]) also makes code testable, but passing the value keeps the core fully pure; inject the clock only when the logic needs the time more than once.
 - **Return a description of what to do.** For example, return a list of emails to send instead of sending them.
 - **Keep the shell boring.** Fetch, call, execute. If the shell has `if` statements about business rules, move them inward.
 - **Represent results as plain data.** Use records, structs, or dictionaries.
@@ -68,7 +68,7 @@ Every edge case of "who gets a reminder?" is now a fast test of `overdueReminder
 
 Note the conditional write. The core decides on a *snapshot* of the data. If two copies of the job run at once, both see the same unpaid invoice. Marking it reminded only if it's still unpaid and not yet reminded — and sending the email only if that succeeded — keeps customers from getting two emails, or one after they've paid.
 
-The fix has a price: if the process crashes between the mark and the send, that customer gets no reminder at all. For a reminder, that's acceptable. For an effect that must happen, record it durably in the same write and send it from a relay ([[transactional-outbox]]) — which brings back possible duplicates, so the sender must be idempotent.
+The fix has a price: if the process crashes between the mark and the send, that customer gets no reminder at all. For a reminder, that's acceptable. For an effect that must happen, record it durably in the same write and have a separate process (a *relay*) send it later ([[transactional-outbox]]) — which brings back possible duplicates, so the sender must be idempotent.
 
 ## Common traps
 
@@ -79,7 +79,7 @@ The fix has a price: if the process crashes between the mark and the send, that 
 
 ## When it doesn't apply
 
-Some logic is inherently interleaved with I/O — e.g., "keep fetching pages until you find a match." You can still keep each step's decision pure, but the shell does more coordination. For tiny scripts, the split may be overkill.
+Some logic is inherently interleaved with I/O — e.g., "keep fetching pages until you find a match." You can still keep each step's decision pure, but the shell does more coordination. For tiny scripts, the split may be overkill. And when the right decision depends on state that can change under you, the final check belongs in a conditional write or a database constraint; the core's answer is only a proposal.
 
 ## Related
 

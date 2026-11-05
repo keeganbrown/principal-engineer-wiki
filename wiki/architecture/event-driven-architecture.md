@@ -21,14 +21,14 @@ Orders ──publish──► [ OrderPlaced ] ──► Email
                          └────────────► Analytics
 ```
 
-Events are named in the **past tense**, because they're facts that already happened.
+Events are named in the past tense, because they're facts that already happened.
 
 ## Why it matters
 
-- **Looser runtime coupling.** Add a new consumer (say, fraud detection) without changing the producer. The coupling doesn't vanish, though: it moves into the event schema and into flows nobody can see in one place. The producer can no longer tell who will break when it changes.
-- **Resilience.** If Shipping is down, events wait in the queue and Orders keeps working. The broker itself becomes critical infrastructure, though, and every dead-letter queue needs an owner who replays it ([[message-brokers]]). Replays arrive late and out of order, so consumers must ignore events older than the state they hold, using a version or timestamp check.
-- **Smoothing bursts.** Consumers process at their own pace; short bursts are absorbed by the queue — as long as it's bounded and consumers can catch up ([[backpressure]]).
-- **Audit trail.** A stream of events is a natural history of what happened.
+- **Runtime coupling gets looser.** Add a new consumer (say, fraud detection) without changing the producer. The coupling doesn't vanish, though: it moves into the event schema and into flows nobody can see in one place. The producer can no longer tell who will break when it changes.
+- **Producers survive consumer outages.** If Shipping is down, events wait in the queue and Orders keeps working. The broker itself becomes critical infrastructure, though, and every dead-letter queue (where messages are parked after consumers repeatedly fail to process them) needs an owner who replays it ([[message-brokers]]).
+- **Queues smooth bursts.** Consumers process at their own pace; short bursts are absorbed by the queue — as long as it's bounded and consumers can catch up ([[backpressure]]).
+- **The stream can be an audit trail.** That holds only if you use a log that keeps events ([[message-brokers]]) and every change is published; a queue that deletes messages once they're processed keeps no history.
 
 The price is **eventual consistency**: consumers' views lag behind the producer by a moment ([[cap-theorem]] covers the consistency models).
 
@@ -37,22 +37,23 @@ The price is **eventual consistency**: consumers' views lag behind the producer 
 - **Publish facts for broadcast, not disguised commands.** `OrderPlaced`, not `SendConfirmationEmail`. A "command" dressed as an event re-creates the coupling you were avoiding. Commands are fine when one component deliberately owns a workflow — that's an [[saga-pattern|orchestrated saga]], where one coordinator sends each step its command.
 - **Design events as public contracts.** Version them, document them, and evolve them compatibly ([[api-versioning]]).
 - **Make consumers idempotent.** Most brokers deliver *at least once*, so the same event may arrive twice ([[idempotency]]).
-- **Use a dead-letter queue and alert on it.** Someone must own replaying it ([[message-brokers]]).
+- **Handle late and replayed events by kind.** For events that carry an entity's latest state, keep a version per entity and ignore anything older than what you hold. For events that record a change (`ItemAdded`, `PaymentCaptured`), deduplicate by event ID instead, so a late event is still applied once. Prefer a version the producer assigns over a wall-clock timestamp, since clocks on different machines drift.
+- **Alert on the dead-letter queue.** An unwatched one silently loses work ([[message-brokers]]).
 - **Publish reliably with an outbox.** Saving to the database and publishing to the broker are two separate writes. Write the event to an outbox table in the same transaction, and let a separate process relay it ([[transactional-outbox]]).
 - **Propagate trace IDs in event metadata.** A trace ID (also called a correlation ID) follows one flow across services ([[observability]]).
 
 ## Example
 
-Checkout used to call five services synchronously; if any was slow, checkout was slow. Now payment stays synchronous, because checkout needs the answer, while `Orders` saves the order, writes `OrderPlaced` to its outbox, and returns immediately. Email, Shipping, Loyalty, and Analytics each consume the event independently. When Loyalty has an outage, its events pile up and are processed when it recovers — customers never notice.
+Checkout used to call five services synchronously; if any was slow, checkout was slow. Now payment stays synchronous, because checkout needs the answer, while `Orders` saves the order, writes `OrderPlaced` to its outbox, and returns immediately. Email, Shipping, Loyalty, and Analytics each consume the event independently. When Loyalty has an outage, its events pile up and are processed when it recovers — customers see their points arrive late instead of a failed checkout.
 
 The trade-off: right after checkout, the "My Shipments" page may not show the new order for a few seconds. The team shows "Processing…" instead of an empty list.
 
 ## Common traps
 
-- **Assuming instant consistency.** Design the user experience (UX) for a short lag.
+- **Assuming instant consistency.** Design the user experience for a short lag.
 - **Event spaghetti.** Long chains of events triggering events become impossible to follow. Document flows and keep chains short.
 - **Getting event size wrong.** Events with only an ID force every consumer to call back for details (re-coupling them). Events carrying everything leak internals. Include what consumers commonly need.
-- **Ignoring ordering.** Events can arrive out of order. Design for it, or key events by `orderId` so all events for one order land in the same ordered partition ([[message-brokers]]).
+- **Ignoring ordering.** Events can arrive out of order. Design for it. Brokers like Kafka split a topic into *partitions* and keep order only within each one, so use `orderId` as the key to send all events for one order to the same partition ([[message-brokers]]).
 - **No observability.** Without tracing, debugging async flows is guesswork.
 
 ## When it doesn't apply

@@ -35,10 +35,10 @@ Many teams adopt microservices to get *clean boundaries*. But you can get clean 
 
 - **Group modules by domain.** Not by technical layer ([[domain-driven-design]] shows how to find domains).
 - **Make each module's public API explicit.** Expose a single entry file or package; keep everything else internal.
-- **Enforce boundaries with tooling.** Use architecture tests, import linters, or language-level visibility. Good intentions decay without enforcement, so bake the checks into your service template ([[paved-roads]]).
+- **Enforce boundaries with tooling.** Use architecture tests, import linters, or language-level visibility. Good intentions decay without enforcement, so put the checks in the build and in the template new modules start from ([[paved-roads]]).
 - **Give each module its own tables.** Others go through its API ([[coupling-and-cohesion]] explains why shared tables recouple everything).
 - **Avoid transactions that span modules.** A single transaction across `orders` and `payments` is convenient today, but it's the hidden coupling that turns a later extraction from weeks into a redesign.
-- **Use in-process events for side effects.** "Order placed → send email" keeps modules decoupled.
+- **Use in-process events for side effects you can afford to lose.** "Order placed → send email" keeps modules decoupled. Dispatch them after the transaction commits, and accept that a crash can lose one; if the side effect must happen, write it to an outbox table in the same transaction ([[transactional-outbox]]).
 - **Extract a service only for a reason you can name.** [[microservices]] lists the good ones.
 
 ## Example
@@ -51,7 +51,8 @@ Two years in, `payments` needs payment card industry (PCI) compliance isolation 
 
 - **Boundaries in name only.** Folders called "modules" with code reaching freely across them is still a ball of mud.
 - **Growing a shared "common" module.** It becomes a dumping ground everyone depends on.
-- **Shared database tables** — the fastest way to recouple modules.
+- **Sharing database tables between modules.** It's the fastest way back to a ball of mud.
+- **Forgetting the shared release.** One team's broken build still stops everyone's deploy, and framework upgrades happen all at once. Per-module test suites, trunk-based development, and [[feature-flags]] reduce this; they don't remove it.
 - **Forgetting shared runtime fate.** One module's memory leak, runaway query, or bad deploy takes down every module. Monitor per module, and keep risky work isolated.
 - **Premature extraction.** Moving to services before boundaries are proven usually means redrawing them across a network, which is much harder.
 

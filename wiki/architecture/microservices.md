@@ -45,7 +45,7 @@ Teams that never split, at large scale, can end up with one codebase where hundr
 
 A company runs one large Rails app with 80 engineers. Deploys happen weekly and often get rolled back because one team's change broke another's.
 
-They don't rewrite into 40 services. They first enforce module boundaries inside the monolith — and that alone takes deploys from weekly to several times a week. Then they extract the two modules with a clear reason: **search** (very different scaling and its own index) and **payments** (payment card industry (PCI) compliance isolation).
+They don't rewrite into 40 services. They first enforce module boundaries inside the monolith and give each module its own test suite and owners, which takes deploys from weekly to several times a week. Then they extract the two modules with a clear reason: **search** (very different scaling and its own index) and **payments** (payment card industry (PCI) compliance isolation).
 
 The extractions weren't free. Each service needed its own deploy pipeline, tracing, dashboards, and on-call rotation — across the extracted services, roughly two engineers' full-time work to build and keep running. Payments was the hardest; [[modular-monolith]] tells that part of the story. Two years later they have three more services, each extracted for a named reason, and deploy daily.
 

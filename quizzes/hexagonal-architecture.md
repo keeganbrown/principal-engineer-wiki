@@ -13,7 +13,7 @@
 
 - [x] Use cases can be tested with in-memory fakes, with no database.
 - [ ] End-to-end tests are no longer needed for most features.
-- [ ] Adapters no longer need any tests of their own at all, ever.
+- [ ] Adapters can be tested through the core's fakes instead of on their own.
 - [ ] Tests can call private methods inside the core directly.
 
 **Why:** The core talks only to interfaces it defines, so tests plug in fakes. Adapters still need their own integration tests. See [[hexagonal-architecture]].

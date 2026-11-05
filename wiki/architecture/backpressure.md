@@ -13,9 +13,7 @@ tags: [resilience, performance, distributed-systems]
 
 Picture a kitchen during a rush. Orders arrive faster than the chefs can cook. If the servers keep pinning tickets to the rail, the queue grows, every meal is late, and eventually food goes out cold or not at all. A good kitchen pushes back: "we're 40 minutes behind — stop seating new tables for a bit."
 
-**Backpressure** is that push back, in software. A consumer tells its producer: "I'm full; slow down." The term comes from fluid dynamics — resistance against flow in a pipe.
-
-Without it, the only "buffer" is unbounded queues and memory, and they *will* run out.
+**Backpressure** is that push back, in software. A consumer tells its producer: "I'm full; slow down." The term comes from fluid dynamics — resistance against flow in a pipe. Without it, the only "buffer" is unbounded queues and memory, and they *will* run out.
 
 ## Why it matters
 
@@ -23,7 +21,7 @@ Every system has a maximum throughput. When input exceeds it, something has to g
 
 1. **Buffer** — queue the extra work (only works if the burst is short).
 2. **Slow the producer** — backpressure proper.
-3. **Drop or reject** — shed load deliberately.
+3. **Drop or reject** — shed load deliberately. Across a network, a fast rejection with a `Retry-After` header is also how a service tells its producer to slow down.
 4. **Crash** — what happens if you choose none of the above.
 
 Systems without backpressure fail in the worst way: latency climbs for *everyone*, memory fills, the process dies, and its load shifts to the next node, which also dies. That's a cascading failure.
@@ -34,8 +32,8 @@ Systems without backpressure fail in the worst way: latency climbs for *everyone
 - **Reject early and clearly.** Return `429 Too Many Requests` or `503 Service Unavailable` with a `Retry-After` header. A fast "no" beats a slow timeout.
 - **Let consumers pull.** A worker that takes the next job only after finishing the last naturally limits its own load.
 - **Limit concurrency per caller.** Cap in-flight requests per client or per dependency, so one noisy caller can't use everything. This is the **bulkhead** pattern, named for the sealed compartments that keep one leak from sinking a ship.
-- **Rate-limit at the edge** — per user, per API key — before work reaches expensive layers.
-- **Prioritize when shedding.** Drop analytics events before checkout requests.
+- **Rate-limit at the edge.** Limit per user or per API key, before work reaches expensive layers.
+- **Prioritize when shedding.** Drop analytics events before checkout requests. Agree the shedding order with product ahead of time, because shedding means deliberately failing some users, and deciding which ones during an incident is too late.
 - **Make clients cooperate.** They should retry with exponential backoff (each wait longer than the last) and **jitter** (a random extra delay, so clients don't all retry at the same moment), and respect `Retry-After`. See [[retries-and-timeouts]].
 - **Watch queue depth and wait time.** Treat them as first-class metrics ([[observability]]).
 
@@ -54,7 +52,7 @@ So the team decides per client. The mobile app gets rejections. The web form get
 ## Common traps
 
 - **"Just add a queue."** A queue absorbs bursts but doesn't fix sustained overload; it just delays the failure.
-- **Letting retry and timeout settings amplify load.** Retries without backoff, and callers that give up before their callees, both add work exactly when you're weakest; see [[retries-and-timeouts]].
+- **Letting retry and timeout settings amplify load.** Retries without backoff, and callers whose timeout is shorter than the service they call (so it keeps working on requests nobody is waiting for), both add work exactly when you're weakest; see [[retries-and-timeouts]].
 - **Backpressure that stops at a boundary.** If the service rejects, but the frontend auto-retries instantly, nothing improved.
 
 ## When it doesn't apply

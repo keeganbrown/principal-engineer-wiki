@@ -30,20 +30,20 @@ Michael Nygard popularized the pattern in *Release It!* (2007).
 
 ## Why it matters
 
-- **Prevents cascading failures.** Callers stop wasting threads and connections on a dead dependency.
+- **It stops cascading failures.** Callers stop wasting threads and connections on a dead dependency.
 - **The dependency gets room to recover.** It isn't hammered by retries.
-- **Faster user experience.** An instant fallback beats a 30-second timeout.
-- **You get a precise diagnostic signal.** Dashboard breaker state, and page only if the fallback itself degrades something users feel ([[observability]]).
+- **Users get a faster answer.** An instant fallback beats a 30-second timeout.
+- **State changes are a precise health signal.** A breaker opening tells you exactly which dependency is failing ([[observability]]).
 
 ## How to apply it
 
-- **Use breakers where they pay off.** That means calls with a meaningful fallback, or calls whose hangs threaten the caller's thread or connection pools. Elsewhere — for example, a database call with a tight timeout and no fallback — a timeout and a bounded retry are often enough ([[retries-and-timeouts]]); a breaker there just turns slow errors into fast ones.
+- **Use breakers where they pay off.** That means calls with a meaningful fallback, or calls whose hangs threaten the caller's thread or connection pools. Elsewhere, a timeout and a bounded retry are often enough ([[retries-and-timeouts]]). A database call with a tight timeout and no fallback is the typical case: the timeout already makes its errors fast, so a breaker adds code and tuning but changes little.
 - **Always pair breakers with timeouts.** A call without a timeout can hang forever and never count as a failure.
 - **Decide on a fallback for each call.** Options are [[caching|cached data]], a default value, a degraded feature, or a clear error.
-- **Tune thresholds from real traffic.** For example: open after 50% failures over at least 20 calls in 10 seconds; try again after 30 seconds.
+- **Tune thresholds from real traffic.** For example: open after 50% failures over at least 20 calls in 10 seconds; try again after 30 seconds. Breakers usually live in each instance, so check the minimum call count against per-instance traffic, not the fleet's total.
 - **Use one breaker per dependency or endpoint.** One bad API shouldn't block healthy ones.
-- **Emit metrics on state changes.** Put them on a dashboard.
-- **Don't write your own.** Use a well-tested library (resilience4j, Polly) or a **service mesh** — infrastructure that manages calls between services for you.
+- **Emit metrics on state changes.** Show them on a dashboard, and page someone only if the fallback hurts something users notice.
+- **Don't write your own.** Use a well-tested library (for example resilience4j for Java, Polly for .NET) or a **service mesh** — infrastructure that manages calls between services for you. A mesh can fail fast, but it can't choose a fallback; that part stays in your code.
 
 ## Example
 

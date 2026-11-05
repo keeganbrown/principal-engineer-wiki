@@ -1,4 +1,4 @@
-# Quiz: Saga Pattern
+# Quiz: Sagas
 
 ## In a checkout saga, why does the confirmation email go last?
 
@@ -9,7 +9,7 @@
 
 **Why:** Order steps by how easy they are to undo. Irreversible steps come after everything that might need compensating. See [[saga-pattern]].
 
-## Why authorize the card before capturing payment?
+## In a checkout saga, why authorize the card as one step and capture the payment as a later one?
 
 - [x] Voiding a hold is cheaper and less visible than a refund.
 - [ ] Authorization costs the payment provider less than a capture does.
