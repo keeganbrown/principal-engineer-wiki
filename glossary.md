@@ -16,7 +16,7 @@ alphabetical under each letter; the linter checks the format.
 - **At-most-once delivery** — Each message is delivered once or not at all: nothing is duplicated, but some messages may be lost. See [[message-brokers]].
 - **Authentication and authorization** — Authentication establishes who a caller is; authorization decides what that caller may do, such as whether they may read this particular record. See [[threat-modeling]].
 - **Availability (CAP)** — In the CAP theorem, every request to a working node gets a non-error response, even during a network partition. See [[cap-theorem]].
-- **Availability (uptime)** — The share of time a system answers requests successfully, often stated in "nines": 99.9% allows about 43 minutes of downtime a month.
+- **Availability (uptime)** — The share of time a system answers requests successfully, often stated in "nines": 99.9% allows about 43 minutes of downtime a month. See [[service-level-objectives]].
 
 ## B
 
@@ -27,6 +27,7 @@ alphabetical under each letter; the linter checks the format.
 - **Blast radius** — How much breaks when one component fails or one change goes wrong. Good design and gradual rollouts keep it small. See [[infrastructure-as-code]].
 - **Blue-green deployment** — Running the old (blue) and new (green) versions side by side and switching traffic at once, so rolling back is just switching back. See [[load-balancers-and-cdns]].
 - **Bounded context** — A boundary inside which one domain model, and its words, have a single consistent meaning. See [[domain-driven-design]].
+- **Break-glass role** — Emergency write access that's normally unused and audited when used, so incidents don't need standing admin rights. See [[infrastructure-as-code]].
 - **Burn rate** — How fast a service is spending its error budget. A burn rate of 1 uses exactly the budget over the window; a high one pages someone. See [[service-level-objectives]].
 - **Bus factor** — How many people would need to be unavailable before a project stalls. A bus factor of one is a risk. See [[hero-culture]].
 
@@ -63,7 +64,7 @@ alphabetical under each letter; the linter checks the format.
 - **Dependency inversion** — High-level code defines the interfaces it needs, and low-level code implements them. See [[hexagonal-architecture]].
 - **Dev container** — A development environment defined by a `devcontainer.json` file in the repository, so every engineer, CI job, and agent gets the same tools. See [[reproducible-dev-environments]].
 - **Distributed monolith** — Services split across the network that still have to change, deploy, and fail together. See [[distributed-monolith]].
-- **DORA metrics** — Five delivery measures from Google's DevOps Research and Assessment program: lead time for changes, deployment frequency, change failure rate, failed deployment recovery time, and deployment rework rate. See [[adopting-coding-agents]].
+- **DORA metrics** — Five delivery measures from Google's DevOps Research and Assessment program: lead time for changes, deployment frequency, change failure rate, failed deployment recovery time, and deployment rework rate. See [[continuous-delivery]].
 - **Drift** — The gap between what your infrastructure code describes and what actually exists, usually from changes made by hand. See [[infrastructure-as-code]].
 - **DRY** — Don't repeat yourself: give each piece of knowledge one authoritative home, but don't abstract too early. See [[dry]].
 
@@ -84,6 +85,7 @@ alphabetical under each letter; the linter checks the format.
 
 ## G
 
+- **Game day** — A planned drill that simulates a failure, to test runbooks, alerts, and fallbacks while nothing is really broken. See [[incident-response]].
 - **God object** — One class or service that knows and does too much, so most changes have to edit it. See [[god-object]].
 - **Golden hammer** — Using a familiar or fashionable tool for every problem, whether or not it fits. See [[golden-hammer]].
 - **Goodhart's law** — When a measure becomes a target, it stops being a good measure, because people optimize the number instead of the outcome. See [[metric-fixation]].
@@ -111,6 +113,7 @@ alphabetical under each letter; the linter checks the format.
 
 ## K
 
+- **Kill switch** — A long-lived flag that quickly turns off a costly or risky feature, often during an incident. See [[feature-flags]].
 - **KISS** — Keep it simple, stupid: choose the simplest design that solves today's problem. See [[kiss]].
 
 ## L
@@ -120,12 +123,13 @@ alphabetical under each letter; the linter checks the format.
 - **Leader election** — Choosing one machine to coordinate work, and choosing a new one if it fails. See [[transactional-outbox]].
 - **Least privilege** — Giving each person, service, and job only the permissions it needs, for only as long as it needs them. See [[threat-modeling]].
 - **Lethal trifecta** — An agent with private data, exposure to untrusted content, and a way to send data out can be tricked into leaking that data. See [[agent-guardrails]].
+- **Liveness and readiness checks** — Liveness asks whether a container should be restarted; readiness asks whether it should get traffic. See [[containers-and-kubernetes]].
 - **Load balancer** — A component that spreads incoming requests across several healthy servers behind one address. See [[load-balancers-and-cdns]].
 - **Load shedding** — Deliberately rejecting some requests during overload so the rest can succeed. See [[backpressure]].
 
 ## M
 
-- **Mean time to restore (MTTR)** — The average time from the start of an incident until service is back. DORA now calls it failed deployment recovery time. See [[incident-response]].
+- **Mean time to restore (MTTR)** — The average time from the start of an incident until service is back. DORA tracks the deploy-caused part as failed deployment recovery time. See [[incident-response]].
 - **Message broker** — Software that holds messages between services, so producers don't wait for consumers. Comes as queues or logs. See [[message-brokers]].
 - **Metric fixation** — Turning a measurement into a target, so people optimize the number instead of the outcome. See [[metric-fixation]].
 - **Model Context Protocol (MCP)** — An open standard for connecting AI applications to tools and data sources. See [[shared-agent-configuration]].
@@ -148,6 +152,7 @@ alphabetical under each letter; the linter checks the format.
 
 - **Partition (data)** — A slice of a dataset or message stream, chosen by a key, that can be stored or processed separately. See [[message-brokers]].
 - **Partition (network)** — A failure in which parts of a system can't reach each other. See [[cap-theorem]].
+- **Partition key** — The field that decides which partition, and so which machine, a record lives on, keeping related records together. See [[nosql-databases]].
 - **Paved road** — The supported, easy way to build and run software in an organization. See [[paved-roads]].
 - **Percentile (p50, p99)** — The value that a given share of measurements fall at or below. p99 latency is the time that 99% of requests finish within. See [[observability]].
 - **Port and adapter** — A port is an interface the core of an application defines; an adapter implements it for one specific technology. See [[hexagonal-architecture]].
@@ -163,27 +168,32 @@ alphabetical under each letter; the linter checks the format.
 
 ## R
 
-- **Rate limiting** — Capping how many requests a client may make in a period of time.
+- **Rate limiting** — Capping how many requests a client may make in a period of time. See [[backpressure]].
 - **Read replica** — A copy of a database that serves reads and lags slightly behind the primary. See [[relational-databases]].
+- **Redelivery timeout** — How long a broker waits for a consumer to acknowledge a message before handing it to another consumer. See [[message-brokers]].
 - **Replication lag** — How far a copy of the data is behind its source. See [[cap-theorem]].
 - **REST** — Representational state transfer: an API style of resources at URLs acted on with HTTP methods, usually with JSON bodies. See [[api-styles]].
 - **Retrieval-augmented generation (RAG)** — Looking up relevant documents and giving them to a language model along with the question. See [[large-language-models]].
 - **Retry with backoff and jitter** — Retrying a failed call after growing, randomized delays, so many clients don't retry in lockstep. See [[retries-and-timeouts]].
 - **RPO and RTO** — Recovery point objective (how much recent data you can afford to lose) and recovery time objective (how long you can afford to be down). See [[relational-databases]].
+- **Runbook** — Step-by-step instructions for handling a known operational task or failure. See [[incident-response]].
 
 ## S
 
 - **Saga** — A multi-step workflow across services in which each step has a compensating action. See [[saga-pattern]].
 - **Sandbox** — An isolated environment that limits which files, networks, and credentials the code inside it can reach. See [[agent-guardrails]].
 - **Second-system effect** — Fred Brooks's observation that a designer's second system tends to be over-designed, carrying every idea held back from the first. See [[big-bang-rewrite]].
+- **Secrets management** — Storing, delivering, scoping, and rotating credentials so they stay out of code, images, and logs. See [[secrets-management]].
 - **Separation of concerns** — Splitting a system into parts that each handle one kind of job. See [[separation-of-concerns]].
 - **Sharding** — Splitting data across several databases by key, so that each holds a part. See [[relational-databases]].
 - **Single point of failure (SPOF)** — A component whose failure takes the whole system down. See [[load-balancers-and-cdns]].
 - **SLI, SLO, SLA** — Service level indicator (what you measure, such as success rate), objective (the target, such as 99.9%), and agreement (the promise to customers, with consequences if broken). See [[service-level-objectives]].
 - **SOLID** — Five heuristics for object-oriented design that keep code safe to change. See [[solid-principles]].
+- **Startup probe** — A container check that holds off liveness and readiness checks until a slow-starting app is up. See [[containers-and-kubernetes]].
 - **State file** — The record an infrastructure-as-code tool keeps of which real resources match which code. It often holds secrets, so store it remotely, locked, and encrypted. See [[infrastructure-as-code]].
 - **Strangler fig** — Replacing a legacy system one piece at a time behind a routing layer. See [[strangler-fig]].
 - **STRIDE** — A checklist of six threat types: spoofing, tampering, repudiation, information disclosure, denial of service, and elevation of privilege. See [[threat-modeling]].
+- **Synthetic probe** — A scripted request sent on a schedule to measure a service from outside, catching failures that never reach your servers. See [[service-level-objectives]].
 
 ## T
 

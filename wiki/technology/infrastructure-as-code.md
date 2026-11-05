@@ -48,7 +48,7 @@ The next "temporary" change is a PR that a reviewer questions. The hard part was
 
 - **Applying without reading the plan.** "Destroy 1 database" is in the output; it's easy to miss in a long plan.
 - **Leaving incident hotfixes out of the code.** A manual fix that's never written back gets silently reverted by the next apply.
-- **Secrets in code or state.** State files often contain secrets in plain text; treat them as sensitive.
+- **Secrets in code or state.** State files often contain secrets in plain text; treat them as sensitive ([[secrets-management]]).
 - **One giant configuration.** A single change becomes slow to plan and dangerous to apply.
 - **Copy-paste environments.** Duplicated code for each environment drifts; use modules with per-environment settings.
 

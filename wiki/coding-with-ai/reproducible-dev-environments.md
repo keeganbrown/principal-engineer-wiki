@@ -48,7 +48,7 @@ Within a week, environment-related test failures drop to near zero, and unattend
 
 - **A definition nobody uses.** If the container is slower or more annoying than the hand setup, people quietly skip it and it rots. Make it the fastest path, not just the official one.
 - **Floating versions.** An unpinned base image changes underneath you, and the environment stops being reproducible.
-- **Credentials baked in.** Tokens in the image or the environment file get copied everywhere the image goes. Inject secrets at run time, and not at all for agent runs where possible.
+- **Credentials baked in.** Tokens in the image or the environment file get copied everywhere the image goes. Inject secrets at run time, and not at all for agent runs where possible ([[secrets-management]]).
 - **Treating the container as a complete sandbox.** A container with your cloud credentials and open network access is reproducible, not safe. Isolation depends on what you mount and allow.
 - **Environment changes outside review.** "I just installed it in my container" recreates the drift you were trying to remove.
 

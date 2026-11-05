@@ -47,7 +47,7 @@ Loren Kohnfelder and Praerit Garg created STRIDE at Microsoft in 1999. The four 
 - **Decide something for every threat.** Mitigate it, remove the feature that creates it, transfer it (to a payment provider, say), or accept it. Accepted risks get an owner and a note of why.
 - **Grant least privilege.** Each service, job, and person gets only the permissions it needs, for only as long as it needs them. The cost is more roles to manage, and a permission that's too narrow fails at a bad time, so automate granting and reviewing access.
 - **Check authorization on the server, on every request.** Authentication says who someone is; authorization says what they may do. Check that the caller may touch *this* object, not just that they're logged in.
-- **Keep secrets out of code and images.** Use a secrets manager and short-lived credentials, and rotate them ([[infrastructure-as-code]]).
+- **Keep secrets out of code and images.** Use a secrets manager and short-lived credentials, and rotate them ([[secrets-management]]).
 - **Assume one layer fails.** Defense in depth means a second control catches what the first misses: an authorization check *and* storage that's private by default.
 - **Count dependencies as attack surface.** Pin versions, scan them for known vulnerabilities, and review new ones before adding them.
 

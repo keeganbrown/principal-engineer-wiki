@@ -82,6 +82,7 @@ tests/                Tests for the linter, site build, and site logic.
 ## Quiz rules (enforced by the linter)
 
 - Every article has `quizzes/<slug>.md`; no quiz without an article.
+- The H1 is `# Quiz: <article title>`, matching the article's `title` exactly.
 - At least 3 questions. Each is a `## Question ending in?`, then 3–4
   options as `- [x]` (exactly one) / `- [ ]`, then `**Why:** …` with a
   link to the article. No duplicate options, no stray lines.
@@ -157,10 +158,16 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   "The", no trailing "Pattern".
 - **Bullets:** a bold lead-in is a short, complete clause ending in a
   period (`**Bound every queue.** An unbounded…`), or no bold at all.
-  Never end a bold lead-in at a colon, comma, or mid-sentence.
-  Two allowed exceptions:
+  Never end a bold lead-in at a colon, comma, or mid-sentence, and don't
+  use a bare noun phrase (`**Performance.**`); say what happens
+  (`**Reads get faster.**`). Under "Common traps", a gerund phrase naming
+  the mistake is fine (`**Splitting by technical layer.**`).
+  Allowed exceptions:
   - *Definition lists* may use `**Term** — definition.`
   - A term of art may be bolded once, mid-sentence, where it is defined.
+  - *Group labels* on their own line may end at a colon (`Spotting it:`,
+    `**Before:**`, `**Fix:**`, `**Option A:**`) when a list, code block, or
+    paragraph follows.
 - **Paragraphs:** at most four sentences, including in Examples.
 - **Pseudocode:** Python-like, colon-and-indent, no braces —
   `interface Clock:` / `    now()`. Identifiers in camelCase; constants
@@ -173,7 +180,8 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
 - **Re-read the example after changing a rule.** Examples must obey the
   article's own guidelines.
 - **Acronyms that never need expanding:** API, HTTP, URL, SQL, JSON, UI, ID.
-  Everything else (CI, CRUD, PR, ADR, CDC, …) is expanded once per article.
+  Everything else (CI, CRUD, PR, ADR, CDC, …) is expanded once per article,
+  always as `full term (ACRONYM)`, e.g. "continuous integration (CI)".
 - **No maintainer notes in reader text.** Never write "this article owns…";
   ownership lives only in the table below.
 - **Every fix gets its own cost check.** When adding a mechanism to fix a
@@ -250,6 +258,9 @@ Decided after the first full review (`reviews/2026-11-01-full-wiki.md`):
   | CI, trunk-based development, canary and progressive rollout | `continuous-delivery` (flag mechanics: `feature-flags`) |
   | Threat modeling, STRIDE, least privilege, authn vs authz | `threat-modeling` (for agents: `agent-guardrails`) |
   | Technical strategy: diagnosis, guiding policy, actions | `technical-strategy` |
+  | DORA delivery metrics | `continuous-delivery` (measuring AI impact with them: `adopting-coding-agents`) |
+  | Secrets: storage, delivery, scoping, rotation | `secrets-management` (for agents: `agent-guardrails`) |
+  | On-call load, game days | `incident-response` |
 
 ## Workflows
 

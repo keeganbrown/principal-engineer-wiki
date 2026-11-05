@@ -23,10 +23,10 @@ Kent Beck popularized TDD as part of Extreme Programming in the late 1990s.
 
 ## Why it matters
 
-- **Design feedback.** Code that's hard to test is often too [[coupling-and-cohesion|coupled]], and TDD surfaces that while it's cheap to fix. Don't add layers *only* for testability; test through a real boundary with a fake (a simple working stand-in, such as an in-memory database), or test at a higher level.
-- **Confidence to change.** A good suite lets you refactor boldly and deploy often.
-- **Living documentation.** Tests show how the code is meant to be used.
-- **Focus.** You build only what a test demands, which keeps scope tight.
+- **Tests give design feedback.** Code that's hard to test is often too [[coupling-and-cohesion|coupled]], and TDD surfaces that while it's cheap to fix. Don't add layers *only* for testability; test through a real boundary with a fake (a simple working stand-in, such as an in-memory database), or test at a higher level.
+- **You can change code with confidence.** A good suite lets you refactor boldly and deploy often.
+- **Tests document the code.** They show how the code is meant to be used.
+- **Scope stays tight.** You build only what a test demands.
 - **It isn't free.** Tests are code you maintain, and first drafts take longer. Studies comparing test-first with test-last are mixed, and some suggest the payoff comes from small steps and fast feedback, not from writing the test first.
 
 ## How to apply it

@@ -58,16 +58,18 @@ Habits that make teams faster and systems safer.
 **Decisions** (see also [[reversible-decisions]])
 - [[design-docs]] — Think it through in writing, while flaws are cheap.
 - [[architecture-decision-records]] — Record what you decided and why.
+- [[technical-debt]] — Borrow deliberately, pay down on purpose.
 
 **Operating**
 - [[observability]] — Systems that explain themselves in production.
 - [[service-level-objectives]] — A reliability target users notice, and an error budget to spend.
 - [[incident-response]] — One commander, mitigate first, update on a clock.
 - [[blameless-postmortems]] — Fix the system that made the mistake easy.
-- [[technical-debt]] — Borrow deliberately, pay down on purpose.
 
 **Security**
 - [[threat-modeling]] — Find what can go wrong at each trust boundary, while the design is cheap to change.
+- [[secrets-management]] — Deliver credentials at run time, scope them narrowly, and rotate them routinely.
+- See also: [[agent-guardrails]], the same ideas applied to coding agents.
 
 ## Architecture patterns
 

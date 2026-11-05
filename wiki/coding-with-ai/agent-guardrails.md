@@ -55,7 +55,7 @@ Each has a cost: the port is one more abstraction, the sandbox blocks some tools
 - **Approving every prompt on autopilot.** By the fiftieth "allow this command?" people click yes unread; fix the allow list.
 - **Running "skip all permissions" mode on your laptop.** In that mode the agent runs every command without asking. Full autonomy is reasonable inside a disposable sandbox and reckless on a machine with your credentials.
 - **Trusting the agent to spot injection.** Models resist injected instructions better each year, but none does so reliably. Design as if the injection works.
-- **Secrets in the agent's environment variables.** Anything in the agent's shell environment can end up in its output, logs, or requests. Credentials for a tool connection belong in that tool's process or a secrets manager, where the agent can use the tool without reading the token ([[shared-agent-configuration]]).
+- **Secrets in the agent's environment variables.** Anything in the agent's shell environment can end up in its output, logs, or requests. Credentials for a tool connection belong in that tool's process or a secrets manager, where the agent can use the tool without reading the token ([[shared-agent-configuration]], [[secrets-management]]).
 - **Guardrails only on laptops.** Agents in CI pipelines, review bots, and scheduled jobs need the same limits, often stricter, because nobody is watching them live.
 
 ## When it doesn't apply

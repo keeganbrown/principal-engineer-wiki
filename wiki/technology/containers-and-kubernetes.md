@@ -48,7 +48,7 @@ Deploys drop to ten minutes and become a non-event. Two years later, with 30 ser
 
 - **Kubernetes as a resume item.** Adopting it for three services adds a full-time operating burden for little gain.
 - **Treating containers like pets.** Containers should be identical and replaceable, not unique and hand-tended. Logging in to patch a running container means the next restart loses the fix. Rebuild the image.
-- **Secrets in images.** Anything baked into an image is readable by anyone who can pull it. Inject secrets at run time.
+- **Secrets in images.** Anything baked into an image is readable by anyone who can pull it. Inject secrets at run time ([[secrets-management]]).
 - **Copy-pasted configuration.** Fifty services with fifty slightly different manifests is drift at scale. Use shared templates.
 
 ## When it doesn't apply

@@ -52,7 +52,7 @@ It worked because the sampler keeps every slow trace. Under the team's old 1% ra
 - **Alert fatigue.** Too many non-actionable alerts teach people to ignore pages. Every alert should require a human action.
 - **High-cardinality metric labels.** Each unique label value creates a separate time series; a `userId` label with millions of values creates millions of series and explodes costs. Put high-cardinality fields like user ID, app version, and region on **traces and structured logs** instead, where they can answer questions like "only Android 4.2 users in the EU."
 - **Sampling away what you need.** Random sampling can drop the one failing request you're looking for. Keep errors and slow requests.
-- **Logging secrets or personal data.** Scrub tokens, passwords, and personally identifiable information (PII) at the source.
+- **Logging secrets or personal data.** Scrub tokens, passwords, and personally identifiable information (PII) at the source ([[secrets-management]]).
 - **Adding telemetry only after an incident.** Make it part of "done" for every feature.
 
 ## When it doesn't apply
