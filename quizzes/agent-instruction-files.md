@@ -7,7 +7,7 @@
 - [ ] Split it into ten files, one per topic, all loaded at every session start.
 - [ ] Delete it, since agents can learn everything they need from the code.
 
-**Why:** Keep it short and lead with the commands; in the example it ended near 40 lines. Agents ignore much of a long file, and nobody can tell which part. Move the style guide into the linter. See [[agent-instruction-files]].
+**Why:** Keep it short and lead with the commands. A long file buries the rules that matter, since all of it is sent to the model every session. Move the style guide into the linter. See [[agent-instruction-files]].
 
 ## An agent keeps making the same mistake in review. What should you do?
 

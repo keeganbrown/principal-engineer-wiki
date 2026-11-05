@@ -11,7 +11,7 @@ tags: [ai, coding-agents, code-review, ownership, quality]
 
 ## The idea
 
-A **coding agent** is an AI tool that reads code, runs commands, and edits files in a loop toward a goal. It produces code that *looks* right: well named, well formatted, with tests. That polish is the problem. Human mistakes usually look like mistakes; agent mistakes often look like finished work.
+A **coding agent** is an AI tool that reads code, runs commands, and edits files in a loop toward a goal. It produces code that *looks* right: well named, well formatted, with tests. That polish is the problem. Agent mistakes, more often than typical human ones, look like finished work.
 
 Two rules follow:
 
@@ -20,14 +20,14 @@ Two rules follow:
 
 ## Why it matters
 
-- **Watch review for a bottleneck.** In a 2026 Harvard working paper (655 firms, observational, not yet peer reviewed), code waited about 60% longer for a reviewer after firms added agents on top of AI assistants, and drew about 39% more comments per change. The authors read the longer reviews as a sign that submitted code got worse.
-- **Watch what humans stop reading.** At one company told to double its output (a 2026 Carnegie Mellon and Stanford observational study of one firm), each reviewer's load doubled. Automated review grew from 19% to 84% of PRs, while the share that got a substantive human review fell from 39% to 21%. Neither study detected more bug reports or reverts in the short term, though both estimates are too imprecise to rule out a rise, and missed defects can surface later ([[adopting-coding-agents]]).
+- **Watch review for a bottleneck.** In a 2026 Harvard working paper (655 firms, observational, not yet peer reviewed), code waited about 60% longer for a reviewer after firms added coding agents on top of AI assistants (tools that suggest code as you type), and drew about 39% more comments per change. The authors read this as a sign that submitted code got worse.
+- **Watch what humans stop reading.** In a 2026 Carnegie Mellon and Stanford observational study of one firm told to double its output, each reviewer's load doubled. Automated review grew from 19% to 84% of PRs, while the share that got a substantive human review fell from 39% to 21%. Neither study detected more bug reports or reverts in the short term, though the Harvard estimate is too imprecise to rule out a rise, the single-firm result is only suggestive, and missed defects can surface later ([[adopting-coding-agents]]).
 - **Plausible errors slip past skimming.** Invented functions, wrong edge-case handling, and tests that check the wrong thing all read fluently.
 - **Ownership keeps knowledge in the team.** If nobody understands the code that was merged, nobody can debug it at 3 a.m.
 
 ## How to apply it
 
-- **Self-review before you ask anyone else.** Read your agent's diff line by line before opening the PR. If you can't explain a line, you're not ready to ask someone else to approve it.
+- **Self-review before you ask anyone else.** Read your agent's diff line by line before opening the PR. If you can't explain a line, you're not ready for review.
 - **Keep PRs small.** Agent PRs follow the same size rules as human ones ([[code-review]]). A 1,500-line generated PR gets a skim, not a review.
 - **Say how the change was made.** A line in the PR description — "agent-written from the plan in #412; I rewrote the retry logic" — tells the reviewer where to look hardest. Make this a team norm, not a confession.
 - **Review intent first, then details.** Check the change against the plan or ticket before reading the code. Agents often solve a slightly different problem very well.
@@ -38,26 +38,27 @@ Two rules follow:
   - *Duplication* — a new helper written beside an existing one the agent didn't find ([[navigable-codebases]]).
   - *Weakened checks* — deleted assertions, skipped tests, broader exception handling, loosened types.
 - **Use AI reviewers as a first pass, not an approval.** An AI review bot can catch real issues cheaply. It doesn't replace a human who understands the system and is accountable for the merge.
-- **Plan review capacity alongside authoring.** When agent use grows, budget reviewer hours, not just licenses, and watch how long PRs wait for a first review. Those hours come out of feature work. If a review bot takes on more of the first pass, a human still approves every merge; each month, have someone reread a few recently merged PRs in full to see what reviewers stopped catching.
-- **Keep checks the agent can't edit.** Branch protection and required reviewers for sensitive paths (repository settings that block merging until checks pass and named people approve), and CI (continuous integration) gates should not be changeable by the same change they guard.
+- **Plan review capacity alongside authoring.** When agent use grows, budget reviewer hours, which come out of feature work, and watch how long PRs wait for a first review. Each month, have someone reread a few recently merged PRs in full to see what reviewers stopped catching.
+- **Sort agent PRs by risk, not diff size.** Ship/show/ask still applies ([[code-review]]), but classify by risk and by how well the author understands the change; agent diffs often hide scope creep.
+- **Keep checks the agent can't edit.** A change must not be able to weaken the checks that guard it. That covers continuous integration (CI) gates, branch protection, and required reviewers for sensitive paths: repository settings that block a merge until checks pass and named people approve.
 
 ## Example
 
-An engineer asks an agent to "add pagination to the orders endpoint." The PR arrives: 300 lines, tests green, clean code.
+An engineer asks an agent to "add pagination to the orders endpoint." The PR arrives: 300 lines, tests green.
 
-The reviewer starts with intent and checks it against the ticket. The ticket says *cursor* pagination: each page returns a marker, such as the last order's ID, and the next request starts after it. Orders arrive constantly, and with page numbers each new one shifts every row, so pages skip or repeat. The agent built page numbers; the tests pass because they never write while paging.
+The reviewer starts with intent and checks it against the ticket. The ticket says *cursor* pagination: each page returns a marker, such as the last order's ID, and the next request starts after it. With page numbers, each new order shifts every row, so pages skip or repeat. The agent built page numbers; the tests pass because they never write while paging.
 
 Reading further, the reviewer finds two more issues. The agent raised the maximum page size from 100 to 1,000 in a shared config file ("to make the test simpler"). And it added a new date-parsing library although the project already has one.
 
-None of this would fail CI. The fix takes an hour; finding it in production would take much longer. The cost is review time, and the team accepts it: they cap agent PRs at about 400 changed lines so reviews like this stay possible, and for a quarter track escaped defects and reverts on agent PRs to check the cap works.
+None of this would fail CI. The fix takes an hour; finding it in production would take much longer. The cost is review time, and the team accepts it: they cap agent PRs at about 400 changed lines so reviews like this stay possible, and for a quarter track bugs found after merge and reverts on agent PRs to check the cap works.
 
 ## Common traps
 
 - **Approving because the tests pass.** The agent wrote the tests to pass. Check that they test the *requirement*.
-- **Reviewing the summary instead of the diff.** Agents write confident PR descriptions. The description is a claim; the diff is the evidence.
+- **Reviewing the summary instead of the diff.** The description is a claim; the diff is the evidence.
 - **Blame-shifting.** "The AI did it" in a postmortem hides the real gaps: the review, the checks, the spec. Treat it as a system problem ([[blameless-postmortems]]).
-- **Review fatigue.** A flood of small agent PRs can exhaust reviewers as surely as one giant one. Limit work in progress, and count review time as real work.
-- **Banning agents from sensitive code by default.** Rules like "no AI in payments" are hard to enforce and push use into hiding. Stricter review for sensitive paths usually works better than a blanket ban. Where a ban is genuinely required, by regulation or contract, enforce it with tooling and access, not a memo.
+- **Review fatigue.** A flood of small agent PRs exhausts reviewers as surely as one giant one. Limit work in progress.
+- **Banning agents from sensitive code by default.** Rules like "no AI in payments" are hard to enforce and push use into hiding; stricter review for sensitive paths usually works better. Where regulation or contract requires a ban, enforce it with tooling and access, not a memo.
 
 ## When it doesn't apply
 

@@ -20,7 +20,7 @@
 
 ## When can an agent safely run with few limits?
 
-- [x] Only in a disposable container with no credentials or anything of value.
+- [x] In a disposable container with no credentials or anything of value.
 - [ ] On a senior engineer's laptop, since they know what they're doing.
 - [ ] When the network is allowlisted to the package registry only.
 - [ ] When the repository is private and only employees can read it.

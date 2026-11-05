@@ -1,10 +1,10 @@
 # Quiz: Reviewing AI-Generated Code
 
-## An engineer merges an agent-written change that later causes an incident. Who owns the fix?
+## An engineer merges an agent-written change that later causes an incident, and says "the agent wrote that part." Who is accountable for the code?
 
 - [x] The engineer who opened the pull request.
 - [ ] The vendor whose coding agent wrote the change.
-- [ ] The reviewer who approved the pull request.
+- [ ] The on-call engineer who first spotted the incident.
 - [ ] Nobody in particular, since no human typed the code.
 
 **Why:** The author owns the code, no matter who or what typed it. Blaming the agent leaves nobody accountable. See [[reviewing-ai-generated-code]].

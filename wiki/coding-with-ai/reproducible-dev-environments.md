@@ -11,11 +11,11 @@ tags: [ai, coding-agents, developer-experience, dev-containers, onboarding]
 
 ## The idea
 
-"Works on my machine" happens because each machine is set up by hand: a different language version here, a missing system library there. A **reproducible environment** replaces the hand setup with a file in the repository that describes it — tools, versions, services, setup steps — so anyone can build an identical copy with one command.
+"Works on my machine" happens because each machine is set up by hand: a different language version here, a missing system library there. A **reproducible environment** replaces the hand setup with a file in the repository that describes it — tools, versions, services, setup steps — so anyone can build an identical copy with one command. Often that copy is a *container*: an isolated environment built from an *image*, a snapshot of the operating system, tools, and files ([[containers-and-kubernetes]]). Common ways to define one are **dev containers** (an open specification, `devcontainer.json`, that many editors and tools read), Nix (a package manager that pins every dependency exactly), or a plain Dockerfile (a script that builds an image) with a setup script.
 
 That used to be mainly an onboarding win. With **coding agents** — AI tools that read code, run commands, and edit files in a loop toward a goal — it matters more. An agent can't ask a colleague why the build fails on its machine. It reads the error, guesses, and may "fix" your code to work around a broken environment.
 
-A reproducible environment also gives you a natural sandbox. If the whole environment is a container, you can run the agent inside a throwaway copy where the repository is the only part of your machine it can see, away from your home directory and credentials. A container is an isolated environment built from an *image*, a snapshot of the operating system, tools, and files ([[containers-and-kubernetes]]). Common ways to do this are **dev containers** (an open specification, `devcontainer.json`, that many editors and tools read), Nix (a package manager that pins every dependency exactly), or a plain Dockerfile (a script that builds an image) with a setup script.
+A reproducible environment also gives you a natural sandbox. If the whole environment is a container, you can run the agent inside a throwaway copy where the repository is the only part of your machine it can see, away from your home directory and credentials.
 
 ## Why it matters
 
@@ -33,12 +33,12 @@ The cost: containers add a layer to learn and debug, can be slow on some laptops
 - **Use one entry point.** `make setup` or "open in container" should produce a working environment with no extra steps. If a step needs a wiki page, script it.
 - **Build CI from the same definition.** That keeps local and CI checks honest with each other ([[feedback-loops-for-agents]]).
 - **Make services local and fake by default.** Databases and queues run in containers next to the code; external APIs use fakes or sandboxes. Real credentials stay out of the definition.
-- **Have a locked-down profile for agents.** Same image, but with only the repository mounted, no personal credentials, and outbound network limited to what builds need, such as the package registry.
+- **Have a locked-down profile for agents.** Same image, but with only the repository mounted, no personal credentials, and outbound network limited to what builds need, such as the package registry. That narrows the leak path; it doesn't close it, since a registry can still carry data out ([[agent-guardrails]]). Never mount the Docker socket or host credentials into the agent's container: containers share the host's kernel, and the socket gives root on the host.
 - **Cache what's slow.** Prebuilt images or cached dependency folders keep a fresh environment fast enough that people actually use it.
 
 ## Example
 
-A team's setup guide is 14 steps long and three of them are out of date. Agents working in the repository keep failing tests because the image library on most laptops is a different version than in CI. One agent "fixes" an image-resizing test by loosening its assertions.
+A team's setup guide is 14 steps long and three of them are out of date. Agents working in the repository keep failing tests because the image-processing library on most laptops is a different version than in CI. One agent "fixes" an image-resizing test by loosening its assertions.
 
 The team adds a dev container: pinned language and library versions, a local PostgreSQL database, and a setup script. CI builds the same image. They add a second configuration for agents that mounts only the repository and allows network access only to the package registry.
 

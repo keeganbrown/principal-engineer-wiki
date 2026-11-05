@@ -20,7 +20,7 @@
 
 ## A team's delivery pipeline is badly broken. Should they roll out agents now?
 
-- [x] No; fix the pipeline where agents will work, since AI tends to amplify it.
+- [x] Not yet; fix the pipeline where agents will work, since AI may amplify the breakage.
 - [ ] Yes; agents will fix the pipeline themselves as part of their work.
 - [ ] No; wait until the whole codebase is clean before trying any agents.
 - [ ] Yes, but only for the engineers who complain most about the pipeline.

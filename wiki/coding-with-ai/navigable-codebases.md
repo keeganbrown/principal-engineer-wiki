@@ -28,13 +28,13 @@ The limit: no structure makes a large system obvious. Navigability lowers the co
 ## How to apply it
 
 - **Group by domain.** `billing/`, `orders/`, `shipping/` tell an agent where a change belongs; `controllers/`, `services/`, `utils/` make it open three folders for every feature ([[coupling-and-cohesion]]).
-- **Use one name per concept.** If the business says "subscription," don't call it `Plan` in one module and `Membership` in another. A search for one word should find all of it ([[domain-driven-design]] calls this the ubiquitous language). This holds within one bounded context; across contexts, different names can be right, so say so in each module's README and a search for one word points to the other.
+- **Use one name per concept.** If the business says "subscription," don't call it `Plan` in one module and `Membership` in another. A search for one word should find all of it ([[domain-driven-design]] calls this the ubiquitous language). That holds within one *bounded context* (a part of the system where each term has one meaning). Across contexts, different names can be right; note the other name in each module's README so a search for either word finds both.
 - **Prefer names you can search for.** `calculateShippingCost` is findable; `calc` or a dynamically built method name isn't. Avoid code generated or registered at runtime by string, where a search finds nothing.
 - **Put docs next to the code.** A short README or instruction file in each major module explains its purpose, rules, and entry points ([[agent-instruction-files]]). Architecture decisions live in the repository as [[architecture-decision-records]], not only in a wiki the agent can't see.
 - **Keep tests easy to find.** Use a consistent pattern — beside the code or mirrored in a `tests/` folder — so finding the tests for a file is mechanical.
 - **Mark generated and frozen code.** A header comment and a folder name like `gen/` stop agents from editing files that will be overwritten. Back it with a check or a hook so the rule holds ([[shared-agent-configuration]]).
 - **Leave one good example of each common change.** A clean reference endpoint, migration, or test shows the house style better than a page of rules.
-- **Delete dead code.** Unused modules look exactly like live ones to an agent. Commented-out code and stale feature flags are traps.
+- **Delete dead code.** Unused modules look exactly like live ones to an agent. Commented-out code and stale feature flags are traps. Confirm the code really is dead first, with usage data or a logged tombstone, because reflection, scheduled jobs, and external callers hide.
 
 ## Example
 

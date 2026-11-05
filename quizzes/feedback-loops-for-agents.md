@@ -7,7 +7,7 @@
 - [ ] Longer prompts that explain which test failures the agent can ignore.
 - [ ] Letting agents skip the tests and relying on human review instead.
 
-**Why:** A flaky test makes the agent "fix" code that wasn't broken. Fast, trustworthy checks let it fix its own mistakes. It cost the team two engineers for two weeks, so start where agents work most. See [[feedback-loops-for-agents]].
+**Why:** A flaky test makes the agent "fix" code that wasn't broken. Fast, trustworthy checks let it fix its own mistakes. It isn't free (two engineers for two weeks in one team), so start where agents work most. See [[feedback-loops-for-agents]].
 
 ## Why is it risky for an agent to write both the code and the only tests for it?
 

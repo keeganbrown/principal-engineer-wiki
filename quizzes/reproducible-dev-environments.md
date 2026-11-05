@@ -1,8 +1,8 @@
-# Quiz: Reproducible Dev Environments
+# Quiz: Reproducible Development Environments
 
-## An agent loosens an image test's assertions because laptops and CI run different library versions. What's the real fix?
+## An agent loosens an image-resizing test's assertions because laptops and CI run different versions of an image-processing library. What's the real fix?
 
-- [x] A dev container with pinned versions, built from CI's definition.
+- [x] A dev container with pinned versions that CI also builds from.
 - [ ] A rule in the instruction file forbidding changes to assertions.
 - [ ] Updating every laptop by hand so its libraries match CI's versions.
 - [ ] Skipping the image tests whenever they run on a laptop instead of CI.

@@ -23,9 +23,9 @@
 - [x] Write a better spec and start a fresh session.
 - [ ] Keep correcting it until the session runs out of context.
 - [ ] Approve the change now and plan to fix it later.
-- [ ] Take over and finish this change by hand.
+- [ ] Switch to a different agent tool and paste the same prompt.
 
-**Why:** Failed attempts stay in the session's context and keep steering the agent. A fresh session with a clearer spec starts clean. See [[spec-first-agent-tasks]].
+**Why:** Failed attempts stay in the session's context and seem to keep steering the agent; the same prompt elsewhere repeats the same gaps. A fresh session with a clearer spec starts clean. See [[spec-first-agent-tasks]].
 
 ## You're unsure how to approach a small change that's cheap to throw away. Should you plan first?
 

@@ -3,7 +3,7 @@
 ## An agent adds a new discount type to an unused `legacy/promo/` folder. What change prevents this?
 
 - [x] Delete dead code so search finds only the real implementation.
-- [ ] Add a comment in the legacy folder asking agents not to use it.
+- [ ] Ask the agent in each prompt to avoid any folder named legacy.
 - [ ] Rename the legacy folder so it starts with an underscore.
 - [ ] Give the agent a bigger context window so it sees everything.
 

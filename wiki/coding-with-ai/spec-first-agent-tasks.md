@@ -20,12 +20,12 @@ Spec-first means splitting the work into phases you can check:
 3. **Code.** It builds one slice at a time, running checks as it goes.
 4. **Verify and commit.** The checks pass, you review, and the slice lands as a small commit or pull request (PR).
 
-Anthropic's guidance for Claude Code describes the same loop (explore, plan, code, commit), and most agent tools now have a read-only "plan mode" for the first two steps.
+Anthropic's guidance for Claude Code describes the same loop (explore, plan, code, commit), and many agent tools now have a read-only "plan mode" for the first two steps.
 
 ## Why it matters
 
 - **Correcting a plan is cheaper than correcting code.** A wrong assumption caught in a ten-line plan costs a sentence. Caught in an 800-line diff, it costs the diff.
-- **Small slices keep review possible.** Agents make it easy to produce huge changes that nobody can review well. DORA (DevOps Research and Assessment) names working in small batches as one of seven capabilities that amplify the benefits of AI-assisted development.
+- **Small slices keep review possible.** Agents make it easy to produce huge changes that nobody can review well. The 2025 AI Capabilities Model from DORA (DevOps Research and Assessment), built from a survey of about 5,000 professionals, lists working in small batches among seven capabilities it associates with better results from AI-assisted development ([[continuous-delivery]]). That's a correlation, not proof.
 - **A clear "done" lets the agent check itself.** "Add rate limiting" is vague. "Requests over 100 per minute per API key get HTTP 429 with a `Retry-After` header; a test proves it" is something the agent can verify.
 
 The limit: planning has a cost too. For a one-line fix, a planning phase is ceremony. And when attempts are cheap and easy to throw away, two quick tries can teach more than a plan; plan first when a wrong attempt is expensive to review or hard to undo.
@@ -33,10 +33,11 @@ The limit: planning has a cost too. For a one-line fix, a planning phase is cere
 ## How to apply it
 
 - **Write acceptance criteria before implementation.** State what must be true when it's done, ideally as tests. A failing test is the most precise spec you can give an agent ([[test-driven-development]]).
-- **Ask for the plan in writing, then edit it.** Look for wrong assumptions, missing edge cases, and files it shouldn't touch. Push back on the plan the way you would in a [[design-docs|design review]], at a smaller scale. Check the facts it rests on, such as instance counts and existing services, before checking the design; the exploration report is model output too, and a plan built on a misread config is still wrong.
+- **Ask for the plan in writing, then edit it.** Look for wrong assumptions, missing edge cases, and files it shouldn't touch. Push back on the plan the way you would in a [[design-docs|design review]], at a smaller scale.
+- **Verify the facts before the design.** The exploration report is model output too, and a plan built on a misread config is still wrong. Confirm instance counts, existing services, and config yourself.
 - **Size tasks to one reviewable PR.** If the plan has six independent steps, that's six tasks. A reviewer should be able to understand a slice in one sitting.
 - **Point at examples and constraints.** "Follow the pattern in `orders/refund.py`; don't change the public API" removes whole categories of guesses.
-- **Restart instead of arguing.** If you've corrected the agent twice on the same task and it's still off, stop. Write a better spec and start a fresh session; a long session full of failed attempts tends to make results worse, not better, because the failed attempts stay in the agent's context and keep steering it.
+- **Restart instead of arguing.** If you've corrected the agent twice on the same task and it's still off, stop. Write a better spec and start a fresh session. A long session full of failed attempts often goes worse, not better; a common explanation is that everything said in the session stays in the text the agent rereads on every step (its *context*), so the failed attempts keep steering it. If the remaining work is small and you now understand it, finishing it yourself can be faster still.
 - **Decide the design yourself on one-way doors.** Let the agent explore options for decisions that are hard to undo, but make the call yourself and record it ([[reversible-decisions]]).
 
 ## Example

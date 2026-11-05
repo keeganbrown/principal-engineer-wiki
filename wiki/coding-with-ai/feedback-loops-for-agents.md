@@ -15,7 +15,7 @@ A **coding agent** is an AI tool that reads code, runs commands, and edits files
 
 So the agent's real teacher is your **feedback loop**: the checks that run after a change and say pass or fail. A codebase with a 20-second test suite, strict types, and clear error messages lets an agent try, fail, and fix many times per task. A codebase with a 40-minute flaky suite leaves it guessing — and guessing agents produce confident, wrong code.
 
-Google's DORA (DevOps Research and Assessment) program describes the same pattern at the organizational level in its 2025 report, a survey of about 5,000 professionals: AI acts as an **amplifier**, magnifying a team's existing strengths and weaknesses rather than fixing them. It's a correlation from self-reports, not a controlled result, but it matches what this article argues from first principles.
+Google's DORA (DevOps Research and Assessment) program describes the same pattern at the organizational level in its 2025 report, a survey of about 5,000 professionals: AI acts as an **amplifier**, magnifying a team's existing strengths and weaknesses rather than fixing them. It's a correlation from self-reports, not a controlled result, but it fits the reasoning above.
 
 ## Why it matters
 
@@ -32,8 +32,7 @@ The limit: checks only catch what they check. An agent can make every test pass 
 - **Turn conventions into checks.** Types, linters, formatters, and architecture tests ("nothing in `core/` imports the database") enforce rules every time. Prose rules in an instruction file are only followed most of the time ([[agent-instruction-files]]).
 - **Write error messages for a reader with no context.** "Expected Cents, got float in `refund()`" lets an agent fix the bug. "AssertionError" makes it guess.
 - **Keep modules small, with clear boundaries.** An agent does better in a 300-line module with a clear interface than in a 5,000-line file ([[navigable-codebases]]).
-- **Give unattended agent runs a finish line.** An *unattended agent run* restarts an agent on a schedule or repository event, with nobody watching, until a task is done. It needs a stop condition a machine can check ("the migration tests pass"), a spending cap on model usage, a durable record of what's done so the next run doesn't start over, and a point where a human takes over. Sandbox it too ([[agent-guardrails]]).
-- **No checkable stop condition, no unattended run.** A loose condition burns budget repeating the same failure. This advice comes from practitioners: a 2026 workshop paper (Lulla, Baltes, and others) found no systematic evidence yet that unattended runs pay off.
+- **Give unattended agent runs a finish line.** An *unattended agent run* restarts an agent on a schedule or repository event, with nobody watching, until a task is done. It needs a stop condition a machine can check ("the migration tests pass"), a spending cap on model usage, a durable record of what's done so the next run doesn't start over, and a point where a human takes over. Sandbox it too ([[agent-guardrails]]). Without a checkable stop condition, don't run it at all: a loose condition burns budget repeating the same failure. This advice comes from practitioners: a 2026 workshop paper (Lulla, Baltes, and others) found no systematic evidence yet that unattended runs pay off.
 - **Protect the tests themselves.** An agent stuck on a failing test may weaken or delete it to make it pass. Review test changes closely, and treat a deleted assertion as a red flag.
 
 ## Example
@@ -43,12 +42,12 @@ A team tries agents on a service whose test suite takes 35 minutes and fails ran
 Instead of giving up, they spend two weeks on the loop:
 
 - Split out a unit suite of pure business-logic tests that runs in 15 seconds, using [[functional-core-imperative-shell]] where the logic was tangled with I/O.
-- Move the flaky tests out of the blocking suite (quarantine them) and fix the top five causes (shared state, real clocks, network calls).
+- Move the flaky tests out of the blocking suite (quarantine them) and fix the top five causes (shared state, real clocks, network calls). Each quarantined test gets an owner and a fix-or-delete deadline, because until then that behavior is unchecked.
 - Add strict type checking to the core module and one architecture test.
 
 Agents now run the fast suite after every edit and fix most of their own failures before anyone looks. Review shifts from "does it even run?" to "is this the right design?" The cost was real — two engineers for two weeks, plus ongoing work to keep the fast suite fast — and it paid off for the humans too.
 
-To check the investment keeps paying, the team tracks how often agent PRs pass CI on the first push and how much review time goes to mechanical issues; both should fall.
+To check the investment keeps paying, the team tracks how often agent PRs pass continuous integration (CI) on the first push and how much review time goes to mechanical issues; both should fall.
 
 ## Common traps
 

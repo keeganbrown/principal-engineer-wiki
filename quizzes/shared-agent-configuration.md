@@ -9,7 +9,7 @@
 
 **Why:** The deny rule stops the agent's file tools, not its commands. Keeping secrets truly out of reach takes a sandbox, or not having the file in the agent's environment. See [[shared-agent-configuration]] and [[agent-guardrails]].
 
-## What belongs in the shared, checked-in configuration?
+## What belongs in a team's checked-in coding-agent configuration?
 
 - [x] Team permissions, hooks, and reusable commands.
 - [ ] A permission one engineer finds convenient for their work.
@@ -29,9 +29,9 @@
 
 ## A team commits a format hook that runs on every edit. What cost should they plan for?
 
-- [x] A broken or slow hook breaks every teammate's agent.
+- [x] A slow or broken hook slows or breaks every teammate's agent.
 - [ ] Hooks can't run in CI, so formatting drifts between machines.
 - [ ] Agents ignore hooks they didn't write themselves.
 - [ ] Each engineer must approve the hook before every edit.
 
-**Why:** A committed hook is code that runs automatically on everyone's machine, so keep it fast and review it like a CI script. See [[shared-agent-configuration]].
+**Why:** A committed hook is code that runs automatically on everyone's machine, so keep it fast and review it like a CI script; a formatter version mismatch can break it for everyone. See [[shared-agent-configuration]].
